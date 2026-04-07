@@ -1,0 +1,178 @@
+{
+  "tipo": "Router",
+  "fabricante": "Mikrotik",
+  "modelo": "RB4011iGS+RM",
+  "snmp_version": "2c",
+  "descricao": "RB4011 — 10x Gigabit Ethernet, 1x SFP+, 4-core 1.4GHz, 1GB RAM",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "descricao": "Verifica se o equipamento está online via ICMP",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "icmp_ping",
+          "nome": "ICMP Ping",
+          "tipo": "ICMP_PING",
+          "unidade": ""
+        },
+        {
+          "id": "icmp_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%"
+        },
+        {
+          "id": "icmp_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms"
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU",
+      "descricao": "Utilização de CPU (single core)",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "cpu_util",
+          "nome": "CPU Utilização",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.2.1.25.3.3.1.2.1",
+          "unidade": "%"
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memória RAM",
+      "descricao": "Uso de memória RAM",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "memory_total",
+          "nome": "Memória Total",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.5.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024
+        },
+        {
+          "id": "memory_used",
+          "nome": "Memória Usada",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.6.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego e status por interface (5 portas)",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "itens": [
+        {
+          "id": "if_status",
+          "nome": "Status",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": {
+            "1": "Up",
+            "2": "Down"
+          }
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_speed",
+          "nome": "Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros/s"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros/s"
+        }
+      ]
+    },
+    {
+      "id": "uptime",
+      "label": "Uptime",
+      "descricao": "Tempo desde o último reinício",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "uptime_hw",
+          "nome": "Uptime Hardware",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.25.1.1.0",
+          "unidade": "s"
+        },
+        {
+          "id": "uptime_net",
+          "nome": "Uptime SNMP",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s"
+        }
+      ]
+    },
+    {
+      "id": "firmware",
+      "label": "Firmware / RouterOS",
+      "descricao": "Versão do RouterOS",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.4.0",
+          "unidade": ""
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.3.0",
+          "unidade": ""
+        }
+      ]
+    }
+  ]
+}

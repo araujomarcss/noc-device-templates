@@ -1,0 +1,72 @@
+{
+  "tipo": "AP",
+  "fabricante": "Mikrotik",
+  "modelo": "hAP ac²",
+  "snmp_version": "2c",
+  "descricao": "hAP ac² — Dual-band AP, 5x Ethernet, 2.4GHz + 5GHz, 716MHz, 128MB RAM",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "icmp_ping", "nome": "ICMP Ping", "tipo": "ICMP_PING", "unidade": ""},
+        {"id": "icmp_loss", "nome": "Perda de Pacotes", "tipo": "ICMP_LOSS", "unidade": "%"},
+        {"id": "icmp_response", "nome": "Tempo de Resposta", "tipo": "ICMP_RESPONSE", "unidade": "ms"}
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "itens": [
+        {"id": "if_status", "nome": "Status", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}", "value_map": {"1": "Up", "2": "Down"}},
+        {"id": "if_in_octets", "nome": "Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "unidade": "bps"},
+        {"id": "if_out_octets", "nome": "Tráfego Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "unidade": "bps"}
+      ]
+    },
+    {
+      "id": "wireless",
+      "label": "Wireless",
+      "descricao": "Clientes conectados, canal e sinal por rádio",
+      "categoria": "Wireless",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.14988.1.1.14.1.1.2",
+      "itens": [
+        {"id": "wifi_clients", "nome": "Clientes Conectados", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.14988.1.1.1.3.1.6.{index}", "unidade": ""},
+        {"id": "wifi_freq", "nome": "Frequência", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.14988.1.1.1.3.1.8.{index}", "unidade": ""}
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "cpu_util", "nome": "CPU Utilização", "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.2.1.25.3.3.1.2.1", "unidade": "%"}
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memória RAM",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "memory_total", "nome": "Memória Total", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.25.2.3.1.5.65536", "unidade": "bytes", "multiplicador": 1024},
+        {"id": "memory_used", "nome": "Memória Usada", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.25.2.3.1.6.65536", "unidade": "bytes", "multiplicador": 1024}
+      ]
+    },
+    {
+      "id": "uptime",
+      "label": "Uptime",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "uptime_net", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s"}
+      ]
+    }
+  ]
+}

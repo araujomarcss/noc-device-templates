@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-04-01",
+  "templates": [
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "CCR1016-12G",
+      "file": "mikrotik/ccr1016-12g.json",
+      "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "CCR2004-1G-12S+2XS",
+      "file": "mikrotik/ccr2004.json",
+      "descricao": "Cloud Core Router, 4 cores, 4GB RAM, 12x SFP+"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "RB750Gr3",
+      "file": "mikrotik/rb750gr3.json",
+      "descricao": "hEX, 5x Gigabit Ethernet, 880MHz, 256MB RAM"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "RB4011iGS+RM",
+      "file": "mikrotik/rb4011.json",
+      "descricao": "10x Gigabit Ethernet, 1x SFP+, 4-core 1.4GHz, 1GB RAM"
+    },
+    {
+      "tipo": "Switch",
+      "fabricante": "Mikrotik",
+      "modelo": "CRS326-24G-2S+RM",
+      "file": "mikrotik/crs326.json",
+      "descricao": "24x Gigabit Ethernet, 2x SFP+, Cloud Router Switch"
+    },
+    {
+      "tipo": "Switch",
+      "fabricante": "Mikrotik",
+      "modelo": "CRS354-48G-4S+2Q+RM",
+      "file": "mikrotik/crs354.json",
+      "descricao": "48x Gigabit Ethernet, 4x SFP+, 2x QSFP+"
+    },
+    {
+      "tipo": "AP",
+      "fabricante": "Mikrotik",
+      "modelo": "hAP ac²",
+      "file": "mikrotik/hap-ac2.json",
+      "descricao": "Dual-band AP, 5x Ethernet, 2.4GHz + 5GHz"
+    },
+    {
+      "tipo": "AP",
+      "fabricante": "Ubiquiti",
+      "modelo": "UniFi AP AC Pro",
+      "file": "ubiquiti/unifi-ap-ac-pro.json",
+      "descricao": "Dual-band 802.11ac, 2.4GHz + 5GHz"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Cisco",
+      "modelo": "ISR 4331",
+      "file": "cisco/isr4331.json",
+      "descricao": "Integrated Services Router, 3x GE, 2x NIM slots"
+    }
+  ]
+}
