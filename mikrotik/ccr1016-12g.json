@@ -13,7 +13,7 @@
       "requer_discovery": false,
       "itens": [
         {
-          "id": "icmp_ping",
+          "id": "icmpping",
           "nome": "ICMP Ping",
           "tipo": "ICMP_PING",
           "unidade": "",
