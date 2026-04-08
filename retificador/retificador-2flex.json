@@ -1,76 +1,190 @@
 {
-  "version": "1.0.0",
-  "updated_at": "2026-04-07",
-  "templates": [
+  "tipo": "Retificador",
+  "fabricante": "2Flex",
+  "modelo": "Retificador 2Flex",
+  "snmp_version": "2c",
+  "descricao": "Retificador 2Flex — Distribuição AC/DC, 2 módulos retificadores, bateria, sensores e alarmes",
+  "capabilities": [
     {
-      "tipo": "Router",
-      "fabricante": "Mikrotik",
-      "modelo": "CCR1016-12G",
-      "file": "mikrotik/ccr1016-12g.json",
-      "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "descricao": "Verifica se o equipamento está online via ICMP",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "icmp_ping",     "nome": "ICMP Ping",          "tipo": "ICMP_PING",     "unidade": ""},
+        {"id": "icmp_loss",     "nome": "Perda de Pacotes",   "tipo": "ICMP_LOSS",     "unidade": "%"},
+        {"id": "icmp_response", "nome": "Tempo de Resposta",  "tipo": "ICMP_RESPONSE", "unidade": "ms"}
+      ]
     },
     {
-      "tipo": "Router",
-      "fabricante": "Mikrotik",
-      "modelo": "CCR2004-1G-12S+2XS",
-      "file": "mikrotik/ccr2004.json",
-      "descricao": "Cloud Core Router, 4 cores, 4GB RAM, 12x SFP+"
+      "id": "medicao_ac",
+      "label": "Medições AC",
+      "descricao": "Tensão, corrente, frequência, fator de potência e energia das 3 fases",
+      "categoria": "Elétrico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "tensao_a",       "nome": "Tensão Fase A",      "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.1.0",  "unidade": "V"},
+        {"id": "corrente_a",     "nome": "Corrente Fase A",    "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.2.0",  "unidade": "A"},
+        {"id": "tensao_b",       "nome": "Tensão Fase B",      "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.3.0",  "unidade": "V"},
+        {"id": "corrente_b",     "nome": "Corrente Fase B",    "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.4.0",  "unidade": "A"},
+        {"id": "tensao_c",       "nome": "Tensão Fase C",      "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.5.0",  "unidade": "V"},
+        {"id": "corrente_c",     "nome": "Corrente Fase C",    "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.6.0",  "unidade": "A"},
+        {"id": "frequencia",     "nome": "Frequência",         "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.7.0",  "unidade": "Hz"},
+        {"id": "fator_potencia", "nome": "Fator de Potência",  "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.8.0",  "unidade": ""},
+        {"id": "potencia_ativa", "nome": "Potência Ativa",     "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.9.0",  "unidade": "W"},
+        {"id": "energia_ativa",  "nome": "Energia Ativa",      "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.1.10.0", "unidade": "kWh"}
+      ]
     },
     {
-      "tipo": "Router",
-      "fabricante": "Mikrotik",
-      "modelo": "RB750Gr3",
-      "file": "mikrotik/rb750gr3.json",
-      "descricao": "hEX, 5x Gigabit Ethernet, 880MHz, 256MB RAM"
+      "id": "alarmes_ac",
+      "label": "Alarmes AC",
+      "descricao": "Alarmes de tensão alta/baixa/perda e frequência por fase",
+      "categoria": "Alarmes",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "perda_tensao_a",  "nome": "Perda de Tensão (A)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.11.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_baixa_a",  "nome": "Tensão Baixa (A)",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.12.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_alta_a",   "nome": "Tensão Alta (A)",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.13.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "corrente_alta_a", "nome": "Corrente Alta (A)",   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.14.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "perda_tensao_b",  "nome": "Perda de Tensão (B)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.15.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_baixa_b",  "nome": "Tensão Baixa (B)",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.16.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_alta_b",   "nome": "Tensão Alta (B)",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.17.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "corrente_alta_b", "nome": "Corrente Alta (B)",   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.18.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "perda_tensao_c",  "nome": "Perda de Tensão (C)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.19.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_baixa_c",  "nome": "Tensão Baixa (C)",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.20.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_alta_c",   "nome": "Tensão Alta (C)",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.21.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "corrente_alta_c", "nome": "Corrente Alta (C)",   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.22.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "freq_baixa",      "nome": "Frequência Baixa",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.23.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "freq_alta",       "nome": "Frequência Alta",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.1.24.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}}
+      ]
     },
     {
-      "tipo": "Router",
-      "fabricante": "Mikrotik",
-      "modelo": "RB4011iGS+RM",
-      "file": "mikrotik/rb4011.json",
-      "descricao": "10x Gigabit Ethernet, 1x SFP+, 4-core 1.4GHz, 1GB RAM"
+      "id": "medicao_dc",
+      "label": "Medições DC",
+      "descricao": "Tensão, correntes de bateria/carga/retificador, temperatura e umidade",
+      "categoria": "Elétrico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "tensao_sistema",     "nome": "Tensão do Sistema",          "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.1.0",  "unidade": "V"},
+        {"id": "tensao_carga",       "nome": "Tensão da Carga",            "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.2.0",  "unidade": "V"},
+        {"id": "corrente_bat1",      "nome": "Corrente Bateria 1",         "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.3.0",  "unidade": "A"},
+        {"id": "corrente_bat2",      "nome": "Corrente Bateria 2",         "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.4.0",  "unidade": "A"},
+        {"id": "corrente_saida_ret", "nome": "Corrente Saída Retificador", "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.5.0",  "unidade": "A"},
+        {"id": "corrente_carga",     "nome": "Corrente da Carga",          "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.6.0",  "unidade": "A"},
+        {"id": "temp_bateria",       "nome": "Temperatura da Bateria",     "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.7.0",  "unidade": "°C"},
+        {"id": "temp_ambiente",      "nome": "Temperatura Ambiente",       "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.8.0",  "unidade": "°C"},
+        {"id": "umidade_ambiente",   "nome": "Umidade Ambiente",           "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.9.0",  "unidade": "%"},
+        {"id": "capacidade_bateria", "nome": "Capacidade da Bateria",      "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.11.0", "unidade": "%"},
+        {"id": "corrente_carga1",    "nome": "Corrente Carga 1",           "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.12.0", "unidade": "A"},
+        {"id": "corrente_carga2",    "nome": "Corrente Carga 2",           "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.13.0", "unidade": "A"},
+        {"id": "corrente_carga3",    "nome": "Corrente Carga 3",           "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.14.0", "unidade": "A"},
+        {"id": "corrente_carga4",    "nome": "Corrente Carga 4",           "tipo": "SNMP_FLOAT", "oid": "1.3.6.1.4.1.44322.1.2.15.0", "unidade": "A"}
+      ]
     },
     {
-      "tipo": "Switch",
-      "fabricante": "Mikrotik",
-      "modelo": "CRS326-24G-2S+RM",
-      "file": "mikrotik/crs326.json",
-      "descricao": "24x Gigabit Ethernet, 2x SFP+, Cloud Router Switch"
+      "id": "alarmes_dc",
+      "label": "Alarmes DC",
+      "descricao": "Alarmes de bateria, carga, temperatura, fumaça, porta e falhas",
+      "categoria": "Alarmes",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "status_carregamento", "nome": "Status Carregamento",          "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.16.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "standby",             "nome": "Standby (Reserva 1)",          "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.17.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "standby2",            "nome": "Standby 2 (Reserva 2)",        "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.18.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "corrente_carga_alta", "nome": "Corrente de Carga Alta",       "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.19.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "carga_bateria",       "nome": "Carga da Bateria",             "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.20.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "sobretensao",         "nome": "Sobretensão DC",               "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.21.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "fusivel_carga",       "nome": "Fusível de Carga",             "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.22.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "lvd2",                "nome": "LVD2 (2º Estágio Desl. BT)",  "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.23.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "lvd1",                "nome": "LVD1 (1º Estágio Desl. BT)",  "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.24.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "corrente_bat_alta",   "nome": "Corrente de Bateria Alta",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.25.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "tensao_bat_baixa",    "nome": "Tensão de Bateria Baixa",      "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.26.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "fusivel_bateria",     "nome": "Fusível da Bateria",           "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.27.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "temp_bat_alta",       "nome": "Temperatura Bateria Alta",     "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.28.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "temp_bat_baixa",      "nome": "Temperatura Bateria Baixa",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.29.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "temp_amb_alta",       "nome": "Temperatura Ambiente Alta",    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.30.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "temp_amb_baixa",      "nome": "Temperatura Ambiente Baixa",   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.31.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "colisao",             "nome": "Aviso de Colisão",             "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.32.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "falha_aterramento",   "nome": "Falha de Aterramento DC",      "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.33.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "nivel_eletrolito",    "nome": "Nível de Eletrólito",          "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.34.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "fumaca",              "nome": "Fumaça",                       "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.36.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "porta",               "nome": "Porta",                        "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.37.0", "unidade": "", "value_map": {"0": "Fechada", "1": "Aberta"}},
+        {"id": "carga_lvd1",          "nome": "Carga LVD1",                   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.38.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "carga_lvd2",          "nome": "Carga LVD2",                   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.39.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "carga_lvd3",          "nome": "Carga LVD3",                   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.40.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "carga_lvd4",          "nome": "Carga LVD4",                   "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.41.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "alarme_ac",           "nome": "Alarme AC",                    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.42.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "alarme_dc",           "nome": "Alarme DC",                    "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.43.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "alarme_retificador",  "nome": "Alarme do Retificador",        "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.44.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "alarme_aparelho",     "nome": "Alarme do Aparelho",           "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.2.45.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "spd",                 "nome": "SPD (Proteção contra Surtos)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.37.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}}
+      ]
     },
     {
-      "tipo": "Switch",
-      "fabricante": "Mikrotik",
-      "modelo": "CRS354-48G-4S+2Q+RM",
-      "file": "mikrotik/crs354.json",
-      "descricao": "48x Gigabit Ethernet, 4x SFP+, 2x QSFP+"
+      "id": "modulo1",
+      "label": "Módulo Retificador 1",
+      "descricao": "Dados e alarmes do módulo retificador 1",
+      "categoria": "Retificador",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "m1_tensao_saida",     "nome": "Mod1 — Tensão de Saída",           "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.2.0",   "unidade": "V"},
+        {"id": "m1_corrente_saida",   "nome": "Mod1 — Corrente de Saída",         "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.3.0",   "unidade": "A"},
+        {"id": "m1_fan1",             "nome": "Mod1 — Ventoinha 1",               "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.4.0",   "unidade": "RPM"},
+        {"id": "m1_fan2",             "nome": "Mod1 — Ventoinha 2",               "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.5.0",   "unidade": "RPM"},
+        {"id": "m1_temperatura",      "nome": "Mod1 — Temperatura",               "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.6.0",   "unidade": "°C"},
+        {"id": "m1_versao_sw",        "nome": "Mod1 — Versão Software",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.44322.1.3.7.0",   "unidade": ""},
+        {"id": "m1_serial",           "nome": "Mod1 — Número de Série",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.44322.1.3.8.0",   "unidade": ""},
+        {"id": "m1_online",           "nome": "Mod1 — Online",                    "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.114.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_prot_alta_tensao", "nome": "Mod1 — Proteção Alta Tensão",      "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.131.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_prot_alta_temp",   "nome": "Mod1 — Proteção Alta Temperatura", "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.133.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_prot_curto",       "nome": "Mod1 — Proteção Curto Circuito",   "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.134.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_offline",          "nome": "Mod1 — Offline",                   "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.135.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_alarme_fan",       "nome": "Mod1 — Alarme Ventoinha",          "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.137.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_desl_anormal",     "nome": "Mod1 — Desligamento Anormal",      "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.138.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_status_alarme",    "nome": "Mod1 — Status do Alarme",          "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.139.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m1_limite_corrente",  "nome": "Mod1 — Limite de Corrente",        "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.140.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}}
+      ]
     },
     {
-      "tipo": "AP",
-      "fabricante": "Mikrotik",
-      "modelo": "hAP ac2",
-      "file": "mikrotik/hap-ac2.json",
-      "descricao": "Dual-band AP, 5x Ethernet, 2.4GHz + 5GHz"
+      "id": "modulo2",
+      "label": "Módulo Retificador 2",
+      "descricao": "Dados e alarmes do módulo retificador 2",
+      "categoria": "Retificador",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "m2_tensao_saida",     "nome": "Mod2 — Tensão de Saída",           "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.9.0",   "unidade": "V"},
+        {"id": "m2_corrente_saida",   "nome": "Mod2 — Corrente de Saída",         "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.10.0",  "unidade": "A"},
+        {"id": "m2_fan1",             "nome": "Mod2 — Ventoinha 1",               "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.11.0",  "unidade": "RPM"},
+        {"id": "m2_fan2",             "nome": "Mod2 — Ventoinha 2",               "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.12.0",  "unidade": "RPM"},
+        {"id": "m2_temperatura",      "nome": "Mod2 — Temperatura",               "tipo": "SNMP_FLOAT",  "oid": "1.3.6.1.4.1.44322.1.3.13.0",  "unidade": "°C"},
+        {"id": "m2_versao_sw",        "nome": "Mod2 — Versão Software",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.44322.1.3.14.0",  "unidade": ""},
+        {"id": "m2_serial",           "nome": "Mod2 — Número de Série",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.44322.1.3.15.0",  "unidade": ""},
+        {"id": "m2_online",           "nome": "Mod2 — Online",                    "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.115.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_prot_alta_tensao", "nome": "Mod2 — Proteção Alta Tensão",      "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.142.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_prot_alta_temp",   "nome": "Mod2 — Proteção Alta Temperatura", "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.144.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_prot_curto",       "nome": "Mod2 — Proteção Curto Circuito",   "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.145.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_offline",          "nome": "Mod2 — Offline",                   "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.146.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_alarme_fan",       "nome": "Mod2 — Alarme Ventoinha",          "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.148.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_desl_anormal",     "nome": "Mod2 — Desligamento Anormal",      "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.149.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_status_alarme",    "nome": "Mod2 — Status do Alarme",          "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.150.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "m2_limite_corrente",  "nome": "Mod2 — Limite de Corrente",        "tipo": "SNMP_INT",    "oid": "1.3.6.1.4.1.44322.1.3.151.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}}
+      ]
     },
     {
-      "tipo": "AP",
-      "fabricante": "Ubiquiti",
-      "modelo": "UniFi AP AC Pro",
-      "file": "ubiquiti/unifi-ap-ac-pro.json",
-      "descricao": "Dual-band 802.11ac, 2.4GHz + 5GHz"
-    },
-    {
-      "tipo": "Router",
-      "fabricante": "Cisco",
-      "modelo": "ISR 4331",
-      "file": "cisco/isr4331.json",
-      "descricao": "Integrated Services Router, 3x GE, 2x NIM slots"
-    },
-    {
-      "tipo": "Retificador",
-      "fabricante": "2Flex",
-      "modelo": "Retificador 2Flex",
-      "file": "retificador/retificador-2flex.json",
-      "descricao": "Retificador 2Flex — Distribuição AC/DC trifásica, 2 módulos, bateria, sensores e alarmes"
+      "id": "rele",
+      "label": "Relés",
+      "descricao": "Status dos relés de alarme (1 a 6)",
+      "categoria": "Alarmes",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "rele1", "nome": "Relé 1 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.1.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "rele2", "nome": "Relé 2 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.2.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "rele3", "nome": "Relé 3 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.3.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "rele4", "nome": "Relé 4 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.4.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "rele5", "nome": "Relé 5 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.5.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}},
+        {"id": "rele6", "nome": "Relé 6 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.44322.1.5.6.0", "unidade": "", "value_map": {"0": "OK", "1": "ALARME"}}
+      ]
     }
   ]
 }
