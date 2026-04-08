@@ -44,6 +44,14 @@
       "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
       "itens": [
         {
+          "id": "cpu_avg",
+          "nome": "CPU Utilização Média",
+          "tipo": "SNMP_AVG_WALK",
+          "oid": "1.3.6.1.2.1.25.3.3.1.2",
+          "unidade": "%",
+          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente."
+        },
+        {
           "id": "cpu_util_per_core",
           "nome": "CPU Core #{index} — Utilização",
           "tipo": "SNMP_FLOAT",
