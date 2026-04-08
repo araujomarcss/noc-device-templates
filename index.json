@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-04-01",
+  "updated_at": "2026-04-07",
   "templates": [
     {
       "tipo": "Router",
@@ -47,7 +47,7 @@
     {
       "tipo": "AP",
       "fabricante": "Mikrotik",
-      "modelo": "hAP ac²",
+      "modelo": "hAP ac2",
       "file": "mikrotik/hap-ac2.json",
       "descricao": "Dual-band AP, 5x Ethernet, 2.4GHz + 5GHz"
     },
@@ -64,6 +64,13 @@
       "modelo": "ISR 4331",
       "file": "cisco/isr4331.json",
       "descricao": "Integrated Services Router, 3x GE, 2x NIM slots"
+    },
+    {
+      "tipo": "Retificador",
+      "fabricante": "2Flex",
+      "modelo": "Retificador 2Flex",
+      "file": "retificador/retificador-2flex.json",
+      "descricao": "Retificador 2Flex — Distribuição AC/DC trifásica, 2 módulos, bateria, sensores e alarmes"
     }
   ]
 }
