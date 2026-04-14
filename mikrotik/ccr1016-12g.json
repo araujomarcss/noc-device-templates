@@ -164,14 +164,15 @@
       "requer_discovery": false,
       "itens": [
         {
-          "id": "pppoe_count",
-          "nome": "Clientes Conectados",
-          "tipo": "SNMP_WALK_COUNT",
-          "oid": ".1.3.6.1.2.1.2.2.1.3",
-          "filter": "pppoe|l2tp",
-          "unidade": "clientes",
-          "descricao": "Conta interfaces que contêm 'pppoe' ou 'l2tp' no nome (ifDescr)."
-        }
+  "id": "pppoe_count",
+  "nome": "Clientes Conectados",
+  "tipo": "SNMP_WALK_COUNT",
+  "oid": "1.3.6.1.2.1.2.2.1.3",
+  "filter": "INTEGER: 23",
+  "unidade": "clientes",
+  "descricao": "Conta interfaces do tipo PPP (ifType=23)."
+}
+
       ]
     },
     {
