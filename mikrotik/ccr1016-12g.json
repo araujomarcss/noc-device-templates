@@ -42,6 +42,7 @@
       "categoria": "Recursos",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
+      "nota": "OID confirmada em CCR1016-12G real: 1.3.6.1.2.1.25.3.3.1.2.{index} retorna % de uso por core. Index 1-16.",
       "itens": [
         {
           "id": "cpu_avg",
@@ -59,8 +60,7 @@
           "unidade": "%",
           "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
         }
-      ],
-      "nota": "OID confirmada em CCR1016-12G real: 1.3.6.1.2.1.25.3.3.1.2.{index} retorna % de uso por core. Index 1-16."
+      ]
     },
     {
       "id": "memory",
@@ -96,6 +96,7 @@
       "categoria": "Rede",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}",
       "itens": [
         {
           "id": "if_status",
@@ -114,20 +115,18 @@
           "nome": "Tráfego Entrada (Download)",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
-          "unidade": "bps",
-          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
-          "exemplo_oid": "1.3.6.1.2.1.2.2.1.10.27 (interface index 27)"
+          "unidade": "bps",
+          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N"
         },
         {
           "id": "if_out_octets",
           "nome": "Tráfego Saída (Upload)",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
-          "unidade": "bps",
-          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
-          "exemplo_oid": "1.3.6.1.2.1.2.2.1.16.27 (interface index 27)"
+          "unidade": "bps",
+          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
         },
         {
           "id": "if_speed",
@@ -153,26 +152,40 @@
           "unidade": "erros/s",
           "descricao": "Pacotes com erro enviados"
         }
-      ],
-      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}"
+      ]
     },
     {
       "id": "pppoe_clients",
       "label": "Clientes PPPoE/L2TP",
-      "descricao": "Contagem de sessões PPPoE e L2TP ativas",
+      "descricao": "Contagem de sessões PPPoE e L2TP ativas via SNMP",
       "categoria": "Rede",
       "requer_discovery": false,
       "itens": [
         {
-  "id": "pppoe_count",
-  "nome": "Clientes Conectados",
-  "tipo": "SNMP_WALK_COUNT",
-  "oid": "1.3.6.1.2.1.2.2.1.3",
-  "filter": "INTEGER: 23",
-  "unidade": "clientes",
-  "descricao": "Conta interfaces do tipo PPP (ifType=23)."
-}
-
+          "id": "pppoe_count",
+          "nome": "Clientes Conectados",
+          "tipo": "SNMP_WALK_COUNT",
+          "oid": "1.3.6.1.2.1.2.2.1.3",
+          "filter": "INTEGER: 23",
+          "unidade": "clientes",
+          "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR1016: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
+        }
+      ]
+    },
+    {
+      "id": "vlan_clients",
+      "label": "Clientes por VLAN",
+      "descricao": "Total de clientes PPPoE agrupados por VLAN via API REST Mikrotik (/rest/ppp/active). Requer credenciais REST configuradas em cliente_fontes.",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "vlan_total",
+          "nome": "Total Clientes por VLAN",
+          "tipo": "REST_VLAN_COUNT",
+          "unidade": "clientes",
+          "descricao": "Soma total de clientes PPPoE/L2TP de todas as VLANs. Dados coletados a cada 2min via API REST e agrupados pelo campo interface. Detalhamento por VLAN disponível em /api/vlan-clients."
+        }
       ]
     },
     {
@@ -231,6 +244,7 @@
       "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
       "categoria": "Ambiente",
       "requer_discovery": false,
+      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)",
       "itens": [
         {
           "id": "temp_device",
@@ -291,25 +305,7 @@
           },
           "descricao": "Estado da fonte 2 (Dual PSU)"
         }
-      ],
-      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)"
-    },
- {
-  "id": "vlan_clients",
-  "label": "Clientes por VLAN",
-  "descricao": "Total de clientes PPPoE agrupados por VLAN via API REST Mikrotik (/rest/ppp/active). Requer credenciais REST configuradas em cliente_fontes.",
-  "categoria": "Rede",
-  "requer_discovery": false,
-  "itens": [
-    {
-      "id": "vlan_total",
-      "nome": "Total Clientes por VLAN",
-      "tipo": "REST_VLAN_COUNT",
-      "unidade": "clientes",
-      "descricao": "Soma total de clientes PPPoE/L2TP de todas as VLANs. Dados coletados a cada 2min via API REST e agrupados pelo campo 'interface'. Detalhamento por VLAN disponível em /api/vlan-clients."
-      }
+      ]
+    }
   ]
 }
-  ]
-}
-
