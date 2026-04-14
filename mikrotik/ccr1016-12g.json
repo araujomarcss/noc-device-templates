@@ -307,7 +307,7 @@
       "tipo": "REST_VLAN_COUNT",
       "unidade": "clientes",
       "descricao": "Soma total de clientes PPPoE/L2TP de todas as VLANs. Dados coletados a cada 2min via API REST e agrupados pelo campo 'interface'. Detalhamento por VLAN disponível em /api/vlan-clients."
-       }
+      }
   ]
 }
   ]
