@@ -71,6 +71,13 @@
       "modelo": "Retificador 2Flex",
       "file": "retificador/retificador-2flex.json",
       "descricao": "Retificador 2Flex — Distribuição AC/DC trifásica, 2 módulos, bateria, sensores e alarmes"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Huawei",
+      "modelo": "NE40",
+      "file": "huawei/ne40.json",
+      "descricao": "OIDs IF-MIB testadas no NE40 — compatível com Datacom, Furukawa, Gigatelco e VSOL"
     }
   ]
 }
