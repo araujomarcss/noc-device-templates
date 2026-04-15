@@ -172,22 +172,23 @@
         }
       ]
     },
-    {
+        {
       "id": "vlan_clients",
       "label": "Clientes por VLAN",
-      "descricao": "Total de clientes PPPoE agrupados por VLAN via API REST Mikrotik (/rest/ppp/active). Requer credenciais REST configuradas em cliente_fontes.",
+      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
       "categoria": "Rede",
-      "requer_discovery": false,
+      "requer_discovery": true,
       "itens": [
         {
           "id": "vlan_total",
-          "nome": "Total Clientes por VLAN",
+          "nome": "Clientes",
           "tipo": "REST_VLAN_COUNT",
           "unidade": "clientes",
-          "descricao": "Soma total de clientes PPPoE/L2TP de todas as VLANs. Dados coletados a cada 2min via API REST e agrupados pelo campo interface. Detalhamento por VLAN disponível em /api/vlan-clients."
+          "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
         }
       ]
-    },
+    }
+,
     {
       "id": "uptime",
       "label": "Uptime",
