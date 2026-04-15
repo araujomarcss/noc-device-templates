@@ -6,7 +6,7 @@
       "tipo": "Router",
       "fabricante": "Mikrotik",
       "modelo": "CCR1016-12G",
-      "file": "mikrotik/ccr1016-12g.json",
+      "file": "mikrotik/ccr2116.json",
       "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
     },
      {
