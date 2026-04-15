@@ -1,0 +1,143 @@
+{
+  "tipo": "Router",
+  "fabricante": "Huawei",
+  "modelo": "NE40",
+  "snmp_version": "2c",
+  "descricao": "Huawei NE40 — OIDs IF-MIB testadas e compatíveis com Huawei, Datacom, Furukawa, Gigatelco e VSOL",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "descricao": "Verifica se o equipamento está online via ICMP",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "icmp_ping",
+          "nome": "ICMP Ping",
+          "tipo": "ICMP_PING",
+          "unidade": "",
+          "descricao": "Online=1 / Offline=0"
+        },
+        {
+          "id": "icmp_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%",
+          "descricao": "Percentual de pacotes perdidos"
+        },
+        {
+          "id": "icmp_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms",
+          "descricao": "Latência ICMP em milissegundos"
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Status, tráfego, erros e descartados por interface — OIDs IF-MIB confirmadas no NE40",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "OIDs testadas no NE40 e compatíveis com Datacom, Furukawa, Gigatelco e VSOL",
+      "itens": [
+        {
+          "id": "if_status",
+          "nome": "Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "Up",
+            "2": "Down"
+          },
+          "descricao": "Status da interface (ifOperStatus). 1=Up, 2=Down"
+        },
+        {
+          "id": "if_type",
+          "nome": "Tipo de Interface",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.3.{index}",
+          "unidade": "",
+          "descricao": "Tipo da interface (ifType). Ex: Ethernet=6, full/half duplex"
+        },
+        {
+          "id": "if_speed",
+          "nome": "Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps",
+          "descricao": "Velocidade negociada da interface em Mbps (ifHighSpeed)"
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada (Bits recebidos)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes recebidos — contador 64-bit (ifHCInOctets)"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída (Bits enviados)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes enviados — contador 64-bit (ifHCOutOctets)"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Erros de Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes de entrada com erros (ifInErrors)"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Erros de Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes de saída com erros (ifOutErrors)"
+        },
+        {
+          "id": "if_in_discards",
+          "nome": "Descartados Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
+          "unidade": "pkts/s",
+          "descricao": "Pacotes de entrada descartados (ifInDiscards)"
+        },
+        {
+          "id": "if_out_discards",
+          "nome": "Descartados Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
+          "unidade": "pkts/s",
+          "descricao": "Pacotes de saída descartados (ifOutDiscards)"
+        }
+      ]
+    },
+    {
+      "id": "uptime",
+      "label": "Uptime",
+      "descricao": "Tempo desde o último reinício",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "uptime_net",
+          "nome": "Uptime SNMP",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s",
+          "descricao": "Tempo desde último reinício do SNMP"
+        }
+      ]
+    }
+  ]
+}
