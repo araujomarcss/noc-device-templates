@@ -1,0 +1,312 @@
+{
+  "tipo": "Router",
+  "fabricante": "Mikrotik",
+  "modelo": "CCR1016-12G",
+  "snmp_version": "2c",
+  "descricao": "Cloud Core Router 1016-12G — 1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "descricao": "Verifica se o equipamento está online via ICMP",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "icmp_ping",
+          "nome": "ICMP Ping",
+          "tipo": "ICMP_PING",
+          "unidade": "",
+          "descricao": "Online=1 / Offline=0"
+        },
+        {
+          "id": "icmp_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%",
+          "descricao": "Percentual de pacotes perdidos"
+        },
+        {
+          "id": "icmp_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms",
+          "descricao": "Latência ICMP em milissegundos"
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU",
+      "descricao": "Utilização por core — 16 cores confirmados (index 1-16)",
+      "categoria": "Recursos",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
+      "nota": "OID confirmada em CCR1016-12G real: 1.3.6.1.2.1.25.3.3.1.2.{index} retorna % de uso por core. Index 1-16.",
+      "itens": [
+        {
+          "id": "cpu_avg",
+          "nome": "CPU Utilização Média",
+          "tipo": "SNMP_AVG_WALK",
+          "oid": "1.3.6.1.2.1.25.3.3.1.2",
+          "unidade": "%",
+          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente."
+        },
+        {
+          "id": "cpu_util_per_core",
+          "nome": "CPU Core #{index} — Utilização",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
+          "unidade": "%",
+          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memória RAM",
+      "descricao": "Uso de memória RAM (total, usado, %)",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "memory_total",
+          "nome": "Memória Total",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.5.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024,
+          "descricao": "Memória RAM total em bytes"
+        },
+        {
+          "id": "memory_used",
+          "nome": "Memória Usada",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.6.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024,
+          "descricao": "Memória RAM usada em bytes"
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego, status, erros e velocidade por interface",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}",
+      "itens": [
+        {
+          "id": "if_status",
+          "nome": "Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "Up",
+            "2": "Down"
+          },
+          "descricao": "Status da interface (Up/Down)"
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada (Download)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída (Upload)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
+        },
+        {
+          "id": "if_speed",
+          "nome": "Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps",
+          "descricao": "Velocidade da interface em Mbps"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes com erro recebidos"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes com erro enviados"
+        }
+      ]
+    },
+    {
+      "id": "pppoe_clients",
+      "label": "Clientes PPPoE/L2TP",
+      "descricao": "Contagem de sessões PPPoE e L2TP ativas via SNMP",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "pppoe_count",
+          "nome": "Clientes Conectados",
+          "tipo": "SNMP_WALK_COUNT",
+          "oid": "1.3.6.1.2.1.2.2.1.3",
+          "filter": "INTEGER: 23",
+          "unidade": "clientes",
+          "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR1016: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
+        }
+      ]
+    },
+        {
+      "id": "vlan_clients",
+      "label": "Clientes por VLAN",
+      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "itens": [
+        {
+          "id": "vlan_total",
+          "nome": "Clientes",
+          "tipo": "REST_VLAN_COUNT",
+          "unidade": "clientes",
+          "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
+        }
+      ]
+    }
+,
+    {
+      "id": "uptime",
+      "label": "Uptime",
+      "descricao": "Tempo desde o último reinício",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "uptime_hw",
+          "nome": "Uptime Hardware",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.25.1.1.0",
+          "unidade": "s",
+          "descricao": "Tempo desde último boot do hardware"
+        },
+        {
+          "id": "uptime_net",
+          "nome": "Uptime SNMP",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s",
+          "descricao": "Tempo desde último reinício do SNMP"
+        }
+      ]
+    },
+    {
+      "id": "firmware",
+      "label": "Firmware / RouterOS",
+      "descricao": "Versão do RouterOS instalado",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.4.0",
+          "unidade": "",
+          "descricao": "Versão atual do RouterOS"
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.3.0",
+          "unidade": "",
+          "descricao": "Serial number do RouterBOARD"
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura, Fan e Alimentação",
+      "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
+      "categoria": "Ambiente",
+      "requer_discovery": false,
+      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)",
+      "itens": [
+        {
+          "id": "temp_device",
+          "nome": "Temperatura Dispositivo",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
+          "divisor": 10,
+          "unidade": "°C",
+          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)"
+        },
+        {
+          "id": "temp_cpu",
+          "nome": "Temperatura CPU",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
+          "divisor": 10,
+          "unidade": "°C",
+          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)"
+        },
+        {
+          "id": "fan_speed",
+          "nome": "Velocidade Fan",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
+          "unidade": "RPM",
+          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM"
+        },
+        {
+          "id": "voltage",
+          "nome": "Tensão",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
+          "divisor": 10,
+          "unidade": "V",
+          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V"
+        },
+        {
+          "id": "psu1_state",
+          "nome": "PSU 1 Estado",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7401",
+          "unidade": "",
+          "value_map": {
+            "0": "OK",
+            "1": "Falha"
+          },
+          "descricao": "Estado da fonte 1 (Dual PSU)"
+        },
+        {
+          "id": "psu2_state",
+          "nome": "PSU 2 Estado",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7402",
+          "unidade": "",
+          "value_map": {
+            "0": "OK",
+            "1": "Falha"
+          },
+          "descricao": "Estado da fonte 2 (Dual PSU)"
+        }
+      ]
+    }
+  ]
+}
