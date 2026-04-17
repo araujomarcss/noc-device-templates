@@ -9,6 +9,13 @@
       "file": "mikrotik/ccr1016-12g.json",
       "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
     },
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "CCR1009-7G-1C-1S+",
+      "file": "mikrotik/ccr1009.json",
+      "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+    },
      {
       "tipo": "Router",
       "fabricante": "Mikrotik",
