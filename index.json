@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-04-07",
+  "updated_at": "2026-04-20",
   "templates": [
     {
       "tipo": "Router",
@@ -14,14 +14,21 @@
       "fabricante": "Mikrotik",
       "modelo": "CCR1009-7G-1C-1S+",
       "file": "mikrotik/ccr1009.json",
-      "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+      "descricao": "1U rackmount, 7x Gigabit Ethernet, 1x Combo, 1x SFP+, 9 cores x 1.2GHz, 2GB RAM"
     },
-     {
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "CCR1036-12G-4S",
+      "file": "mikrotik/ccr1036.json",
+      "descricao": "1U rackmount, 12x Gigabit Ethernet, 4x SFP+, 36 cores x 1.2GHz, 4GB RAM"
+    },
+    {
       "tipo": "Router",
       "fabricante": "Mikrotik",
       "modelo": "CCR2116-12G-4S+",
       "file": "mikrotik/ccr2116.json",
-      "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+      "descricao": "2U rackmount, 12x Gigabit Ethernet, 4x SFP+, 16 cores ARM, 4GB RAM"
     },
     {
       "tipo": "Router",
