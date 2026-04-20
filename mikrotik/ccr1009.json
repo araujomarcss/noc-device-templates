@@ -210,22 +210,13 @@
           "descricao": "Velocidade da interface em Mbps",
           "triggers": [
             {
-              "id": "speed_drop_1g",
-              "nome": "Velocidade caiu para 1G",
-              "condicao": "<=",
-              "threshold": 1000,
+              "id": "speed_drop",
+              "nome": "Velocidade da porta caiu",
+              "condicao": "drop",
+              "threshold": 0,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Interface {interface} em {host}: velocidade caiu para {valor} Mbps (era 10G)"
-            },
-            {
-              "id": "speed_drop_100m",
-              "nome": "Velocidade caiu para 100M",
-              "condicao": "<=",
-              "threshold": 100,
-              "severidade": "high",
-              "auto_create": true,
-              "mensagem": "Interface {interface} em {host}: velocidade CRÍTICA — apenas {valor} Mbps"
+              "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
             }
           ]
         },
@@ -321,11 +312,11 @@
             {
               "id": "reboot_detectado",
               "nome": "Reboot detectado",
-              "condicao": "<=",
-              "threshold": 300,
+              "condicao": "drop",
+              "threshold": 0,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host} reiniciado — uptime de apenas {valor}s. Reboot inesperado?"
+              "mensagem": "Host {host} reiniciou — uptime caiu de {anterior}s para {valor}s"
             }
           ]
         },
