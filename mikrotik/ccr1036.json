@@ -1,0 +1,522 @@
+{
+  "tipo": "Router",
+  "fabricante": "Mikrotik",
+  "modelo": "CCR1036-12G-4S",
+  "snmp_version": "2c",
+  "descricao": "Cloud Core Router 1036-12G-4S — 1U rackmount, 12x Gigabit Ethernet, 4x SFP+, 36 cores x 1.2GHz, 4GB RAM",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Disponibilidade",
+      "descricao": "Verifica se o equipamento está online via ICMP",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "icmp_ping",
+          "nome": "ICMP Ping",
+          "tipo": "ICMP_PING",
+          "unidade": "",
+          "descricao": "Online=1 / Offline=0",
+          "triggers": [
+            {
+              "id": "host_offline",
+              "nome": "Host offline",
+              "condicao": "=",
+              "threshold": 0,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host} não responde ao ping — equipamento offline"
+            }
+          ]
+        },
+        {
+          "id": "icmp_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%",
+          "descricao": "Percentual de pacotes perdidos",
+          "triggers": [
+            {
+              "id": "icmp_loss_warning",
+              "nome": "Perda de pacotes alta",
+              "condicao": ">=",
+              "threshold": 20,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: perda de {valor}% dos pacotes ICMP"
+            },
+            {
+              "id": "icmp_loss_critical",
+              "nome": "Perda de pacotes crítica",
+              "condicao": ">=",
+              "threshold": 50,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: perda CRÍTICA de {valor}% dos pacotes — link instável"
+            }
+          ]
+        },
+        {
+          "id": "icmp_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms",
+          "descricao": "Latência ICMP em milissegundos",
+          "triggers": [
+            {
+              "id": "latencia_alta",
+              "nome": "Latência alta",
+              "condicao": ">=",
+              "threshold": 150,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: latência de {valor}ms (limite: 150ms)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU",
+      "descricao": "Utilização por core — 36 cores (index 1-36)",
+      "categoria": "Recursos",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
+      "nota": "OID hrProcessorLoad: 1.3.6.1.2.1.25.3.3.1.2.{index} — CCR1036 possui 36 cores.",
+      "itens": [
+        {
+          "id": "cpu_avg",
+          "nome": "CPU Utilização Média",
+          "tipo": "SNMP_AVG_WALK",
+          "oid": "1.3.6.1.2.1.25.3.3.1.2",
+          "unidade": "%",
+          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente.",
+          "triggers": [
+            {
+              "id": "cpu_alto",
+              "nome": "CPU alta",
+              "condicao": ">=",
+              "threshold": 80,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU média em {valor}% (limite: 80%)"
+            },
+            {
+              "id": "cpu_critico",
+              "nome": "CPU crítica",
+              "condicao": ">=",
+              "threshold": 95,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU CRÍTICA em {valor}% — roteador sobrecarregado"
+            }
+          ]
+        },
+        {
+          "id": "cpu_util_per_core",
+          "nome": "CPU Core #{index} — Utilização",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
+          "unidade": "%",
+          "descricao": "Utilização média do core nos últimos 60s. Índices 1-36 no CCR1036.",
+          "triggers": []
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memória RAM",
+      "descricao": "Uso de memória RAM (total, usado, %)",
+      "categoria": "Recursos",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "memory_total",
+          "nome": "Memória Total",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.5.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024,
+          "descricao": "Memória RAM total em bytes"
+        },
+        {
+          "id": "memory_used",
+          "nome": "Memória Usada",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.25.2.3.1.6.65536",
+          "unidade": "bytes",
+          "multiplicador": 1024,
+          "descricao": "Memória RAM usada em bytes"
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego, status, erros e velocidade por interface",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}",
+      "itens": [
+        {
+          "id": "if_status",
+          "nome": "Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "Up",
+            "2": "Down"
+          },
+          "descricao": "Status da interface (Up/Down)",
+          "triggers": [
+            {
+              "id": "link_down",
+              "nome": "Interface caiu (Link Down)",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "high",
+              "auto_create": false,
+              "observacao": "Não criado automaticamente — operador decide quais portas monitorar para evitar ruído"
+            }
+          ]
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada (Download)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída (Upload)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bps",
+          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
+        },
+        {
+          "id": "if_speed",
+          "nome": "Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps",
+          "descricao": "Velocidade da interface em Mbps",
+          "triggers": [
+            {
+              "id": "speed_drop",
+              "nome": "Velocidade da porta caiu",
+              "condicao": "drop",
+              "threshold": 0,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
+            }
+          ]
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes com erro recebidos",
+          "triggers": [
+            {
+              "id": "in_errors_alto",
+              "nome": "Erros de entrada elevados",
+              "condicao": ">=",
+              "threshold": 10,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: {valor} erros/s de entrada — verificar cabo/SFP"
+            }
+          ]
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros/s",
+          "descricao": "Pacotes com erro enviados",
+          "triggers": [
+            {
+              "id": "out_errors_alto",
+              "nome": "Erros de saída elevados",
+              "condicao": ">=",
+              "threshold": 10,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: {valor} erros/s de saída — verificar cabo/SFP"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pppoe_clients",
+      "label": "Clientes PPPoE/L2TP",
+      "descricao": "Contagem de sessões PPPoE e L2TP ativas via SNMP",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "pppoe_count",
+          "nome": "Clientes Conectados",
+          "tipo": "SNMP_WALK_COUNT",
+          "oid": "1.3.6.1.2.1.2.2.1.3",
+          "filter": "INTEGER: 23",
+          "unidade": "clientes",
+          "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR1016: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
+        }
+      ]
+    },
+    {
+      "id": "vlan_clients",
+      "label": "Clientes por VLAN",
+      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "itens": [
+        {
+          "id": "vlan_total",
+          "nome": "Clientes",
+          "tipo": "REST_VLAN_COUNT",
+          "unidade": "clientes",
+          "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
+        }
+      ]
+    },
+    {
+      "id": "uptime",
+      "label": "Uptime",
+      "descricao": "Tempo desde o último reinício",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "uptime_hw",
+          "nome": "Uptime Hardware",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.25.1.1.0",
+          "unidade": "s",
+          "descricao": "Tempo desde último boot do hardware",
+          "triggers": [
+            {
+              "id": "reboot_detectado",
+              "nome": "Reboot detectado",
+              "condicao": "drop",
+              "threshold": 0,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host} reiniciou — uptime caiu de {anterior}s para {valor}s"
+            }
+          ]
+        },
+        {
+          "id": "uptime_net",
+          "nome": "Uptime SNMP",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s",
+          "descricao": "Tempo desde último reinício do SNMP"
+        }
+      ]
+    },
+    {
+      "id": "firmware",
+      "label": "Firmware / RouterOS",
+      "descricao": "Versão do RouterOS instalado",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.4.0",
+          "unidade": "",
+          "descricao": "Versão atual do RouterOS"
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.14988.1.1.7.3.0",
+          "unidade": "",
+          "descricao": "Serial number do RouterBOARD"
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura, Fan e Alimentação",
+      "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
+      "categoria": "Ambiente",
+      "requer_discovery": false,
+      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)",
+      "itens": [
+        {
+          "id": "temp_device",
+          "nome": "Temperatura Dispositivo",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
+          "divisor": 10,
+          "unidade": "°C",
+          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)",
+          "triggers": [
+            {
+              "id": "temp_alta",
+              "nome": "Temperatura alta",
+              "condicao": ">=",
+              "threshold": 60,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: temperatura do dispositivo em {valor}°C (limite: 60°C)"
+            },
+            {
+              "id": "temp_critica",
+              "nome": "Temperatura crítica",
+              "condicao": ">=",
+              "threshold": 75,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: TEMPERATURA CRÍTICA — {valor}°C. Risco de desligamento!"
+            }
+          ]
+        },
+        {
+          "id": "temp_cpu",
+          "nome": "Temperatura CPU",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
+          "divisor": 10,
+          "unidade": "°C",
+          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)",
+          "triggers": [
+            {
+              "id": "temp_cpu_alta",
+              "nome": "Temperatura CPU alta",
+              "condicao": ">=",
+              "threshold": 70,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: temperatura da CPU em {valor}°C (limite: 70°C)"
+            },
+            {
+              "id": "temp_cpu_critica",
+              "nome": "Temperatura CPU crítica",
+              "condicao": ">=",
+              "threshold": 85,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU SUPERAQUECENDO — {valor}°C. Verifique ventilação!"
+            }
+          ]
+        },
+        {
+          "id": "fan_speed",
+          "nome": "Velocidade Fan",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
+          "unidade": "RPM",
+          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM",
+          "triggers": [
+            {
+              "id": "fan_lento",
+              "nome": "Fan com velocidade baixa",
+              "condicao": "<=",
+              "threshold": 1000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: ventilador rodando a apenas {valor} RPM — possível falha"
+            },
+            {
+              "id": "fan_parado",
+              "nome": "Fan parado",
+              "condicao": "=",
+              "threshold": 0,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: ventilador PARADO — risco imediato de superaquecimento!"
+            }
+          ]
+        },
+        {
+          "id": "voltage",
+          "nome": "Tensão",
+          "tipo": "SNMP_FLOAT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
+          "divisor": 10,
+          "unidade": "V",
+          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V",
+          "triggers": [
+            {
+              "id": "tensao_baixa",
+              "nome": "Tensão abaixo do normal",
+              "condicao": "<=",
+              "threshold": 21,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: tensão em {valor}V — abaixo do esperado (24V)"
+            }
+          ]
+        },
+        {
+          "id": "psu1_state",
+          "nome": "PSU 1 Estado",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7401",
+          "unidade": "",
+          "value_map": {
+            "0": "OK",
+            "1": "Falha"
+          },
+          "descricao": "Estado da fonte 1 (Dual PSU)",
+          "triggers": [
+            {
+              "id": "psu1_falha",
+              "nome": "PSU 1 com falha",
+              "condicao": "=",
+              "threshold": 1,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host}: FONTE 1 (PSU1) com falha! Equipamento operando só na PSU2."
+            }
+          ]
+        },
+        {
+          "id": "psu2_state",
+          "nome": "PSU 2 Estado",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7402",
+          "unidade": "",
+          "value_map": {
+            "0": "OK",
+            "1": "Falha"
+          },
+          "descricao": "Estado da fonte 2 (Dual PSU)",
+          "triggers": [
+            {
+              "id": "psu2_falha",
+              "nome": "PSU 2 com falha",
+              "condicao": "=",
+              "threshold": 1,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host}: FONTE 2 (PSU2) com falha! Equipamento operando só na PSU1."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
