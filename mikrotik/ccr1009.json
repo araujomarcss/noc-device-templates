@@ -129,13 +129,24 @@
           "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
         },
         {
-          "id": "if_speed",
-          "nome": "Velocidade",
-          "tipo": "SNMP_INT",
-          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
-          "unidade": "Mbps",
-          "descricao": "Velocidade da interface em Mbps"
-        },
+  "id": "if_speed",
+  "nome": "Velocidade",
+  "tipo": "SNMP_INT",
+  "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+  "unidade": "Mbps",
+  "triggers": [
+    {
+      "id": "speed_drop",
+      "nome": "Velocidade da porta caiu",
+      "condicao": "drop",
+      "threshold": 0,
+      "severidade": "warning",
+      "auto_create": true,
+      "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
+    }
+  ]
+}
+
         {
           "id": "if_in_errors",
           "nome": "Erros Entrada",
