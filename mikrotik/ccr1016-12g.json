@@ -17,21 +17,63 @@
           "nome": "ICMP Ping",
           "tipo": "ICMP_PING",
           "unidade": "",
-          "descricao": "Online=1 / Offline=0"
+          "descricao": "Online=1 / Offline=0",
+          "triggers": [
+            {
+              "id": "host_offline",
+              "nome": "Host offline",
+              "condicao": "=",
+              "threshold": 0,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host} não responde ao ping — equipamento offline"
+            }
+          ]
         },
         {
           "id": "icmp_loss",
           "nome": "Perda de Pacotes",
           "tipo": "ICMP_LOSS",
           "unidade": "%",
-          "descricao": "Percentual de pacotes perdidos"
+          "descricao": "Percentual de pacotes perdidos",
+          "triggers": [
+            {
+              "id": "icmp_loss_warning",
+              "nome": "Perda de pacotes alta",
+              "condicao": ">=",
+              "threshold": 20,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: perda de {valor}% dos pacotes ICMP"
+            },
+            {
+              "id": "icmp_loss_critical",
+              "nome": "Perda de pacotes crítica",
+              "condicao": ">=",
+              "threshold": 50,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: perda CRÍTICA de {valor}% dos pacotes — link instável"
+            }
+          ]
         },
         {
           "id": "icmp_response",
           "nome": "Tempo de Resposta",
           "tipo": "ICMP_RESPONSE",
           "unidade": "ms",
-          "descricao": "Latência ICMP em milissegundos"
+          "descricao": "Latência ICMP em milissegundos",
+          "triggers": [
+            {
+              "id": "latencia_alta",
+              "nome": "Latência alta",
+              "condicao": ">=",
+              "threshold": 150,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: latência de {valor}ms (limite: 150ms)"
+            }
+          ]
         }
       ]
     },
@@ -50,7 +92,27 @@
           "tipo": "SNMP_AVG_WALK",
           "oid": "1.3.6.1.2.1.25.3.3.1.2",
           "unidade": "%",
-          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente."
+          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente.",
+          "triggers": [
+            {
+              "id": "cpu_alto",
+              "nome": "CPU alta",
+              "condicao": ">=",
+              "threshold": 80,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU média em {valor}% (limite: 80%)"
+            },
+            {
+              "id": "cpu_critico",
+              "nome": "CPU crítica",
+              "condicao": ">=",
+              "threshold": 95,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU CRÍTICA em {valor}% — roteador sobrecarregado"
+            }
+          ]
         },
         {
           "id": "cpu_util_per_core",
@@ -58,7 +120,8 @@
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
           "unidade": "%",
-          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
+          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016.",
+          "triggers": []
         }
       ]
     },
@@ -108,7 +171,18 @@
             "1": "Up",
             "2": "Down"
           },
-          "descricao": "Status da interface (Up/Down)"
+          "descricao": "Status da interface (Up/Down)",
+          "triggers": [
+            {
+              "id": "link_down",
+              "nome": "Interface caiu (Link Down)",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "high",
+              "auto_create": false,
+              "observacao": "Não criado automaticamente — operador decide quais portas monitorar para evitar ruído"
+            }
+          ]
         },
         {
           "id": "if_in_octets",
@@ -134,7 +208,27 @@
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
           "unidade": "Mbps",
-          "descricao": "Velocidade da interface em Mbps"
+          "descricao": "Velocidade da interface em Mbps",
+          "triggers": [
+            {
+              "id": "speed_drop_1g",
+              "nome": "Velocidade caiu para 1G",
+              "condicao": "<=",
+              "threshold": 1000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: velocidade caiu para {valor} Mbps (era 10G)"
+            },
+            {
+              "id": "speed_drop_100m",
+              "nome": "Velocidade caiu para 100M",
+              "condicao": "<=",
+              "threshold": 100,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: velocidade CRÍTICA — apenas {valor} Mbps"
+            }
+          ]
         },
         {
           "id": "if_in_errors",
@@ -142,7 +236,18 @@
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
           "unidade": "erros/s",
-          "descricao": "Pacotes com erro recebidos"
+          "descricao": "Pacotes com erro recebidos",
+          "triggers": [
+            {
+              "id": "in_errors_alto",
+              "nome": "Erros de entrada elevados",
+              "condicao": ">=",
+              "threshold": 10,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: {valor} erros/s de entrada — verificar cabo/SFP"
+            }
+          ]
         },
         {
           "id": "if_out_errors",
@@ -150,7 +255,18 @@
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
           "unidade": "erros/s",
-          "descricao": "Pacotes com erro enviados"
+          "descricao": "Pacotes com erro enviados",
+          "triggers": [
+            {
+              "id": "out_errors_alto",
+              "nome": "Erros de saída elevados",
+              "condicao": ">=",
+              "threshold": 10,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: {valor} erros/s de saída — verificar cabo/SFP"
+            }
+          ]
         }
       ]
     },
@@ -172,7 +288,7 @@
         }
       ]
     },
-        {
+    {
       "id": "vlan_clients",
       "label": "Clientes por VLAN",
       "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
@@ -187,8 +303,7 @@
           "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
         }
       ]
-    }
-,
+    },
     {
       "id": "uptime",
       "label": "Uptime",
@@ -202,7 +317,18 @@
           "tipo": "SNMP_TIMETICKS",
           "oid": "1.3.6.1.2.1.25.1.1.0",
           "unidade": "s",
-          "descricao": "Tempo desde último boot do hardware"
+          "descricao": "Tempo desde último boot do hardware",
+          "triggers": [
+            {
+              "id": "reboot_detectado",
+              "nome": "Reboot detectado",
+              "condicao": "<=",
+              "threshold": 300,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host} reiniciado — uptime de apenas {valor}s. Reboot inesperado?"
+            }
+          ]
         },
         {
           "id": "uptime_net",
@@ -254,7 +380,27 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)"
+          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)",
+          "triggers": [
+            {
+              "id": "temp_alta",
+              "nome": "Temperatura alta",
+              "condicao": ">=",
+              "threshold": 60,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: temperatura do dispositivo em {valor}°C (limite: 60°C)"
+            },
+            {
+              "id": "temp_critica",
+              "nome": "Temperatura crítica",
+              "condicao": ">=",
+              "threshold": 75,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: TEMPERATURA CRÍTICA — {valor}°C. Risco de desligamento!"
+            }
+          ]
         },
         {
           "id": "temp_cpu",
@@ -263,7 +409,27 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)"
+          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)",
+          "triggers": [
+            {
+              "id": "temp_cpu_alta",
+              "nome": "Temperatura CPU alta",
+              "condicao": ">=",
+              "threshold": 70,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: temperatura da CPU em {valor}°C (limite: 70°C)"
+            },
+            {
+              "id": "temp_cpu_critica",
+              "nome": "Temperatura CPU crítica",
+              "condicao": ">=",
+              "threshold": 85,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: CPU SUPERAQUECENDO — {valor}°C. Verifique ventilação!"
+            }
+          ]
         },
         {
           "id": "fan_speed",
@@ -271,7 +437,27 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
           "unidade": "RPM",
-          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM"
+          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM",
+          "triggers": [
+            {
+              "id": "fan_lento",
+              "nome": "Fan com velocidade baixa",
+              "condicao": "<=",
+              "threshold": 1000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: ventilador rodando a apenas {valor} RPM — possível falha"
+            },
+            {
+              "id": "fan_parado",
+              "nome": "Fan parado",
+              "condicao": "=",
+              "threshold": 0,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: ventilador PARADO — risco imediato de superaquecimento!"
+            }
+          ]
         },
         {
           "id": "voltage",
@@ -280,7 +466,18 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
           "divisor": 10,
           "unidade": "V",
-          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V"
+          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V",
+          "triggers": [
+            {
+              "id": "tensao_baixa",
+              "nome": "Tensão abaixo do normal",
+              "condicao": "<=",
+              "threshold": 21,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: tensão em {valor}V — abaixo do esperado (24V)"
+            }
+          ]
         },
         {
           "id": "psu1_state",
@@ -292,7 +489,18 @@
             "0": "OK",
             "1": "Falha"
           },
-          "descricao": "Estado da fonte 1 (Dual PSU)"
+          "descricao": "Estado da fonte 1 (Dual PSU)",
+          "triggers": [
+            {
+              "id": "psu1_falha",
+              "nome": "PSU 1 com falha",
+              "condicao": "=",
+              "threshold": 1,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host}: FONTE 1 (PSU1) com falha! Equipamento operando só na PSU2."
+            }
+          ]
         },
         {
           "id": "psu2_state",
@@ -304,7 +512,18 @@
             "0": "OK",
             "1": "Falha"
           },
-          "descricao": "Estado da fonte 2 (Dual PSU)"
+          "descricao": "Estado da fonte 2 (Dual PSU)",
+          "triggers": [
+            {
+              "id": "psu2_falha",
+              "nome": "PSU 2 com falha",
+              "condicao": "=",
+              "threshold": 1,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Host {host}: FONTE 2 (PSU2) com falha! Equipamento operando só na PSU1."
+            }
+          ]
         }
       ]
     }
