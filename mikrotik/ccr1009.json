@@ -3,7 +3,7 @@
   "fabricante": "Mikrotik",
   "modelo": "CCR1009-7G-1C-1S+",
   "snmp_version": "2c",
-  "descricao": "Cloud Core Router 1016-12G — 1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM",
+  "descricao": "Cloud Core Router 1009-7G-1C-1S+ — 1U rackmount, 7x Gigabit Ethernet, 1x Combo, 1x SFP+, 9 cores x 1.2GHz, 2GB RAM",
   "capabilities": [
     {
       "id": "ping",
@@ -38,11 +38,10 @@
     {
       "id": "cpu",
       "label": "CPU",
-      "descricao": "Utilização por core — 16 cores confirmados (index 1-16)",
+      "descricao": "Utilização por core — 9 cores (index 1-9)",
       "categoria": "Recursos",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
-      "nota": "OID confirmada em CCR1016-12G real: 1.3.6.1.2.1.25.3.3.1.2.{index} retorna % de uso por core. Index 1-16.",
       "itens": [
         {
           "id": "cpu_avg",
@@ -50,7 +49,7 @@
           "tipo": "SNMP_AVG_WALK",
           "oid": "1.3.6.1.2.1.25.3.3.1.2",
           "unidade": "%",
-          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente."
+          "descricao": "Média de utilização de todos os cores."
         },
         {
           "id": "cpu_util_per_core",
@@ -58,14 +57,14 @@
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
           "unidade": "%",
-          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
+          "descricao": "Utilização média do core nos últimos 60s."
         }
       ]
     },
     {
       "id": "memory",
       "label": "Memória RAM",
-      "descricao": "Uso de memória RAM (total, usado, %)",
+      "descricao": "Uso de memória RAM (total, usado)",
       "categoria": "Recursos",
       "requer_discovery": false,
       "itens": [
@@ -96,7 +95,6 @@
       "categoria": "Rede",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
-      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}",
       "itens": [
         {
           "id": "if_status",
@@ -104,10 +102,7 @@
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
           "unidade": "",
-          "value_map": {
-            "1": "Up",
-            "2": "Down"
-          },
+          "value_map": {"1": "Up", "2": "Down"},
           "descricao": "Status da interface (Up/Down)"
         },
         {
@@ -117,7 +112,7 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
           "unidade": "bps",
-          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N"
+          "descricao": "Bytes recebidos (64-bit)"
         },
         {
           "id": "if_out_octets",
@@ -126,27 +121,27 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
           "unidade": "bps",
-          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
+          "descricao": "Bytes enviados (64-bit)"
         },
         {
-  "id": "if_speed",
-  "nome": "Velocidade",
-  "tipo": "SNMP_INT",
-  "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
-  "unidade": "Mbps",
-  "triggers": [
-    {
-      "id": "speed_drop",
-      "nome": "Velocidade da porta caiu",
-      "condicao": "drop",
-      "threshold": 0,
-      "severidade": "warning",
-      "auto_create": true,
-      "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
-    }
-  ]
-}
-
+          "id": "if_speed",
+          "nome": "Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps",
+          "descricao": "Velocidade da interface em Mbps",
+          "triggers": [
+            {
+              "id": "speed_drop",
+              "nome": "Velocidade da porta caiu",
+              "condicao": "drop",
+              "threshold": 0,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
+            }
+          ]
+        },
         {
           "id": "if_in_errors",
           "nome": "Erros Entrada",
@@ -179,14 +174,14 @@
           "oid": "1.3.6.1.2.1.2.2.1.3",
           "filter": "INTEGER: 23",
           "unidade": "clientes",
-          "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR1016: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
+          "descricao": "Conta interfaces do tipo PPP (ifType=23)."
         }
       ]
     },
-        {
+    {
       "id": "vlan_clients",
       "label": "Clientes por VLAN",
-      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
+      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik.",
       "categoria": "Rede",
       "requer_discovery": true,
       "itens": [
@@ -198,8 +193,7 @@
           "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
         }
       ]
-    }
-,
+    },
     {
       "id": "uptime",
       "label": "Uptime",
@@ -256,7 +250,6 @@
       "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
       "categoria": "Ambiente",
       "requer_discovery": false,
-      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)",
       "itens": [
         {
           "id": "temp_device",
@@ -265,7 +258,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)"
+          "descricao": "Temperatura geral (÷10)"
         },
         {
           "id": "temp_cpu",
@@ -274,7 +267,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)"
+          "descricao": "Temperatura CPU (÷10)"
         },
         {
           "id": "fan_speed",
@@ -282,7 +275,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
           "unidade": "RPM",
-          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM"
+          "descricao": "Velocidade do ventilador"
         },
         {
           "id": "voltage",
@@ -291,7 +284,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
           "divisor": 10,
           "unidade": "V",
-          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V"
+          "descricao": "Tensão de alimentação (÷10)"
         },
         {
           "id": "psu1_state",
@@ -299,10 +292,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7401",
           "unidade": "",
-          "value_map": {
-            "0": "OK",
-            "1": "Falha"
-          },
+          "value_map": {"0": "OK", "1": "Falha"},
           "descricao": "Estado da fonte 1 (Dual PSU)"
         },
         {
@@ -311,10 +301,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7402",
           "unidade": "",
-          "value_map": {
-            "0": "OK",
-            "1": "Falha"
-          },
+          "value_map": {"0": "OK", "1": "Falha"},
           "descricao": "Estado da fonte 2 (Dual PSU)"
         }
       ]
