@@ -33,6 +33,41 @@
           "unidade": "ms",
           "descricao": "Latência ICMP em milissegundos"
         }
+      ],
+      "alertas": [
+        {
+          "id": "alert_device_offline",
+          "nome": "Equipamento Offline",
+          "item_id": "icmp_ping",
+          "condicao": "==",
+          "valor_threshold": 0,
+          "duracao_minutos": 2,
+          "severidade": "critical",
+          "mensagem": "Equipamento não responde a ping ICMP",
+          "ativo": true
+        },
+        {
+          "id": "alert_packet_loss_high",
+          "nome": "Perda de Pacotes Alta",
+          "item_id": "icmp_loss",
+          "condicao": ">",
+          "valor_threshold": 10,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Perda de pacotes acima de 10%",
+          "ativo": true
+        },
+        {
+          "id": "alert_latency_high",
+          "nome": "Latência Alta",
+          "item_id": "icmp_response",
+          "condicao": ">",
+          "valor_threshold": 100,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Latência ICMP acima de 100ms",
+          "ativo": true
+        }
       ]
     },
     {
@@ -60,6 +95,30 @@
           "unidade": "%",
           "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR2116."
         }
+      ],
+      "alertas": [
+        {
+          "id": "alert_cpu_high",
+          "nome": "CPU Média Alta",
+          "item_id": "cpu_avg",
+          "condicao": ">",
+          "valor_threshold": 80,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "Utilização média da CPU acima de 80%",
+          "ativo": true
+        },
+        {
+          "id": "alert_cpu_critical",
+          "nome": "CPU Média Crítica",
+          "item_id": "cpu_avg",
+          "condicao": ">",
+          "valor_threshold": 95,
+          "duracao_minutos": 5,
+          "severidade": "critical",
+          "mensagem": "Utilização média da CPU acima de 95%",
+          "ativo": true
+        }
       ]
     },
     {
@@ -86,6 +145,38 @@
           "unidade": "bytes",
           "multiplicador": 1024,
           "descricao": "Memória RAM usada em bytes"
+        },
+        {
+          "id": "memory_percent",
+          "nome": "Memória Utilização %",
+          "tipo": "CALCULATED",
+          "formula": "(memory_used / memory_total) * 100",
+          "unidade": "%",
+          "descricao": "Percentual de memória RAM em uso"
+        }
+      ],
+      "alertas": [
+        {
+          "id": "alert_memory_high",
+          "nome": "Memória Alta",
+          "item_id": "memory_percent",
+          "condicao": ">",
+          "valor_threshold": 85,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "Uso de memória RAM acima de 85%",
+          "ativo": true
+        },
+        {
+          "id": "alert_memory_critical",
+          "nome": "Memória Crítica",
+          "item_id": "memory_percent",
+          "condicao": ">",
+          "valor_threshold": 95,
+          "duracao_minutos": 5,
+          "severidade": "critical",
+          "mensagem": "Uso de memória RAM acima de 95%",
+          "ativo": true
         }
       ]
     },
@@ -137,6 +228,22 @@
           "descricao": "Velocidade da interface em Mbps"
         },
         {
+          "id": "if_utilization_in",
+          "nome": "Utilização Download",
+          "tipo": "CALCULATED",
+          "formula": "(if_in_octets / (if_speed * 1000000)) * 100",
+          "unidade": "%",
+          "descricao": "Percentual de utilização do link de entrada"
+        },
+        {
+          "id": "if_utilization_out",
+          "nome": "Utilização Upload",
+          "tipo": "CALCULATED",
+          "formula": "(if_out_octets / (if_speed * 1000000)) * 100",
+          "unidade": "%",
+          "descricao": "Percentual de utilização do link de saída"
+        },
+        {
           "id": "if_in_errors",
           "nome": "Erros Entrada",
           "tipo": "DELTA_BYTES",
@@ -151,6 +258,133 @@
           "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
           "unidade": "erros/s",
           "descricao": "Pacotes com erro enviados"
+        }
+      ],
+      "alertas": [
+        {
+          "id": "alert_interface_down",
+          "nome": "Interface Inativa",
+          "item_id": "if_status",
+          "condicao": "==",
+          "valor_threshold": 2,
+          "duracao_minutos": 3,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} está Down",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_util_in_high",
+          "nome": "Utilização Download Alta",
+          "item_id": "if_utilization_in",
+          "condicao": ">",
+          "valor_threshold": 85,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} com utilização de download acima de 85%",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_util_out_high",
+          "nome": "Utilização Upload Alta",
+          "item_id": "if_utilization_out",
+          "condicao": ">",
+          "valor_threshold": 85,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} com utilização de upload acima de 85%",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_util_in_critical",
+          "nome": "Interface Sufocando (Download)",
+          "item_id": "if_utilization_in",
+          "condicao": ">",
+          "valor_threshold": 95,
+          "duracao_minutos": 5,
+          "severidade": "critical",
+          "mensagem": "Interface {interface_name} ({if_speed}Mbps) SUFOCANDO - Download acima de 95%",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_util_out_critical",
+          "nome": "Interface Sufocando (Upload)",
+          "item_id": "if_utilization_out",
+          "condicao": ">",
+          "valor_threshold": 95,
+          "duracao_minutos": 5,
+          "severidade": "critical",
+          "mensagem": "Interface {interface_name} ({if_speed}Mbps) SUFOCANDO - Upload acima de 95%",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_1gb_saturating_in",
+          "nome": "Link 1Gbps Saturando (Download)",
+          "item_id": "if_in_octets",
+          "condicao": ">",
+          "valor_threshold": 900000000,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} 1Gbps com tráfego de download acima de 900Mbps - considere upgrade",
+          "ativo": true,
+          "condicao_extra": "if_speed >= 900 AND if_speed <= 1100"
+        },
+        {
+          "id": "alert_interface_1gb_saturating_out",
+          "nome": "Link 1Gbps Saturando (Upload)",
+          "item_id": "if_out_octets",
+          "condicao": ">",
+          "valor_threshold": 900000000,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} 1Gbps com tráfego de upload acima de 900Mbps - considere upgrade",
+          "ativo": true,
+          "condicao_extra": "if_speed >= 900 AND if_speed <= 1100"
+        },
+        {
+          "id": "alert_interface_10gb_saturating_in",
+          "nome": "Link 10Gbps Saturando (Download)",
+          "item_id": "if_in_octets",
+          "condicao": ">",
+          "valor_threshold": 9000000000,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} 10Gbps com tráfego de download acima de 9Gbps - considere upgrade",
+          "ativo": true,
+          "condicao_extra": "if_speed >= 9000 AND if_speed <= 11000"
+        },
+        {
+          "id": "alert_interface_10gb_saturating_out",
+          "nome": "Link 10Gbps Saturando (Upload)",
+          "item_id": "if_out_octets",
+          "condicao": ">",
+          "valor_threshold": 9000000000,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} 10Gbps com tráfego de upload acima de 9Gbps - considere upgrade",
+          "ativo": true,
+          "condicao_extra": "if_speed >= 9000 AND if_speed <= 11000"
+        },
+        {
+          "id": "alert_interface_errors_in",
+          "nome": "Erros de Entrada",
+          "item_id": "if_in_errors",
+          "condicao": ">",
+          "valor_threshold": 10,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} com mais de 10 erros/s na entrada",
+          "ativo": true
+        },
+        {
+          "id": "alert_interface_errors_out",
+          "nome": "Erros de Saída",
+          "item_id": "if_out_errors",
+          "condicao": ">",
+          "valor_threshold": 10,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Interface {interface_name} com mais de 10 erros/s na saída",
+          "ativo": true
         }
       ]
     },
@@ -170,9 +404,33 @@
           "unidade": "clientes",
           "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR2116: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
         }
+      ],
+      "alertas": [
+        {
+          "id": "alert_pppoe_clients_low",
+          "nome": "Poucos Clientes Conectados",
+          "item_id": "pppoe_count",
+          "condicao": "<",
+          "valor_threshold": 10,
+          "duracao_minutos": 15,
+          "severidade": "info",
+          "mensagem": "Menos de 10 clientes PPPoE/L2TP conectados",
+          "ativo": false
+        },
+        {
+          "id": "alert_pppoe_clients_high",
+          "nome": "Muitos Clientes Conectados",
+          "item_id": "pppoe_count",
+          "condicao": ">",
+          "valor_threshold": 1000,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "Mais de 1000 clientes PPPoE/L2TP conectados - verificar capacidade",
+          "ativo": true
+        }
       ]
     },
-        {
+    {
       "id": "vlan_clients",
       "label": "Clientes por VLAN",
       "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
@@ -186,9 +444,32 @@
           "unidade": "clientes",
           "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
         }
+      ],
+      "alertas": [
+        {
+          "id": "alert_vlan_clients_zero",
+          "nome": "Nenhum Cliente na VLAN",
+          "item_id": "vlan_total",
+          "condicao": "==",
+          "valor_threshold": 0,
+          "duracao_minutos": 30,
+          "severidade": "info",
+          "mensagem": "VLAN {vlan_id} sem clientes conectados",
+          "ativo": false
+        },
+        {
+          "id": "alert_vlan_clients_limit",
+          "nome": "Limite de Clientes na VLAN",
+          "item_id": "vlan_total",
+          "condicao": ">",
+          "valor_threshold": 500,
+          "duracao_minutos": 10,
+          "severidade": "warning",
+          "mensagem": "VLAN {vlan_id} com mais de 500 clientes - verificar segmentação",
+          "ativo": true
+        }
       ]
-    }
-,
+    },
     {
       "id": "uptime",
       "label": "Uptime",
@@ -211,6 +492,30 @@
           "oid": "1.3.6.1.2.1.1.3.0",
           "unidade": "s",
           "descricao": "Tempo desde último reinício do SNMP"
+        }
+      ],
+      "alertas": [
+        {
+          "id": "alert_uptime_reboot",
+          "nome": "Reinicialização Detectada",
+          "item_id": "uptime_hw",
+          "condicao": "<",
+          "valor_threshold": 600,
+          "duracao_minutos": 1,
+          "severidade": "warning",
+          "mensagem": "Equipamento reiniciou recentemente (uptime < 10 minutos)",
+          "ativo": true
+        },
+        {
+          "id": "alert_uptime_low",
+          "nome": "Uptime Baixo",
+          "item_id": "uptime_hw",
+          "condicao": "<",
+          "valor_threshold": 86400,
+          "duracao_minutos": 30,
+          "severidade": "info",
+          "mensagem": "Equipamento com uptime menor que 24 horas",
+          "ativo": false
         }
       ]
     },
@@ -237,7 +542,8 @@
           "unidade": "",
           "descricao": "Serial number do RouterBOARD"
         }
-      ]
+      ],
+      "alertas": []
     },
     {
       "id": "temperature",
@@ -305,6 +611,107 @@
             "1": "Falha"
           },
           "descricao": "Estado da fonte 2 (Dual PSU)"
+        }
+      ],
+      "alertas": [
+        {
+          "id": "alert_temp_device_high",
+          "nome": "Temperatura Dispositivo Alta",
+          "item_id": "temp_device",
+          "condicao": ">",
+          "valor_threshold": 60,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Temperatura do dispositivo acima de 60°C",
+          "ativo": true
+        },
+        {
+          "id": "alert_temp_cpu_high",
+          "nome": "Temperatura CPU Alta",
+          "item_id": "temp_cpu",
+          "condicao": ">",
+          "valor_threshold": 70,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Temperatura da CPU acima de 70°C",
+          "ativo": true
+        },
+        {
+          "id": "alert_temp_cpu_critical",
+          "nome": "Temperatura CPU Crítica",
+          "item_id": "temp_cpu",
+          "condicao": ">",
+          "valor_threshold": 85,
+          "duracao_minutos": 2,
+          "severidade": "critical",
+          "mensagem": "Temperatura da CPU acima de 85°C - CRÍTICO",
+          "ativo": true
+        },
+        {
+          "id": "alert_fan_low",
+          "nome": "Velocidade do Fan Baixa",
+          "item_id": "fan_speed",
+          "condicao": "<",
+          "valor_threshold": 2000,
+          "duracao_minutos": 5,
+          "severidade": "warning",
+          "mensagem": "Velocidade do ventilador abaixo de 2000 RPM",
+          "ativo": true
+        },
+        {
+          "id": "alert_fan_stopped",
+          "nome": "Fan Parado",
+          "item_id": "fan_speed",
+          "condicao": "==",
+          "valor_threshold": 0,
+          "duracao_minutos": 2,
+          "severidade": "critical",
+          "mensagem": "Ventilador parado - verificar urgentemente",
+          "ativo": true
+        },
+        {
+          "id": "alert_voltage_low",
+          "nome": "Tensão Baixa",
+          "item_id": "voltage",
+          "condicao": "<",
+          "valor_threshold": 20,
+          "duracao_minutos": 3,
+          "severidade": "warning",
+          "mensagem": "Tensão de alimentação abaixo de 20V",
+          "ativo": true
+        },
+        {
+          "id": "alert_voltage_high",
+          "nome": "Tensão Alta",
+          "item_id": "voltage",
+          "condicao": ">",
+          "valor_threshold": 28,
+          "duracao_minutos": 3,
+          "severidade": "warning",
+          "mensagem": "Tensão de alimentação acima de 28V",
+          "ativo": true
+        },
+        {
+          "id": "alert_psu1_failure",
+          "nome": "Falha PSU 1",
+          "item_id": "psu1_state",
+          "condicao": "==",
+          "valor_threshold": 1,
+          "duracao_minutos": 1,
+          "severidade": "critical",
+          "mensagem": "Fonte de alimentação 1 em estado de falha",
+          "ativo": true
+        },
+        {
+          "id": "alert_psu2_failure",
+          "nome": "Falha PSU 2",
+          "item_id": "psu2_state",
+          "condicao": "==",
+          "valor_threshold": 1,
+          "duracao_minutos": 1,
+          "severidade": "critical",
+          "mensagem": "Fonte de alimentação 2 em estado de falha",
+          "ativo": true
         }
       ]
     }
