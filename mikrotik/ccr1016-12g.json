@@ -84,7 +84,6 @@
       "categoria": "Recursos",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
-      "nota": "OID confirmada em CCR1016-12G real: 1.3.6.1.2.1.25.3.3.1.2.{index} retorna % de uso por core. Index 1-16.",
       "itens": [
         {
           "id": "cpu_avg",
@@ -92,7 +91,7 @@
           "tipo": "SNMP_AVG_WALK",
           "oid": "1.3.6.1.2.1.25.3.3.1.2",
           "unidade": "%",
-          "descricao": "Média de utilização de todos os cores. Walk em hrProcessorLoad e calcula média automaticamente.",
+          "descricao": "Média de utilização de todos os cores.",
           "triggers": [
             {
               "id": "cpu_alto",
@@ -120,15 +119,14 @@
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
           "unidade": "%",
-          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016.",
-          "triggers": []
+          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
         }
       ]
     },
     {
       "id": "memory",
       "label": "Memória RAM",
-      "descricao": "Uso de memória RAM (total, usado, %)",
+      "descricao": "Uso de memória RAM (total, usado)",
       "categoria": "Recursos",
       "requer_discovery": false,
       "itens": [
@@ -159,7 +157,6 @@
       "categoria": "Rede",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
-      "nota": "OIDs confirmadas em CCR1016-12G real: download=1.3.6.1.2.1.2.2.1.10.{index}, upload=1.3.6.1.2.1.2.2.1.16.{index} (32-bit). Para contadores 64-bit use ifHC: 1.3.6.1.2.1.31.1.1.1.6.{index} e 1.3.6.1.2.1.31.1.1.1.10.{index}",
       "itens": [
         {
           "id": "if_status",
@@ -167,22 +164,8 @@
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
           "unidade": "",
-          "value_map": {
-            "1": "Up",
-            "2": "Down"
-          },
-          "descricao": "Status da interface (Up/Down)",
-          "triggers": [
-            {
-              "id": "link_down",
-              "nome": "Interface caiu (Link Down)",
-              "condicao": "=",
-              "threshold": 2,
-              "severidade": "high",
-              "auto_create": false,
-              "observacao": "Não criado automaticamente — operador decide quais portas monitorar para evitar ruído"
-            }
-          ]
+          "value_map": {"1": "Up", "2": "Down"},
+          "descricao": "Status da interface (Up/Down)"
         },
         {
           "id": "if_in_octets",
@@ -191,7 +174,7 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
           "unidade": "bps",
-          "descricao": "Bytes recebidos. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.6.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.10.N"
+          "descricao": "Bytes recebidos (64-bit)"
         },
         {
           "id": "if_out_octets",
@@ -200,7 +183,7 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
           "unidade": "bps",
-          "descricao": "Bytes enviados. OID 64-bit: 1.3.6.1.2.1.31.1.1.1.10.N | OID 32-bit: 1.3.6.1.2.1.2.2.1.16.N"
+          "descricao": "Bytes enviados (64-bit)"
         },
         {
           "id": "if_speed",
@@ -211,22 +194,13 @@
           "descricao": "Velocidade da interface em Mbps",
           "triggers": [
             {
-              "id": "speed_drop_1g",
-              "nome": "Velocidade caiu para 1G",
-              "condicao": "<=",
-              "threshold": 1000,
+              "id": "speed_drop",
+              "nome": "Velocidade da porta caiu",
+              "condicao": "drop",
+              "threshold": 0,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Interface {interface} em {host}: velocidade caiu para {valor} Mbps (era 10G)"
-            },
-            {
-              "id": "speed_drop_100m",
-              "nome": "Velocidade caiu para 100M",
-              "condicao": "<=",
-              "threshold": 100,
-              "severidade": "high",
-              "auto_create": true,
-              "mensagem": "Interface {interface} em {host}: velocidade CRÍTICA — apenas {valor} Mbps"
+              "mensagem": "Interface {interface} em {host}: velocidade caiu de {anterior} para {valor} Mbps"
             }
           ]
         },
@@ -284,14 +258,14 @@
           "oid": "1.3.6.1.2.1.2.2.1.3",
           "filter": "INTEGER: 23",
           "unidade": "clientes",
-          "descricao": "Conta interfaces do tipo PPP (ifType=23). Confirmado no CCR1016: cada sessão PPPoE/L2TP ativa aparece como ifType=23."
+          "descricao": "Conta interfaces do tipo PPP (ifType=23)."
         }
       ]
     },
     {
       "id": "vlan_clients",
       "label": "Clientes por VLAN",
-      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik. Selecione quais VLANs monitorar.",
+      "descricao": "Contagem de clientes PPPoE por VLAN via API REST Mikrotik.",
       "categoria": "Rede",
       "requer_discovery": true,
       "itens": [
@@ -322,11 +296,11 @@
             {
               "id": "reboot_detectado",
               "nome": "Reboot detectado",
-              "condicao": "<=",
-              "threshold": 300,
+              "condicao": "drop",
+              "threshold": 0,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host} reiniciado — uptime de apenas {valor}s. Reboot inesperado?"
+              "mensagem": "Host {host} reiniciou — uptime caiu de {anterior}s para {valor}s"
             }
           ]
         },
@@ -371,7 +345,6 @@
       "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
       "categoria": "Ambiente",
       "requer_discovery": false,
-      "nota": "OIDs confirmadas em CCR1016-12G real via MIKROTIK-MIB (1.3.6.1.4.1.14988.1.1.3)",
       "itens": [
         {
           "id": "temp_device",
@@ -380,7 +353,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura geral. Valor confirmado: 32 = 3.2°C (÷10)",
+          "descricao": "Temperatura geral (÷10)",
           "triggers": [
             {
               "id": "temp_alta",
@@ -409,7 +382,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
           "divisor": 10,
           "unidade": "°C",
-          "descricao": "Temperatura CPU. Valor confirmado: 51 = 5.1°C (÷10)",
+          "descricao": "Temperatura CPU (÷10)",
           "triggers": [
             {
               "id": "temp_cpu_alta",
@@ -437,7 +410,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
           "unidade": "RPM",
-          "descricao": "Velocidade do ventilador. Valor confirmado: 6022 RPM",
+          "descricao": "Velocidade do ventilador",
           "triggers": [
             {
               "id": "fan_lento",
@@ -466,7 +439,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
           "divisor": 10,
           "unidade": "V",
-          "descricao": "Tensão de alimentação. Valor confirmado: 243 = 24.3V",
+          "descricao": "Tensão de alimentação (÷10)",
           "triggers": [
             {
               "id": "tensao_baixa",
@@ -485,10 +458,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7401",
           "unidade": "",
-          "value_map": {
-            "0": "OK",
-            "1": "Falha"
-          },
+          "value_map": {"0": "OK", "1": "Falha"},
           "descricao": "Estado da fonte 1 (Dual PSU)",
           "triggers": [
             {
@@ -508,10 +478,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7402",
           "unidade": "",
-          "value_map": {
-            "0": "OK",
-            "1": "Falha"
-          },
+          "value_map": {"0": "OK", "1": "Falha"},
           "descricao": "Estado da fonte 2 (Dual PSU)",
           "triggers": [
             {
