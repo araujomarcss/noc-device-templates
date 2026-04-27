@@ -437,27 +437,27 @@
           "nome": "Temperatura Dispositivo",
           "tipo": "SNMP_FLOAT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
-          "divisor": 10,
+          "multiplicador": 0.1,
           "unidade": "°C",
-          "descricao": "Temperatura geral (÷10)",
+          "descricao": "Temperatura geral em décimos (valor * 0.1 = °C)",
           "triggers": [
             {
               "id": "temp_alta",
               "nome": "Temperatura alta",
               "condicao": ">=",
-              "threshold": 60,
+              "threshold": 600,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host}: temperatura do dispositivo em {valor}°C (limite: 60°C)"
+              "mensagem": "Host {host}: temperatura do dispositivo em {valor} décimos (60.0°C) — limite: 60°C"
             },
             {
               "id": "temp_critica",
               "nome": "Temperatura crítica",
               "condicao": ">=",
-              "threshold": 75,
+              "threshold": 750,
               "severidade": "critical",
               "auto_create": true,
-              "mensagem": "Host {host}: TEMPERATURA CRÍTICA — {valor}°C. Risco de desligamento!"
+              "mensagem": "Host {host}: TEMPERATURA CRÍTICA — {valor} décimos (75.0°C). Risco de desligamento!"
             }
           ]
         },
@@ -466,27 +466,27 @@
           "nome": "Temperatura CPU",
           "tipo": "SNMP_FLOAT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.17",
-          "divisor": 10,
+          "multiplicador": 0.1,
           "unidade": "°C",
-          "descricao": "Temperatura CPU (÷10)",
+          "descricao": "Temperatura CPU em décimos (valor * 0.1 = °C)",
           "triggers": [
             {
               "id": "temp_cpu_alta",
               "nome": "Temperatura CPU alta",
               "condicao": ">=",
-              "threshold": 70,
+              "threshold": 700,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host}: temperatura da CPU em {valor}°C (limite: 70°C)"
+              "mensagem": "Host {host}: temperatura da CPU em {valor} décimos (70.0°C) — limite: 70°C"
             },
             {
               "id": "temp_cpu_critica",
               "nome": "Temperatura CPU crítica",
               "condicao": ">=",
-              "threshold": 85,
+              "threshold": 850,
               "severidade": "critical",
               "auto_create": true,
-              "mensagem": "Host {host}: CPU SUPERAQUECENDO — {valor}°C. Verifique ventilação!"
+              "mensagem": "Host {host}: CPU SUPERAQUECENDO — {valor} décimos (85.0°C). Verifique ventilação!"
             }
           ]
         },
@@ -523,27 +523,27 @@
           "nome": "Tensão",
           "tipo": "SNMP_FLOAT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
-          "divisor": 10,
+          "multiplicador": 0.1,
           "unidade": "V",
-          "descricao": "Tensão de alimentação (÷10)",
+          "descricao": "Tensão de alimentação em decivolt (valor * 0.1 = Volts)",
           "triggers": [
             {
               "id": "tensao_baixa",
               "nome": "Tensão abaixo do normal",
               "condicao": "<=",
-              "threshold": 21,
+              "threshold": 210,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host}: tensão em {valor}V — abaixo do esperado (24V)"
+              "mensagem": "Host {host}: tensão em {valor} decivolt (21.0V) — abaixo do esperado (24V)"
             },
             {
               "id": "tensao_alta",
               "nome": "Tensão acima do normal",
               "condicao": ">=",
-              "threshold": 28,
+              "threshold": 280,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host}: tensão em {valor}V — acima do esperado (24V)"
+              "mensagem": "Host {host}: tensão em {valor} decivolt (28.0V) — acima do esperado (24V)"
             }
           ]
         },
