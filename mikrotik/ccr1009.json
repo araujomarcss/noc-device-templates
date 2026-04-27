@@ -571,7 +571,7 @@
               "threshold": 1,
               "severidade": "high",
               "auto_create": true,
-              "mensagem": "Host {host}: FONTE 1 (PSU1) com falha!"
+              "mensagem": "Host {host}: FONTE 1 (PSU1) com falha! Equipamento operando só na PSU2."
             }
           ]
         },
@@ -594,7 +594,7 @@
               "threshold": 1,
               "severidade": "high",
               "auto_create": true,
-              "mensagem": "Host {host}: FONTE 2 (PSU2) com falha!"
+              "mensagem": "Host {host}: FONTE 2 (PSU2) com falha! Equipamento operando só na PSU1."
             }
           ]
         }
