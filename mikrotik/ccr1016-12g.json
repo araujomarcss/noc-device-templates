@@ -146,7 +146,27 @@
           "oid": "1.3.6.1.2.1.25.2.3.1.6.65536",
           "unidade": "bytes",
           "multiplicador": 1024,
-          "descricao": "Memória RAM usada em bytes"
+          "descricao": "Memória RAM usada em bytes",
+          "triggers": [
+            {
+              "id": "memoria_alta",
+              "nome": "Memória RAM alta",
+              "condicao": ">=",
+              "threshold": 1800000000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: memória em {valor} bytes — acima de 85% (2GB total)"
+            },
+            {
+              "id": "memoria_critica",
+              "nome": "Memória RAM crítica",
+              "condicao": ">=",
+              "threshold": 1950000000,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Host {host}: memória CRÍTICA — {valor} bytes usados (>95% de 2GB)"
+            }
+          ]
         }
       ]
     },
@@ -165,7 +185,18 @@
           "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
           "unidade": "",
           "value_map": {"1": "Up", "2": "Down"},
-          "descricao": "Status da interface (Up/Down)"
+          "descricao": "Status da interface (Up/Down)",
+          "triggers": [
+            {
+              "id": "interface_down",
+              "nome": "Interface inativa",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host} está DOWN"
+            }
+          ]
         },
         {
           "id": "if_in_octets",
@@ -174,7 +205,29 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
           "unidade": "bps",
-          "descricao": "Bytes recebidos (64-bit)"
+          "descricao": "Bytes recebidos (64-bit)",
+          "triggers": [
+            {
+              "id": "trafego_in_1gb_alto",
+              "nome": "Tráfego entrada saturando (1Gbps)",
+              "condicao": ">=",
+              "threshold": 900000000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} (1Gbps) em {host}: tráfego de entrada em {valor}bps (>900Mbps) — link saturando",
+              "condicao_extra": "if_speed >= 900 AND if_speed <= 1100"
+            },
+            {
+              "id": "trafego_in_10gb_alto",
+              "nome": "Tráfego entrada saturando (10Gbps)",
+              "condicao": ">=",
+              "threshold": 9000000000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} (10Gbps) em {host}: tráfego de entrada em {valor}bps (>9Gbps) — link saturando",
+              "condicao_extra": "if_speed >= 9000 AND if_speed <= 11000"
+            }
+          ]
         },
         {
           "id": "if_out_octets",
@@ -183,7 +236,29 @@
           "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
           "unidade": "bps",
-          "descricao": "Bytes enviados (64-bit)"
+          "descricao": "Bytes enviados (64-bit)",
+          "triggers": [
+            {
+              "id": "trafego_out_1gb_alto",
+              "nome": "Tráfego saída saturando (1Gbps)",
+              "condicao": ">=",
+              "threshold": 900000000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} (1Gbps) em {host}: tráfego de saída em {valor}bps (>900Mbps) — link saturando",
+              "condicao_extra": "if_speed >= 900 AND if_speed <= 1100"
+            },
+            {
+              "id": "trafego_out_10gb_alto",
+              "nome": "Tráfego saída saturando (10Gbps)",
+              "condicao": ">=",
+              "threshold": 9000000000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} (10Gbps) em {host}: tráfego de saída em {valor}bps (>9Gbps) — link saturando",
+              "condicao_extra": "if_speed >= 9000 AND if_speed <= 11000"
+            }
+          ]
         },
         {
           "id": "if_speed",
@@ -258,7 +333,18 @@
           "oid": "1.3.6.1.2.1.2.2.1.3",
           "filter": "INTEGER: 23",
           "unidade": "clientes",
-          "descricao": "Conta interfaces do tipo PPP (ifType=23)."
+          "descricao": "Conta interfaces do tipo PPP (ifType=23).",
+          "triggers": [
+            {
+              "id": "pppoe_alto",
+              "nome": "Muitos clientes PPPoE conectados",
+              "condicao": ">=",
+              "threshold": 1200,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: {valor} clientes PPPoE/L2TP conectados — verificar capacidade (CCR1016 recomenda max 1200)"
+            }
+          ]
         }
       ]
     },
@@ -274,7 +360,7 @@
           "nome": "Clientes",
           "tipo": "REST_VLAN_COUNT",
           "unidade": "clientes",
-          "descricao": "Clientes PPPoE/L2TP conectados na VLAN"
+          "descricao": "Clientes PPPoE/L2TP conectados na VLAN. Triggers devem ser criados manualmente pelo usuário conforme a capacidade de cada VLAN/barramento."
         }
       ]
     },
@@ -449,6 +535,15 @@
               "severidade": "warning",
               "auto_create": true,
               "mensagem": "Host {host}: tensão em {valor}V — abaixo do esperado (24V)"
+            },
+            {
+              "id": "tensao_alta",
+              "nome": "Tensão acima do normal",
+              "condicao": ">=",
+              "threshold": 28,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Host {host}: tensão em {valor}V — acima do esperado (24V)"
             }
           ]
         },
