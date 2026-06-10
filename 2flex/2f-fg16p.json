@@ -1,0 +1,415 @@
+{
+  "tipo": "OLT",
+  "fabricante": "2Flex",
+  "modelo": "2F-FG16P",
+  "snmp_version": "2c",
+  "descricao": "GPON OLT — 8x GPON (2.5Gbps), 4x GE (1Gbps), 4x 10GE (10Gbps). Firmware GPONOLT-V3.x. Enterprise OID: 1.3.6.1.4.1.32285",
+  "sysObjectID": "1.3.6.1.4.1.32285.11.2.1.2.3.2",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Latência",
+      "descricao": "ICMP ping, perda de pacotes e tempo de resposta",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "ping_status",
+          "nome": "Status Ping",
+          "tipo": "ICMP_PING",
+          "unidade": ""
+        },
+        {
+          "id": "ping_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%"
+        },
+        {
+          "id": "ping_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms"
+        }
+      ]
+    },
+    {
+      "id": "sistema",
+      "label": "Informações do Sistema",
+      "descricao": "Uptime, nome, descrição, firmware e serial number",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "sys_uptime",
+          "nome": "Uptime",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "",
+          "descricao": "Tempo desde último boot"
+        },
+        {
+          "id": "sys_name",
+          "nome": "Nome do Equipamento",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.5.0",
+          "unidade": "",
+          "descricao": "sysName — ex: OLT_Engenharia"
+        },
+        {
+          "id": "sys_descr",
+          "nome": "Descrição",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.1.0",
+          "unidade": "",
+          "descricao": "sysDescr — ex: GPON OLT with 8 GPON(10GE*4, GE*4, GPON*8)"
+        },
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.3.1.1.9.1.0",
+          "unidade": "",
+          "descricao": "Versão do firmware da OLT. Ex: GPONOLT-V3.1.9.2"
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.13.0",
+          "unidade": "",
+          "descricao": "Serial number do equipamento. Ex: FHTC15110049"
+        },
+        {
+          "id": "device_model",
+          "nome": "Modelo",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.2.1.1.3.1",
+          "unidade": "",
+          "descricao": "Modelo do equipamento. Ex: 2F-FG16P"
+        },
+        {
+          "id": "device_vendor",
+          "nome": "Fabricante",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.12.0",
+          "unidade": "",
+          "descricao": "Nome do fabricante. Ex: 2Flex"
+        },
+        {
+          "id": "mac_address",
+          "nome": "MAC Address",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.6.0",
+          "unidade": "",
+          "descricao": "Endereço MAC da OLT. Ex: A0-94-6A-0E-B4-63"
+        },
+        {
+          "id": "mgmt_ip",
+          "nome": "IP de Gerência",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.7.0",
+          "unidade": "",
+          "descricao": "IP da interface de gerência"
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego, status, erros e velocidade das portas GPON, GE e 10GE. Indices altos (ex: 8388608, 142606338).",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "Indices da OLT 2Flex são valores altos. GPON: 8388608-67108864, GE: 142606338-167772162, XE: 176160770-201326594. Counters 64-bit (HC) confirmados.",
+      "itens": [
+        {
+          "id": "if_name",
+          "nome": "Interface #{index} — Nome",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.2.1.2.2.1.2.{index}",
+          "unidade": "",
+          "descricao": "Nome da interface. Ex: PORT-GPON-0/1, PORT-GE-0/1, PORT-XE-0/1"
+        },
+        {
+          "id": "if_oper_status",
+          "nome": "Interface #{index} — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          },
+          "descricao": "Status operacional: 1=up, 2=down"
+        },
+        {
+          "id": "if_admin_status",
+          "nome": "Interface #{index} — Status Administrativo",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          },
+          "descricao": "Status administrativo: 1=up, 2=down"
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Interface #{index} — Tráfego Entrada (Download)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bytes",
+          "descricao": "Bytes recebidos (HC 64-bit). Fallback 32-bit disponível."
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Interface #{index} — Tráfego Saída (Upload)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bytes",
+          "descricao": "Bytes enviados (HC 64-bit). Fallback 32-bit disponível."
+        },
+        {
+          "id": "if_speed",
+          "nome": "Interface #{index} — Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps",
+          "descricao": "Velocidade da interface em Mbps. GPON=2500, GE=1000, XE=10000"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Interface #{index} — Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros",
+          "descricao": "Pacotes com erro recebidos"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Interface #{index} — Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros",
+          "descricao": "Pacotes com erro enviados"
+        },
+        {
+          "id": "if_in_discards",
+          "nome": "Interface #{index} — Descartes Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
+          "unidade": "pacotes",
+          "descricao": "Pacotes descartados na entrada"
+        },
+        {
+          "id": "if_out_discards",
+          "nome": "Interface #{index} — Descartes Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
+          "unidade": "pacotes",
+          "descricao": "Pacotes descartados na saída"
+        },
+        {
+          "id": "if_last_change",
+          "nome": "Interface #{index} — Última Mudança",
+          "tipo": "SNMP_TIMETICKS",
+          "oid_template": "1.3.6.1.2.1.2.2.1.9.{index}",
+          "unidade": "",
+          "descricao": "Timestamp da última mudança de estado"
+        }
+      ]
+    },
+    {
+      "id": "alarmes",
+      "label": "Alarmes / Eventos",
+      "descricao": "Tabela de alarmes ativos da OLT (enterprise OID 17409 — SCTE HMS). Inclui alarmes de fan, SFP, ONU, etc.",
+      "categoria": "Sistema",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2",
+      "nota": "A tabela de alarmes usa indexação dupla (tipo.sequencia). Valor 105=fan speed alarm, 112325=ONU alarm, 321=SFP alarm, 310=power alarm. Campo .4 = severity (1=cleared, 2=warning, 3=minor, 4=major). Campo .10 = descrição textual do alarme.",
+      "itens": [
+        {
+          "id": "alarm_type",
+          "nome": "Tipo de Alarme #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2.{index}",
+          "unidade": "",
+          "descricao": "Código do tipo de alarme"
+        },
+        {
+          "id": "alarm_severity",
+          "nome": "Severidade #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.4.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "cleared",
+            "2": "warning",
+            "3": "minor",
+            "4": "major"
+          },
+          "descricao": "Severidade do alarme"
+        },
+        {
+          "id": "alarm_count",
+          "nome": "Contagem #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.8.{index}",
+          "unidade": "",
+          "descricao": "Quantidade de vezes que o alarme ocorreu"
+        },
+        {
+          "id": "alarm_description",
+          "nome": "Descrição #{index}",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.10.{index}",
+          "unidade": "",
+          "descricao": "Descrição textual do alarme. Ex: Fan speed: 4860 rpm, SN: xxxx"
+        }
+      ]
+    },
+    {
+      "id": "pon_status",
+      "label": "Status das PON",
+      "descricao": "Status de link e alertas por porta GPON (baseado no standing alarm table)",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "nota": "Tabela de status de alarmes estáticos (.1.3.6.1.4.1.17409.2.2.11.2.3.1.2). Os indices 1-77+ representam diferentes alarmes do sistema. Útil para verificar status geral.",
+      "itens": [
+        {
+          "id": "pon1_oper",
+          "nome": "GPON-0/1 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.8388608",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/1"
+        },
+        {
+          "id": "pon2_oper",
+          "nome": "GPON-0/2 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.16777216",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/2"
+        },
+        {
+          "id": "pon3_oper",
+          "nome": "GPON-0/3 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.25165824",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/3"
+        },
+        {
+          "id": "pon4_oper",
+          "nome": "GPON-0/4 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.33554432",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/4"
+        },
+        {
+          "id": "pon5_oper",
+          "nome": "GPON-0/5 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.41943040",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/5"
+        },
+        {
+          "id": "pon6_oper",
+          "nome": "GPON-0/6 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.50331648",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/6"
+        },
+        {
+          "id": "pon7_oper",
+          "nome": "GPON-0/7 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.58720256",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/7"
+        },
+        {
+          "id": "pon8_oper",
+          "nome": "GPON-0/8 — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.67108864",
+          "unidade": "",
+          "value_map": { "1": "up", "2": "down" },
+          "descricao": "Status operacional da porta GPON-0/8"
+        }
+      ]
+    },
+    {
+      "id": "power_fan",
+      "label": "Fontes e Ventilação",
+      "descricao": "Status das fontes de alimentação e ventiladores via MIB privada SCTE",
+      "categoria": "Ambiente",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "psu1_status",
+          "nome": "Fonte 1 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.20",
+          "unidade": "",
+          "value_map": { "1": "OK", "2": "Falha" },
+          "descricao": "Status da fonte de alimentação 1"
+        },
+        {
+          "id": "psu2_status",
+          "nome": "Fonte 2 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.21",
+          "unidade": "",
+          "value_map": { "1": "OK", "2": "Falha" },
+          "descricao": "Status da fonte de alimentação 2"
+        },
+        {
+          "id": "psu1_type",
+          "nome": "Fonte 1 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.20",
+          "unidade": "",
+          "value_map": { "1": "AC", "2": "DC", "4": "AC/DC" },
+          "descricao": "Tipo da fonte 1"
+        },
+        {
+          "id": "psu2_type",
+          "nome": "Fonte 2 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.21",
+          "unidade": "",
+          "value_map": { "1": "AC", "2": "DC", "4": "AC/DC" },
+          "descricao": "Tipo da fonte 2"
+        },
+        {
+          "id": "fan_status",
+          "nome": "Ventilador — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.5.1.1.3.1.19",
+          "unidade": "",
+          "value_map": { "1": "OK", "2": "Falha" },
+          "descricao": "Status do módulo de ventilação"
+        }
+      ]
+    }
+  ]
+}
