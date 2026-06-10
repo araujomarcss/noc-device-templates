@@ -1,9 +1,9 @@
 {
   "tipo": "OLT",
   "fabricante": "2Flex",
-  "modelo": "2F-FG16P",
+  "modelo": "2F-FG8P",
   "snmp_version": "2c",
-  "descricao": "GPON OLT — 8x GPON (2.5Gbps), 4x GE (1Gbps), 4x 10GE (10Gbps). Firmware GPONOLT-V3.x. Enterprise OID: 1.3.6.1.4.1.32285",
+  "descricao": "GPON OLT — 8x GPON (2.5Gbps), 4x GE (1Gbps), 4x 10GE (10Gbps). Firmware GPONOLT-V3.x",
   "sysObjectID": "1.3.6.1.4.1.32285.11.2.1.2.3.2",
   "capabilities": [
     {
