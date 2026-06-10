@@ -7,7 +7,7 @@
   "fabricante": "2Flex",
   "modelo": "2F-FG16P",
   "file": "2flex/2f-fg16p.json",
-  "descricao": "GPON OLT — 8x GPON, 4x GE, 4x 10GE"
+    "descricao": "GPON OLT — 8x GPON, 4x GE, 4x 10GE"
     },
     {
       "tipo": "Router",
