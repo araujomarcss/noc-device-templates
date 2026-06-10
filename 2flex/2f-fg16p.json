@@ -382,156 +382,252 @@
       ]
     },
     {
-      "id": "potencia_optica",
-      "label": "Potência Óptica PON",
-      "descricao": "TX Power e RX Power por porta GPON. Valores em 0.01 µW — converter para dBm: 10*log10(valor/100000). Portas inativas retornam 0.",
+      "id": "optica_pon",
+      "label": "Diagnóstico Óptico PON",
+      "descricao": "Voltage, bias current e temperatura dos transceivers GPON. TX/RX Power em dBm NÃO disponível via SNMP neste modelo.",
       "categoria": "Rede",
       "requer_discovery": false,
-      "nota": "Confirmado via SNMP real: TX=322090 → 3220.9µW → +5.08dBm, RX=960 → 9.6µW → -20.18dBm. Unidade: 0.01 µW. Fórmula dBm: 10*log10(valor/100000). Index 1-8 = PON 0/1 a 0/8.",
+      "nota": "Confirmado comparando SNMP vs Web UI: .4=Voltage(÷100=mV), .5=Current(÷100=mA), .6=Temperatura(÷10=°C). TX/RX Power em dBm só disponível pela web da OLT.",
       "itens": [
         {
-          "id": "pon1_tx_power",
-          "nome": "GPON-0/1 — TX Power",
+          "id": "pon1_voltage",
+          "nome": "GPON-0/1 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.1",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/1 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/1. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon1_rx_power",
-          "nome": "GPON-0/1 — RX Power",
+          "id": "pon1_current",
+          "nome": "GPON-0/1 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.1",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/1 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/1. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon2_tx_power",
-          "nome": "GPON-0/2 — TX Power",
+          "id": "pon1_temperature",
+          "nome": "GPON-0/1 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.1",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/1. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon2_voltage",
+          "nome": "GPON-0/2 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.2",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/2 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/2. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon2_rx_power",
-          "nome": "GPON-0/2 — RX Power",
+          "id": "pon2_current",
+          "nome": "GPON-0/2 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.2",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/2 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/2. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon3_tx_power",
-          "nome": "GPON-0/3 — TX Power",
+          "id": "pon2_temperature",
+          "nome": "GPON-0/2 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.2",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/2. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon3_voltage",
+          "nome": "GPON-0/3 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.3",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/3 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/3. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon3_rx_power",
-          "nome": "GPON-0/3 — RX Power",
+          "id": "pon3_current",
+          "nome": "GPON-0/3 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.3",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/3 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/3. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon4_tx_power",
-          "nome": "GPON-0/4 — TX Power",
+          "id": "pon3_temperature",
+          "nome": "GPON-0/3 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.3",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/3. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon4_voltage",
+          "nome": "GPON-0/4 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.4",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/4 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/4. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon4_rx_power",
-          "nome": "GPON-0/4 — RX Power",
+          "id": "pon4_current",
+          "nome": "GPON-0/4 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.4",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/4 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/4. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon5_tx_power",
-          "nome": "GPON-0/5 — TX Power",
+          "id": "pon4_temperature",
+          "nome": "GPON-0/4 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.4",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/4. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon5_voltage",
+          "nome": "GPON-0/5 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.5",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/5 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/5. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon5_rx_power",
-          "nome": "GPON-0/5 — RX Power",
+          "id": "pon5_current",
+          "nome": "GPON-0/5 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.5",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/5 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/5. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon6_tx_power",
-          "nome": "GPON-0/6 — TX Power",
+          "id": "pon5_temperature",
+          "nome": "GPON-0/5 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.5",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/5. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon6_voltage",
+          "nome": "GPON-0/6 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.6",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/6 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/6. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon6_rx_power",
-          "nome": "GPON-0/6 — RX Power",
+          "id": "pon6_current",
+          "nome": "GPON-0/6 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.6",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/6 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/6. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon7_tx_power",
-          "nome": "GPON-0/7 — TX Power",
+          "id": "pon6_temperature",
+          "nome": "GPON-0/6 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.6",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/6. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon7_voltage",
+          "nome": "GPON-0/7 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.7",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/7 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/7. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon7_rx_power",
-          "nome": "GPON-0/7 — RX Power",
+          "id": "pon7_current",
+          "nome": "GPON-0/7 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.7",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/7 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/7. Ex: 912 ÷ 100 = 9.12 mA"
         },
         {
-          "id": "pon8_tx_power",
-          "nome": "GPON-0/8 — TX Power",
+          "id": "pon7_temperature",
+          "nome": "GPON-0/7 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.7",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/7. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
+        },
+        {
+          "id": "pon8_voltage",
+          "nome": "GPON-0/8 — Voltage",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.8",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência TX da porta GPON-0/8 (OLT→ONU)"
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Tensão do transceiver GPON-0/8. Ex: 321960 ÷ 100 = 3219.6 mV"
         },
         {
-          "id": "pon8_rx_power",
-          "nome": "GPON-0/8 — RX Power",
+          "id": "pon8_current",
+          "nome": "GPON-0/8 — Bias Current",
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.8",
-          "unidade": "0.01µW",
-          "conversao": "dBm = 10*log10(valor/100000)",
-          "descricao": "Potência RX da porta GPON-0/8 (ONU→OLT)"
+          "unidade": "mA",
+          "conversao": "dividir",
+          "divisor": 100,
+          "descricao": "Corrente de bias do laser GPON-0/8. Ex: 912 ÷ 100 = 9.12 mA"
+        },
+        {
+          "id": "pon8_temperature",
+          "nome": "GPON-0/8 — Temperatura",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.8",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "descricao": "Temperatura do transceiver GPON-0/8. Ex: 400 ÷ 10 = 40.0°C. Valor -2147483648 = porta inativa."
         }
       ]
     },
