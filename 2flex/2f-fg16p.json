@@ -114,34 +114,35 @@
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
       "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
-      "nota": "Indices altos: GPON 8388608-67108864, GE 142606338-167772162, XE 176160770-201326594. HC 64-bit confirmados.",
+      "nota": "Após discovery, usar o nome retornado por discovery_name_oid (ifDescr) como label de cada interface. Ex: em vez de 'Interface #25165824', exibir 'PORT-GPON-0/3'. Indices: GPON 8388608-67108864, GE 142606338-167772162, XE 176160770-201326594.",
       "itens": [
         {
-          "id": "if_name",
-          "nome": "Interface #{index} — Nome",
-          "tipo": "SNMP_STRING",
-          "oid_template": "1.3.6.1.2.1.2.2.1.2.{index}",
-          "unidade": ""
-        },
-        {
           "id": "if_oper_status",
-          "nome": "Interface #{index} — Status Operacional",
+          "nome": "{name} — Status Operacional",
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
           "unidade": "",
-          "value_map": {"1": "up", "2": "down", "3": "testing"}
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          }
         },
         {
           "id": "if_admin_status",
-          "nome": "Interface #{index} — Status Administrativo",
+          "nome": "{name} — Status Administrativo",
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}",
           "unidade": "",
-          "value_map": {"1": "up", "2": "down", "3": "testing"}
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          }
         },
         {
           "id": "if_in_octets",
-          "nome": "Interface #{index} — Tráfego Entrada (Download)",
+          "nome": "{name} — Tráfego Entrada (Download)",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
@@ -149,7 +150,7 @@
         },
         {
           "id": "if_out_octets",
-          "nome": "Interface #{index} — Tráfego Saída (Upload)",
+          "nome": "{name} — Tráfego Saída (Upload)",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
           "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
@@ -157,47 +158,41 @@
         },
         {
           "id": "if_speed",
-          "nome": "Interface #{index} — Velocidade",
+          "nome": "{name} — Velocidade",
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
           "unidade": "Mbps"
         },
         {
           "id": "if_in_errors",
-          "nome": "Interface #{index} — Erros Entrada",
+          "nome": "{name} — Erros Entrada",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
           "unidade": "erros"
         },
         {
           "id": "if_out_errors",
-          "nome": "Interface #{index} — Erros Saída",
+          "nome": "{name} — Erros Saída",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
           "unidade": "erros"
         },
         {
           "id": "if_in_discards",
-          "nome": "Interface #{index} — Descartes Entrada",
+          "nome": "{name} — Descartes Entrada",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
           "unidade": "pacotes"
         },
         {
           "id": "if_out_discards",
-          "nome": "Interface #{index} — Descartes Saída",
+          "nome": "{name} — Descartes Saída",
           "tipo": "DELTA_BYTES",
           "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
           "unidade": "pacotes"
-        },
-        {
-          "id": "if_last_change",
-          "nome": "Interface #{index} — Última Mudança",
-          "tipo": "SNMP_TIMETICKS",
-          "oid_template": "1.3.6.1.2.1.2.2.1.9.{index}",
-          "unidade": ""
         }
-      ]
+      ],
+      "usar_nome_discovery": true
     },
     {
       "id": "pon_status",
@@ -206,14 +201,94 @@
       "categoria": "Rede",
       "requer_discovery": false,
       "itens": [
-        {"id": "pon1_oper", "nome": "GPON-0/1 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.8388608", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon2_oper", "nome": "GPON-0/2 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.16777216", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon3_oper", "nome": "GPON-0/3 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.25165824", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon4_oper", "nome": "GPON-0/4 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.33554432", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon5_oper", "nome": "GPON-0/5 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.41943040", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon6_oper", "nome": "GPON-0/6 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.50331648", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon7_oper", "nome": "GPON-0/7 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.58720256", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "pon8_oper", "nome": "GPON-0/8 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.2.1.2.2.1.8.67108864", "unidade": "", "value_map": {"1": "up", "2": "down"}}
+        {
+          "id": "pon1_oper",
+          "nome": "GPON-0/1 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.8388608",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon2_oper",
+          "nome": "GPON-0/2 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.16777216",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon3_oper",
+          "nome": "GPON-0/3 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.25165824",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon4_oper",
+          "nome": "GPON-0/4 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.33554432",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon5_oper",
+          "nome": "GPON-0/5 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.41943040",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon6_oper",
+          "nome": "GPON-0/6 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.50331648",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon7_oper",
+          "nome": "GPON-0/7 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.58720256",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon8_oper",
+          "nome": "GPON-0/8 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.2.1.2.2.1.8.67108864",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        }
       ]
     },
     {
@@ -223,14 +298,78 @@
       "categoria": "Rede",
       "requer_discovery": false,
       "itens": [
-        {"id": "pon1_voltage", "nome": "GPON-0/1 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.1", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon2_voltage", "nome": "GPON-0/2 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.2", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon3_voltage", "nome": "GPON-0/3 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.3", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon4_voltage", "nome": "GPON-0/4 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.4", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon5_voltage", "nome": "GPON-0/5 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.5", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon6_voltage", "nome": "GPON-0/6 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.6", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon7_voltage", "nome": "GPON-0/7 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.7", "unidade": "mV", "conversao": "dividir", "divisor": 100},
-        {"id": "pon8_voltage", "nome": "GPON-0/8 — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.8", "unidade": "mV", "conversao": "dividir", "divisor": 100}
+        {
+          "id": "pon1_voltage",
+          "nome": "GPON-0/1 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.1",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon2_voltage",
+          "nome": "GPON-0/2 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.2",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon3_voltage",
+          "nome": "GPON-0/3 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.3",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon4_voltage",
+          "nome": "GPON-0/4 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.4",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon5_voltage",
+          "nome": "GPON-0/5 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.5",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon6_voltage",
+          "nome": "GPON-0/6 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.6",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon7_voltage",
+          "nome": "GPON-0/7 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.7",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon8_voltage",
+          "nome": "GPON-0/8 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.8",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        }
       ]
     },
     {
@@ -242,10 +381,40 @@
       "discovery_oid": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2",
       "nota": "Indexação dupla (tipo.sequencia). Campo .4 = severity (1=cleared, 2=warning, 3=minor, 4=major). Campo .10 = descrição textual.",
       "itens": [
-        {"id": "alarm_type", "nome": "Tipo de Alarme #{index}", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2.{index}", "unidade": ""},
-        {"id": "alarm_severity", "nome": "Severidade #{index}", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.4.{index}", "unidade": "", "value_map": {"1": "cleared", "2": "warning", "3": "minor", "4": "major"}},
-        {"id": "alarm_count", "nome": "Contagem #{index}", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.8.{index}", "unidade": ""},
-        {"id": "alarm_description", "nome": "Descrição #{index}", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.10.{index}", "unidade": ""}
+        {
+          "id": "alarm_type",
+          "nome": "Tipo de Alarme #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2.{index}",
+          "unidade": ""
+        },
+        {
+          "id": "alarm_severity",
+          "nome": "Severidade #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.4.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "cleared",
+            "2": "warning",
+            "3": "minor",
+            "4": "major"
+          }
+        },
+        {
+          "id": "alarm_count",
+          "nome": "Contagem #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.8.{index}",
+          "unidade": ""
+        },
+        {
+          "id": "alarm_description",
+          "nome": "Descrição #{index}",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.10.{index}",
+          "unidade": ""
+        }
       ]
     },
     {
@@ -255,11 +424,63 @@
       "categoria": "Ambiente",
       "requer_discovery": false,
       "itens": [
-        {"id": "psu1_status", "nome": "Fonte 1 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.20", "unidade": "", "value_map": {"1": "OK", "2": "Falha"}},
-        {"id": "psu2_status", "nome": "Fonte 2 — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.21", "unidade": "", "value_map": {"1": "OK", "2": "Falha"}},
-        {"id": "psu1_type", "nome": "Fonte 1 — Tipo", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.20", "unidade": "", "value_map": {"1": "AC", "2": "DC", "4": "AC/DC"}},
-        {"id": "psu2_type", "nome": "Fonte 2 — Tipo", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.21", "unidade": "", "value_map": {"1": "AC", "2": "DC", "4": "AC/DC"}},
-        {"id": "fan_status", "nome": "Ventilador — Status", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.17409.2.3.1.5.1.1.3.1.19", "unidade": "", "value_map": {"1": "OK", "2": "Falha"}}
+        {
+          "id": "psu1_status",
+          "nome": "Fonte 1 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.20",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        },
+        {
+          "id": "psu2_status",
+          "nome": "Fonte 2 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.21",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        },
+        {
+          "id": "psu1_type",
+          "nome": "Fonte 1 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.20",
+          "unidade": "",
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          }
+        },
+        {
+          "id": "psu2_type",
+          "nome": "Fonte 2 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.21",
+          "unidade": "",
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          }
+        },
+        {
+          "id": "fan_status",
+          "nome": "Ventilador — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.5.1.1.3.1.19",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        }
       ]
     }
   ]
