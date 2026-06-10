@@ -1,0 +1,876 @@
+{
+  "tipo": "OLT",
+  "fabricante": "2Flex",
+  "modelo": "2F-FG16P",
+  "snmp_version": "2c",
+  "descricao": "GPON OLT — 16x GPON (2.5Gbps), 4x GE (1Gbps), 4x 10GE (10Gbps). Firmware GPONOLT-V3.x",
+  "sysObjectID": "1.3.6.1.4.1.32285.11.2.1.2.3.2",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Latência",
+      "descricao": "ICMP ping, perda de pacotes e tempo de resposta",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "ping_status",
+          "nome": "Status Ping",
+          "tipo": "ICMP_PING",
+          "unidade": ""
+        },
+        {
+          "id": "ping_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%"
+        },
+        {
+          "id": "ping_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms"
+        }
+      ]
+    },
+    {
+      "id": "sistema",
+      "label": "Informações do Sistema",
+      "descricao": "Uptime, nome, descrição, firmware e serial number",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "sys_uptime",
+          "nome": "Uptime",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "",
+          "descricao": "Tempo desde último boot"
+        },
+        {
+          "id": "sys_name",
+          "nome": "Nome do Equipamento",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.5.0",
+          "unidade": ""
+        },
+        {
+          "id": "sys_descr",
+          "nome": "Descrição",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.1.0",
+          "unidade": ""
+        },
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.3.1.1.9.1.0",
+          "unidade": ""
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.13.0",
+          "unidade": ""
+        },
+        {
+          "id": "device_model",
+          "nome": "Modelo",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.2.1.1.3.1",
+          "unidade": ""
+        },
+        {
+          "id": "device_vendor",
+          "nome": "Fabricante",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.12.0",
+          "unidade": ""
+        },
+        {
+          "id": "mac_address",
+          "nome": "MAC Address",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.6.0",
+          "unidade": ""
+        },
+        {
+          "id": "mgmt_ip",
+          "nome": "IP de Gerência",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.1.7.0",
+          "unidade": ""
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego, status, erros e velocidade das portas GPON, GE e 10GE",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "Após discovery, usar o nome retornado por discovery_name_oid (ifDescr) como label de cada interface. Ex: em vez de 'Interface #25165824', exibir 'PORT-GPON-0/3'. Indices: GPON 8388608-67108864, GE 142606338-167772162, XE 176160770-201326594.",
+      "itens": [
+        {
+          "id": "if_oper_status",
+          "nome": "{name} — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          }
+        },
+        {
+          "id": "if_admin_status",
+          "nome": "{name} — Status Administrativo",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          }
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "{name} — Tráfego Entrada (Download)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bytes"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "{name} — Tráfego Saída (Upload)",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bytes"
+        },
+        {
+          "id": "if_speed",
+          "nome": "{name} — Velocidade",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
+          "unidade": "Mbps"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "{name} — Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "{name} — Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros"
+        },
+        {
+          "id": "if_in_discards",
+          "nome": "{name} — Descartes Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
+          "unidade": "pacotes"
+        },
+        {
+          "id": "if_out_discards",
+          "nome": "{name} — Descartes Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
+          "unidade": "pacotes"
+        }
+      ],
+      "usar_nome_discovery": true
+    },
+    {
+      "id": "pon_status",
+      "label": "Status das PON",
+      "descricao": "Status e quantidade de ONUs de cada porta GPON",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "pon1_status",
+          "nome": "GPON-0/1 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.1",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon1_onu_count",
+          "nome": "GPON-0/1 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.1",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon2_status",
+          "nome": "GPON-0/2 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.2",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon2_onu_count",
+          "nome": "GPON-0/2 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.2",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon3_status",
+          "nome": "GPON-0/3 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.3",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon3_onu_count",
+          "nome": "GPON-0/3 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.3",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon4_status",
+          "nome": "GPON-0/4 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.4",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon4_onu_count",
+          "nome": "GPON-0/4 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.4",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon5_status",
+          "nome": "GPON-0/5 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.5",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon5_onu_count",
+          "nome": "GPON-0/5 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.5",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon6_status",
+          "nome": "GPON-0/6 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.6",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon6_onu_count",
+          "nome": "GPON-0/6 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.6",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon7_status",
+          "nome": "GPON-0/7 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.7",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon7_onu_count",
+          "nome": "GPON-0/7 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.7",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon8_status",
+          "nome": "GPON-0/8 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.8",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon8_onu_count",
+          "nome": "GPON-0/8 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.8",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon9_status",
+          "nome": "GPON-0/9 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.9",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon9_onu_count",
+          "nome": "GPON-0/9 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.9",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon10_status",
+          "nome": "GPON-0/10 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.10",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon10_onu_count",
+          "nome": "GPON-0/10 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.10",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon11_status",
+          "nome": "GPON-0/11 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.11",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon11_onu_count",
+          "nome": "GPON-0/11 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.11",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon12_status",
+          "nome": "GPON-0/12 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.12",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon12_onu_count",
+          "nome": "GPON-0/12 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.12",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon13_status",
+          "nome": "GPON-0/13 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.13",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon13_onu_count",
+          "nome": "GPON-0/13 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.13",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon14_status",
+          "nome": "GPON-0/14 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.14",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon14_onu_count",
+          "nome": "GPON-0/14 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.14",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon15_status",
+          "nome": "GPON-0/15 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.15",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon15_onu_count",
+          "nome": "GPON-0/15 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.15",
+          "unidade": "ONUs"
+        },
+        {
+          "id": "pon16_status",
+          "nome": "GPON-0/16 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.16",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "pon16_onu_count",
+          "nome": "GPON-0/16 — ONUs Conectadas",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.16",
+          "unidade": "ONUs"
+        }
+      ]
+    },
+    {
+      "id": "optica_pon",
+      "label": "Diagnóstico Óptico PON",
+      "descricao": "Tensão do transceiver SFP de cada porta GPON",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "pon1_voltage",
+          "nome": "GPON-0/1 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.1",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon2_voltage",
+          "nome": "GPON-0/2 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.2",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon3_voltage",
+          "nome": "GPON-0/3 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.3",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon4_voltage",
+          "nome": "GPON-0/4 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.4",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon5_voltage",
+          "nome": "GPON-0/5 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.5",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon6_voltage",
+          "nome": "GPON-0/6 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.6",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon7_voltage",
+          "nome": "GPON-0/7 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.7",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon8_voltage",
+          "nome": "GPON-0/8 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.8",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon9_voltage",
+          "nome": "GPON-0/9 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.9",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon10_voltage",
+          "nome": "GPON-0/10 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.10",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon11_voltage",
+          "nome": "GPON-0/11 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.11",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon12_voltage",
+          "nome": "GPON-0/12 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.12",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon13_voltage",
+          "nome": "GPON-0/13 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.13",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon14_voltage",
+          "nome": "GPON-0/14 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.14",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon15_voltage",
+          "nome": "GPON-0/15 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.15",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon16_voltage",
+          "nome": "GPON-0/16 — Voltage",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.16",
+          "unidade": "mV",
+          "conversao": "dividir",
+          "divisor": 100
+        }
+      ]
+    },
+    {
+      "id": "alarmes",
+      "label": "Alarmes / Eventos",
+      "descricao": "Tabela de alarmes ativos da OLT (enterprise 17409 — SCTE HMS)",
+      "categoria": "Sistema",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2",
+      "nota": "Indexação dupla (tipo.sequencia). Campo .4 = severity (1=cleared, 2=warning, 3=minor, 4=major). Campo .10 = descrição textual.",
+      "itens": [
+        {
+          "id": "alarm_type",
+          "nome": "Tipo de Alarme #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.2.{index}",
+          "unidade": ""
+        },
+        {
+          "id": "alarm_severity",
+          "nome": "Severidade #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.4.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "cleared",
+            "2": "warning",
+            "3": "minor",
+            "4": "major"
+          }
+        },
+        {
+          "id": "alarm_count",
+          "nome": "Contagem #{index}",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.8.{index}",
+          "unidade": ""
+        },
+        {
+          "id": "alarm_description",
+          "nome": "Descrição #{index}",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.17409.2.2.11.2.2.1.10.{index}",
+          "unidade": ""
+        }
+      ]
+    },
+    {
+      "id": "power_fan",
+      "label": "Fontes e Ventilação",
+      "descricao": "Status das fontes de alimentação e ventilador",
+      "categoria": "Ambiente",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "psu1_status",
+          "nome": "Fonte 1 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.20",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        },
+        {
+          "id": "psu2_status",
+          "nome": "Fonte 2 — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.21",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        },
+        {
+          "id": "psu1_type",
+          "nome": "Fonte 1 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.20",
+          "unidade": "",
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          }
+        },
+        {
+          "id": "psu2_type",
+          "nome": "Fonte 2 — Tipo",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.21",
+          "unidade": "",
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          }
+        },
+        {
+          "id": "fan_status",
+          "nome": "Ventilador — Status",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.1.5.1.1.3.1.19",
+          "unidade": "",
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          }
+        }
+      ]
+    }
+  ],
+  "onu_table": {
+    "descricao": "Tabela de ONUs registradas — enterprise 17409.2.8.4 (gponOnuStatus)",
+    "base_oid": "1.3.6.1.4.1.17409.2.8.4.1.1",
+    "snmp_options": "-Cc",
+    "fields": {
+      "location": {
+        "sub_oid": ".2",
+        "tipo": "STRING",
+        "label": "Localização"
+      },
+      "serial": {
+        "sub_oid": ".3",
+        "tipo": "HEX",
+        "label": "Serial"
+      },
+      "vendor": {
+        "sub_oid": ".5",
+        "tipo": "STRING",
+        "label": "Fabricante"
+      },
+      "model": {
+        "sub_oid": ".6",
+        "tipo": "STRING",
+        "label": "Modelo"
+      },
+      "status": {
+        "sub_oid": ".7",
+        "tipo": "INT",
+        "label": "Status"
+      },
+      "distance": {
+        "sub_oid": ".11",
+        "tipo": "INT",
+        "label": "Distância (m)"
+      },
+      "firmware": {
+        "sub_oid": ".14",
+        "tipo": "STRING",
+        "label": "Firmware"
+      }
+    },
+    "status_field": "status",
+    "status_values": {
+      "online": [
+        1
+      ],
+      "offline": [
+        2,
+        0
+      ]
+    },
+    "location_field": "location",
+    "location_parser": "split_colon"
+  },
+  "pon_ports": {
+    "descricao": "Dados individuais de cada porta GPON — status, contagem de ONUs e nome",
+    "port_count": 16,
+    "port_name_prefix": "GPON 0/",
+    "fields": {
+      "status": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.1.1.5.1.0.{port}",
+        "tipo": "INT",
+        "label": "Status",
+        "value_map": {
+          "1": "up",
+          "2": "down"
+        }
+      },
+      "onu_count": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.1.1.8.1.0.{port}",
+        "tipo": "INT",
+        "label": "ONUs Registradas"
+      },
+      "port_name": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.1.1.21.1.0.{port}",
+        "tipo": "STRING",
+        "label": "Nome da Porta"
+      }
+    },
+    "nota": "{port} = 1 a 8 (GPON 0/1 a 0/8). Contagem de online/offline vem do onu_table (walk no status individual de cada ONU)."
+  },
+  "pon_diagnostics": {
+    "descricao": "Diagnóstico óptico dos transceivers SFP de cada porta GPON",
+    "port_count": 16,
+    "port_name_prefix": "GPON 0/",
+    "fields": {
+      "voltage": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.{port}",
+        "tipo": "INT",
+        "label": "Voltage",
+        "unidade": "mV",
+        "conversao": "dividir",
+        "divisor": 100
+      },
+      "bias_current": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.{port}",
+        "tipo": "INT",
+        "label": "Bias Current",
+        "unidade": "raw",
+        "nota": "Valor não confirmado com precisão — provavelmente corrente em 0.01 mA"
+      },
+      "field_6": {
+        "oid_template": "1.3.6.1.4.1.17409.2.3.3.5.1.6.1.0.{port}",
+        "tipo": "INT",
+        "label": "Parâmetro SFP",
+        "unidade": "raw",
+        "nota": "Valor não confirmado — possivelmente temperatura. Portas inativas retornam -2147483648."
+      }
+    },
+    "valores_invalidos": [
+      -2147483648,
+      2147483647
+    ],
+    "nota": "Apenas voltage (÷100 = mV) foi confirmado exato contra a web da OLT. TX/RX Power em dBm não disponível via SNMP neste modelo."
+  },
+  "snmp_options": "-Cc -t 15 -r 2",
+  "nota_discovery": "OLT de 16 portas tem muitas interfaces. Discovery pode demorar. Usar timeout de 15s e flag -Cc (OID ordering bug do firmware)."
+}
