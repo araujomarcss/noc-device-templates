@@ -289,7 +289,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.8388608",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/1"
         },
         {
@@ -298,7 +301,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.16777216",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/2"
         },
         {
@@ -307,7 +313,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.25165824",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/3"
         },
         {
@@ -316,7 +325,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.33554432",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/4"
         },
         {
@@ -325,7 +337,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.41943040",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/5"
         },
         {
@@ -334,7 +349,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.50331648",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/6"
         },
         {
@@ -343,7 +361,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.58720256",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/7"
         },
         {
@@ -352,8 +373,165 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.2.1.2.2.1.8.67108864",
           "unidade": "",
-          "value_map": { "1": "up", "2": "down" },
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          },
           "descricao": "Status operacional da porta GPON-0/8"
+        }
+      ]
+    },
+    {
+      "id": "potencia_optica",
+      "label": "Potência Óptica PON",
+      "descricao": "TX Power e RX Power por porta GPON. Valores em 0.01 µW — converter para dBm: 10*log10(valor/100000). Portas inativas retornam 0.",
+      "categoria": "Rede",
+      "requer_discovery": false,
+      "nota": "Confirmado via SNMP real: TX=322090 → 3220.9µW → +5.08dBm, RX=960 → 9.6µW → -20.18dBm. Unidade: 0.01 µW. Fórmula dBm: 10*log10(valor/100000). Index 1-8 = PON 0/1 a 0/8.",
+      "itens": [
+        {
+          "id": "pon1_tx_power",
+          "nome": "GPON-0/1 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.1",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/1 (OLT→ONU)"
+        },
+        {
+          "id": "pon1_rx_power",
+          "nome": "GPON-0/1 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.1",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/1 (ONU→OLT)"
+        },
+        {
+          "id": "pon2_tx_power",
+          "nome": "GPON-0/2 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.2",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/2 (OLT→ONU)"
+        },
+        {
+          "id": "pon2_rx_power",
+          "nome": "GPON-0/2 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.2",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/2 (ONU→OLT)"
+        },
+        {
+          "id": "pon3_tx_power",
+          "nome": "GPON-0/3 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.3",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/3 (OLT→ONU)"
+        },
+        {
+          "id": "pon3_rx_power",
+          "nome": "GPON-0/3 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.3",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/3 (ONU→OLT)"
+        },
+        {
+          "id": "pon4_tx_power",
+          "nome": "GPON-0/4 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.4",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/4 (OLT→ONU)"
+        },
+        {
+          "id": "pon4_rx_power",
+          "nome": "GPON-0/4 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.4",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/4 (ONU→OLT)"
+        },
+        {
+          "id": "pon5_tx_power",
+          "nome": "GPON-0/5 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.5",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/5 (OLT→ONU)"
+        },
+        {
+          "id": "pon5_rx_power",
+          "nome": "GPON-0/5 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.5",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/5 (ONU→OLT)"
+        },
+        {
+          "id": "pon6_tx_power",
+          "nome": "GPON-0/6 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.6",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/6 (OLT→ONU)"
+        },
+        {
+          "id": "pon6_rx_power",
+          "nome": "GPON-0/6 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.6",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/6 (ONU→OLT)"
+        },
+        {
+          "id": "pon7_tx_power",
+          "nome": "GPON-0/7 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.7",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/7 (OLT→ONU)"
+        },
+        {
+          "id": "pon7_rx_power",
+          "nome": "GPON-0/7 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.7",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/7 (ONU→OLT)"
+        },
+        {
+          "id": "pon8_tx_power",
+          "nome": "GPON-0/8 — TX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.4.1.0.8",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência TX da porta GPON-0/8 (OLT→ONU)"
+        },
+        {
+          "id": "pon8_rx_power",
+          "nome": "GPON-0/8 — RX Power",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.17409.2.3.3.5.1.5.1.0.8",
+          "unidade": "0.01µW",
+          "conversao": "dBm = 10*log10(valor/100000)",
+          "descricao": "Potência RX da porta GPON-0/8 (ONU→OLT)"
         }
       ]
     },
@@ -370,7 +548,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.20",
           "unidade": "",
-          "value_map": { "1": "OK", "2": "Falha" },
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          },
           "descricao": "Status da fonte de alimentação 1"
         },
         {
@@ -379,7 +560,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.3.1.21",
           "unidade": "",
-          "value_map": { "1": "OK", "2": "Falha" },
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          },
           "descricao": "Status da fonte de alimentação 2"
         },
         {
@@ -388,7 +572,11 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.20",
           "unidade": "",
-          "value_map": { "1": "AC", "2": "DC", "4": "AC/DC" },
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          },
           "descricao": "Tipo da fonte 1"
         },
         {
@@ -397,7 +585,11 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.1.4.1.1.8.1.21",
           "unidade": "",
-          "value_map": { "1": "AC", "2": "DC", "4": "AC/DC" },
+          "value_map": {
+            "1": "AC",
+            "2": "DC",
+            "4": "AC/DC"
+          },
           "descricao": "Tipo da fonte 2"
         },
         {
@@ -406,7 +598,10 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.17409.2.3.1.5.1.1.3.1.19",
           "unidade": "",
-          "value_map": { "1": "OK", "2": "Falha" },
+          "value_map": {
+            "1": "OK",
+            "2": "Falha"
+          },
           "descricao": "Status do módulo de ventilação"
         }
       ]
