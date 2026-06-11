@@ -1,0 +1,74 @@
+{
+  "tipo":        "OLT",
+  "fabricante":  "2Flex",
+  "modelo":      "2F-FG16P",
+  "descricao":   "Script de provisionamento de ONUs via Telnet — 2Flex 2F-FG16P (16 PONs).",
+  "protocol":    "telnet",
+
+  "auth": {
+    "login_prompt":    "Login:",
+    "password_prompt": "Password:",
+    "ready_prompt":    "[#>]\\s*$",
+    "init_commands":   ["enable", "configure terminal"]
+  },
+
+  "actions": {
+
+    "scan_profiles": {
+      "descricao": "Parseia auto-auth bindings do running-config para descobrir line/srv profile de cada PON. Roda 1x ao cadastrar a OLT (e quando admin alterar profiles). Os dados ficam salvos na tabela olt_pon_profiles do NocFlex.",
+      "commands":     ["show running-config"],
+      "read_timeout": 30
+    },
+
+    "scan_unprovisioned": {
+      "descricao": "Lista ONUs descobertas mas nao autorizadas. Output vem em blocos multi-linha (nao tabular). row_pattern usa [\\s\\S]*? lazy pra atravessar quebras de linha entre os campos.",
+      "commands": ["show onu gpon autofind"],
+      "row_pattern": "S/P\\s*:\\s*([\\d/]+)[\\s\\S]*?Onu\\s+SN\\s*:\\s*([0-9A-Za-z]+)[\\s\\S]*?Onu\\s+autofind\\s+time\\s*:\\s*([\\d/]+\\s+[\\d:]+)",
+      "row_fields": {
+        "pon":       {"group": 1, "tipo": "STRING"},
+        "serial":    {"group": 2, "tipo": "STRING"},
+        "found_at":  {"group": 3, "tipo": "STRING"}
+      },
+      "read_timeout": 20
+    },
+
+    "list_used_slots": {
+      "descricao": "Lista slots ocupados em UMA PON especifica. O backend entra no contexto da porta antes (interface gpon 0/{pon}) — sem isso o comando retorna ONUs de todas as portas.",
+      "commands": [
+        "interface gpon 0/{pon}",
+        "show onuinfo gpon all"
+      ],
+      "row_pattern": "^\\s*\\d+/\\d+/(\\d+)\\s+\\S+",
+      "row_fields": {
+        "slot": {"group": 1, "tipo": "INT"}
+      },
+      "read_timeout": 12
+    },
+
+    "provision": {
+      "descricao": "Provisiona uma ONU. Os inputs marcados com auto_from: pon_profile sao preenchidos automaticamente pelo backend a partir da tabela olt_pon_profiles (mapeada via scan_profiles). Frontend so precisa enviar pon, slot e serial.",
+      "inputs": [
+        {"key": "pon",          "label": "Porta PON",       "type": "number",
+         "required": true,
+         "help": "Vem da ONU descoberta (nao-provisionada)."},
+        {"key": "slot",         "label": "Slot ONU",        "type": "number",
+         "required": true, "auto_from": "next_free_slot",
+         "help": "Proximo slot livre na PON, calculado via show onuinfo."},
+        {"key": "serial",       "label": "Serial",          "type": "string",
+         "required": true,
+         "help": "Vem da ONU descoberta."},
+        {"key": "line_profile", "label": "Line profile",    "type": "number",
+         "required": true, "auto_from": "pon_profile"},
+        {"key": "srv_profile",  "label": "Service profile", "type": "number",
+         "required": true, "auto_from": "pon_profile"}
+      ],
+      "commands": [
+        "interface gpon 0/{pon}",
+        "onu add {slot} sn-auth {serial} omci onu-lineprofile-id {line_profile} onu-srvprofile-id {srv_profile}"
+      ],
+      "success_pattern": "^(?!.*[Ee]rror)(?!.*[Ff]ailed)(?!.*[Ii]nvalid).*$",
+      "read_timeout": 15
+    }
+
+  }
+}
