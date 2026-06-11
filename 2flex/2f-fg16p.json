@@ -880,7 +880,13 @@
       "login_prompt": "Username:",
       "password_prompt": "Password:",
       "ready_prompt": "[#>]\\s*$",
-      "init_commands": ["enable", "configure terminal"]
+      "init_commands": [
+        "enable"
+      ],
+      "enable_password_prompt": "Password:",
+      "post_enable_commands": [
+        "configure terminal"
+      ]
     },
     "loop": {
       "type": "per_pon",
@@ -912,6 +918,7 @@
     },
     "match_onu_by": {
       "onu_number_from_row": "onu_num"
-    }
+    },
+    "auth_nota": "Fluxo: login → enable → senha novamente → configure terminal → loop PON. A senha do enable é a mesma do login, passada via cli_pass do host."
   }
 }
