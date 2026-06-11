@@ -66,6 +66,20 @@
       ],
       "success_pattern": "^(?!.*[Ee]rror)(?!.*[Ff]ailed)(?!.*[Ii]nvalid).*$",
       "read_timeout": 15
+    },
+
+    "unprovision": {
+      "descricao": "Remove uma ONU ja cadastrada. Apos o delete, se ela ainda estiver conectada, volta pro autofind.",
+      "inputs": [
+        {"key": "pon",  "label": "Porta PON", "type": "number", "required": true},
+        {"key": "slot", "label": "Slot ONU",  "type": "number", "required": true}
+      ],
+      "commands": [
+        "interface gpon 0/{pon}",
+        "onu delete {slot}"
+      ],
+      "success_pattern": "^(?!.*[Ee]rror)(?!.*[Ff]ailed)(?!.*[Ii]nvalid).*$",
+      "read_timeout": 10
     }
 
   }
