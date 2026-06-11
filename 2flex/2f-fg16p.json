@@ -872,5 +872,46 @@
     "nota": "Apenas voltage (÷100 = mV) foi confirmado exato contra a web da OLT. TX/RX Power em dBm não disponível via SNMP neste modelo."
   },
   "snmp_options": "-Cc -t 15 -r 2",
-  "nota_discovery": "OLT de 16 portas tem muitas interfaces. Discovery pode demorar. Usar timeout de 15s e flag -Cc (OID ordering bug do firmware)."
+  "nota_discovery": "OLT de 16 portas tem muitas interfaces. Discovery pode demorar. Usar timeout de 15s e flag -Cc (OID ordering bug do firmware).",
+  "onu_optical_power": {
+    "descricao": "RX/TX óptica das ONUs via Telnet. Loop por PON (1..16).",
+    "protocol": "telnet",
+    "auth": {
+      "login_prompt": "Username:",
+      "password_prompt": "Password:",
+      "ready_prompt": "[#>]\\s*$",
+      "init_commands": ["enable", "configure terminal"]
+    },
+    "loop": {
+      "type": "per_pon",
+      "port_count": 16,
+      "context_command": "interface gpon 0/{pon}",
+      "exit_command": "exit"
+    },
+    "command": "show onu optical-transceiver gpon all",
+    "read_timeout": 10,
+    "row_pattern": "AJUSTE_COM_OUTPUT_REAL",
+    "row_fields": {
+      "onu_num": {
+        "group": 1,
+        "tipo": "INT",
+        "label": "ONU"
+      },
+      "rx_power": {
+        "group": 2,
+        "tipo": "FLOAT",
+        "unidade": "dBm",
+        "label": "RX"
+      },
+      "tx_power": {
+        "group": 3,
+        "tipo": "FLOAT",
+        "unidade": "dBm",
+        "label": "TX"
+      }
+    },
+    "match_onu_by": {
+      "onu_number_from_row": "onu_num"
+    }
+  }
 }
