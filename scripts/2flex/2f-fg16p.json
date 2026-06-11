@@ -15,14 +15,20 @@
   "actions": {
 
     "scan_profiles": {
-      "descricao": "Parseia auto-auth bindings do running-config para descobrir line/srv profile de cada PON. Roda 1x ao cadastrar a OLT (e quando admin alterar profiles). Os dados ficam salvos na tabela olt_pon_profiles do NocFlex.",
+      "descricao": "Parseia auto-auth bindings do running-config para descobrir line/srv profile de cada PON.",
       "commands":     ["show running-config"],
       "read_timeout": 30
     },
 
     "scan_unprovisioned": {
-      "descricao": "Lista ONUs descobertas mas nao autorizadas. Output vem em blocos multi-linha (nao tabular). row_pattern usa [\\s\\S]*? lazy pra atravessar quebras de linha entre os campos.",
+      "descricao": "Lista ONUs em autofind. Roda dentro do contexto interface gpon 0/{pon}.",
       "commands": ["show onu gpon autofind"],
+      "loop": {
+        "type":            "per_pon",
+        "context_command": "interface gpon 0/{pon}",
+        "exit_command":    "exit",
+        "port_count":      16
+      },
       "row_pattern": "S/P\\s*:\\s*([\\d/]+)[\\s\\S]*?Onu\\s+SN\\s*:\\s*([0-9A-Za-z]+)[\\s\\S]*?Onu\\s+autofind\\s+time\\s*:\\s*([\\d/]+\\s+[\\d:]+)",
       "row_fields": {
         "pon":       {"group": 1, "tipo": "STRING"},
@@ -33,7 +39,7 @@
     },
 
     "list_used_slots": {
-      "descricao": "Lista slots ocupados em UMA PON especifica. O backend entra no contexto da porta antes (interface gpon 0/{pon}) — sem isso o comando retorna ONUs de todas as portas.",
+      "descricao": "Lista slots ocupados em UMA PON especifica.",
       "commands": [
         "interface gpon 0/{pon}",
         "show onuinfo gpon all"
@@ -46,21 +52,13 @@
     },
 
     "provision": {
-      "descricao": "Provisiona uma ONU. Os inputs marcados com auto_from: pon_profile sao preenchidos automaticamente pelo backend a partir da tabela olt_pon_profiles (mapeada via scan_profiles). Frontend so precisa enviar pon, slot e serial.",
+      "descricao": "Provisiona uma ONU. Inputs auto_from: pon_profile vem do banco do NocFlex.",
       "inputs": [
-        {"key": "pon",          "label": "Porta PON",       "type": "number",
-         "required": true,
-         "help": "Vem da ONU descoberta (nao-provisionada)."},
-        {"key": "slot",         "label": "Slot ONU",        "type": "number",
-         "required": true, "auto_from": "next_free_slot",
-         "help": "Proximo slot livre na PON, calculado via show onuinfo."},
-        {"key": "serial",       "label": "Serial",          "type": "string",
-         "required": true,
-         "help": "Vem da ONU descoberta."},
-        {"key": "line_profile", "label": "Line profile",    "type": "number",
-         "required": true, "auto_from": "pon_profile"},
-        {"key": "srv_profile",  "label": "Service profile", "type": "number",
-         "required": true, "auto_from": "pon_profile"}
+        {"key": "pon",          "label": "Porta PON",       "type": "number", "required": true},
+        {"key": "slot",         "label": "Slot ONU",        "type": "number", "required": true, "auto_from": "next_free_slot"},
+        {"key": "serial",       "label": "Serial",          "type": "string", "required": true},
+        {"key": "line_profile", "label": "Line profile",    "type": "number", "required": true, "auto_from": "pon_profile"},
+        {"key": "srv_profile",  "label": "Service profile", "type": "number", "required": true, "auto_from": "pon_profile"}
       ],
       "commands": [
         "interface gpon 0/{pon}",
