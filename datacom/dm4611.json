@@ -1,0 +1,158 @@
+{
+  "tipo": "OLT",
+  "fabricante": "Datacom",
+  "modelo": "DM4611",
+  "snmp_version": "2c",
+  "descricao": "GPON OLT — 4x GPON (2.5Gbps), 2x GE RJ45, 2x 10GE SFP+. DmOS. Enterprise OID: 1.3.6.1.4.1.3709",
+  "sysObjectID": "1.3.6.1.4.1.3709",
+  "snmp_options": "",
+  "nota": "OIDs enterprise baseadas em templates Zabbix da comunidade (DmOS). Interface GPON usa notação 1/1/X (shelf/slot/port). Verificar com walk real quais OIDs respondem neste firmware.",
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Latência",
+      "descricao": "ICMP ping, perda de pacotes e tempo de resposta",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "ping_status", "nome": "Status Ping", "tipo": "ICMP_PING", "unidade": ""},
+        {"id": "ping_loss", "nome": "Perda de Pacotes", "tipo": "ICMP_LOSS", "unidade": "%"},
+        {"id": "ping_response", "nome": "Tempo de Resposta", "tipo": "ICMP_RESPONSE", "unidade": "ms"}
+      ]
+    },
+    {
+      "id": "sistema",
+      "label": "Informações do Sistema",
+      "descricao": "Uptime, nome, descrição. Firmware e serial via Entity MIB (1.3.6.1.2.1.47)",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {"id": "sys_uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": ""},
+        {"id": "sys_name", "nome": "Nome do Equipamento", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0", "unidade": ""},
+        {"id": "sys_descr", "nome": "Descrição", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0", "unidade": ""},
+        {
+          "id": "firmware_version",
+          "nome": "Versão Firmware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.10.1",
+          "unidade": "",
+          "nota": "Entity MIB entPhysicalSoftwareRev. Index .1 = chassis. Verificar se responde."
+        },
+        {
+          "id": "serial_number",
+          "nome": "Número de Série",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.11.1",
+          "unidade": "",
+          "nota": "Entity MIB entPhysicalSerialNum. Index .1 = chassis."
+        },
+        {
+          "id": "device_model",
+          "nome": "Modelo",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.13.1",
+          "unidade": "",
+          "nota": "Entity MIB entPhysicalModelName. Index .1 = chassis."
+        },
+        {
+          "id": "hardware_rev",
+          "nome": "Revisão Hardware",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.8.1",
+          "unidade": "",
+          "nota": "Entity MIB entPhysicalHardwareRev."
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "descricao": "Tráfego, status, erros e velocidade das portas GPON, GE e 10GE",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "usar_nome_discovery": true,
+      "itens": [
+        {"id": "if_oper_status", "nome": "{name} — Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}", "unidade": "", "value_map": {"1": "up", "2": "down", "3": "testing"}},
+        {"id": "if_admin_status", "nome": "{name} — Status Administrativo", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}", "unidade": "", "value_map": {"1": "up", "2": "down", "3": "testing"}},
+        {"id": "if_in_octets", "nome": "{name} — Tráfego Entrada (Download)", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bytes"},
+        {"id": "if_out_octets", "nome": "{name} — Tráfego Saída (Upload)", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bytes"},
+        {"id": "if_speed", "nome": "{name} — Velocidade", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}", "unidade": "Mbps"},
+        {"id": "if_in_errors", "nome": "{name} — Erros Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}", "unidade": "erros"},
+        {"id": "if_out_errors", "nome": "{name} — Erros Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}", "unidade": "erros"},
+        {"id": "if_in_discards", "nome": "{name} — Descartes Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}", "unidade": "pacotes"},
+        {"id": "if_out_discards", "nome": "{name} — Descartes Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}", "unidade": "pacotes"}
+      ]
+    },
+    {
+      "id": "alarmes",
+      "label": "Alarmes / Eventos",
+      "descricao": "Tabela de alarmes ativos (se suportado pelo firmware DmOS)",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": []
+    }
+  ],
+  "onu_table": {
+    "descricao": "Tabela de ONUs registradas — enterprise 3709 (Datacom DmOS). Base OID da comunidade Zabbix: 1.3.6.1.4.1.3709.3.6.2.1.1",
+    "base_oid": "1.3.6.1.4.1.3709.3.6.2.1.1",
+    "snmp_options": "",
+    "fields": {
+      "serial": {
+        "sub_oid": ".3",
+        "tipo": "STRING",
+        "label": "Serial",
+        "nota": "Serial number da ONU (GPON SN)"
+      },
+      "status": {
+        "sub_oid": ".7",
+        "tipo": "INT",
+        "label": "Status",
+        "nota": "Status da ONU. Verificar valores: provavelmente 1=online, 2=offline"
+      },
+      "model": {
+        "sub_oid": ".5",
+        "tipo": "STRING",
+        "label": "Modelo",
+        "nota": "Tipo/modelo da ONU"
+      },
+      "rx_power": {
+        "sub_oid": ".22",
+        "tipo": "INT",
+        "label": "RX Power",
+        "unidade": "dBm",
+        "nota": "Potência RX da ONU. Unidade e divisor precisam ser confirmados com walk real."
+      },
+      "firmware": {
+        "sub_oid": ".26",
+        "tipo": "STRING",
+        "label": "Firmware",
+        "nota": "Versão firmware da ONU. Verificar se este sub_oid é correto."
+      }
+    },
+    "status_field": "status",
+    "status_values": {
+      "online": [1],
+      "offline": [2, 0]
+    },
+    "location_field": "location",
+    "location_parser": "onu_id_math",
+    "nota": "OIDs baseadas no template Zabbix da comunidade (DmOS - ONU Interfaces por Guilherme Zamora Rodrigues). Os sub_oid .3, .5, .7, .22, .26 precisam ser confirmados com walk real. O index de cada ONU segue o padrão ifIndex do DmOS."
+  },
+  "onu_optical_power_snmp": {
+    "descricao": "Diagnóstico óptico das ONUs via SNMP (enterprise 3709 — Datacom DmOS)",
+    "base_oid": "1.3.6.1.4.1.3709.3.6.2.1.1",
+    "snmp_options": "",
+    "fields": {
+      "rx_power": {
+        "sub_oid": ".22",
+        "tipo": "INT",
+        "label": "RX",
+        "unidade": "dBm",
+        "nota": "Potência RX. Divisor a confirmar com walk real (pode ser ÷100 ou ÷10)"
+      }
+    },
+    "nota": "OID .22 confirmada no template Zabbix como 'Power RX'. Verificar se existe TX power em outro sub_oid. Divisor de conversão precisa ser calibrado com leitura real vs CLI."
+  }
+}
