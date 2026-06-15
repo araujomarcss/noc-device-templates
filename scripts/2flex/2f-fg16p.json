@@ -69,7 +69,7 @@
     },
 
     "unprovision": {
-      "descricao": "Remove uma ONU ja cadastrada. Apos o delete, se ela ainda estiver conectada, volta pro autofind.",
+      "descricao": "Remove uma ONU ja cadastrada.",
       "inputs": [
         {"key": "pon",  "label": "Porta PON", "type": "number", "required": true},
         {"key": "slot", "label": "Slot ONU",  "type": "number", "required": true}
