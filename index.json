@@ -17,6 +17,13 @@
       "descricao": "GPON OLT — 16x GPON, 4x GE, 4x 10GE"
     },
     {
+      "tipo": "OLT",
+      "fabricante": "Datacom",
+      "modelo": "DM4611",
+      "file": "datacom/dm4611.json",
+      "descricao": "GPON OLT — 4x GPON, 2x GE, 2x 10GE. DmOS."
+    },
+    {
       "tipo": "Router",
       "fabricante": "Mikrotik",
       "modelo": "CCR1016-12G",
