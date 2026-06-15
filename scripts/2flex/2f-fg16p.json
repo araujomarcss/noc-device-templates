@@ -2,7 +2,7 @@
   "tipo":        "OLT",
   "fabricante":  "2Flex",
   "modelo":      "2F-FG16P",
-  "descricao":   "Script de provisionamento de ONUs via Telnet — 2Flex 2F-FG16P (16 PONs).",
+  "descricao":   "Script de provisionamento + correlação de ONUs via Telnet — 2Flex 2F-FG16P (16 PONs).",
   "protocol":    "telnet",
 
   "auth": {
@@ -80,6 +80,28 @@
       ],
       "success_pattern": "^(?!.*[Ee]rror)(?!.*[Ff]ailed)(?!.*[Ii]nvalid).*$",
       "read_timeout": 10
+    },
+
+    "mac_table": {
+      "descricao": "Lista MACs aprendidos atras de cada ONU (CPE do cliente). Roda no contexto da PON. Usado pela correlacao automatica ONU->MAC->login PPPoE->cliente.",
+      "commands": ["show mac-addr pon vlan all"],
+      "loop": {
+        "type":            "per_pon",
+        "context_command": "interface gpon 0/{pon}",
+        "exit_command":    "exit",
+        "port_count":      16
+      },
+      "row_pattern": "^\\s*\\d+\\s+([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})\\s+(\\d+)/\\S+\\s+(\\w+)\\s+ONU\\s+(\\d+)/(\\d+)\\s*:(\\d+)\\s+(\\d+)",
+      "row_fields": {
+        "mac_dotted": {"group": 1, "tipo": "STRING"},
+        "vlan":       {"group": 2, "tipo": "INT"},
+        "state":      {"group": 3, "tipo": "STRING"},
+        "slot":       {"group": 4, "tipo": "INT"},
+        "pon":        {"group": 5, "tipo": "INT"},
+        "onu":        {"group": 6, "tipo": "INT"},
+        "gem":        {"group": 7, "tipo": "INT"}
+      },
+      "read_timeout": 15
     }
 
   }
