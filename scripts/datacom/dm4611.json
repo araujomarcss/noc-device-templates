@@ -6,11 +6,13 @@
   "protocol": "telnet",
   "nota": "DmOS é CLI estilo Juniper: login direto, SEM enable/configure terminal. Notacao de interface gpon-1/1/X (shelf/slot/port). PON vai de 1 a 4. O comando recebe a PON como argumento, NAO precisa entrar no contexto da interface (por isso context_command e exit_command vazios). O serial da ONU so existe via CLI (nao ha OID SNMP). A correlacao com a tabela SNMP e feita pelo location no formato gpon-1/1/X-onu-N.",
   "auth": {
-    "login_prompt": "[Ll]ogin:",
-    "password_prompt": "[Pp]assword:",
+    "login_prompt": "login:",
+    "password_prompt": "Password:",
     "ready_prompt": "[\\w\\-]+#\\s*$",
-    "init_commands": [],
-    "nota_prompt": "DmOS usa prompt Hostname# (ex Costa_Verde#). Se o login cair em modo operacional com >, ajustar para [\\w\\-]+[#>]\\s*$."
+    "init_commands": [
+      "screen-length 0 temporary"
+    ],
+    "nota_prompt": "init_commands desabilita paginacao (--More--). Se 'screen-length 0 temporary' nao funcionar nesta versao DmOS, alternativas: 'no paging', 'terminal length 0', 'set cli screen-length 0'. Se --More-- persistir, ajustar cli.py pra detectar --More-- e enviar espaco."
   },
   "actions": {
     "list_onus_serial": {
@@ -25,7 +27,7 @@
         "port_count": 4,
         "pon_start": 1
       },
-      "row_pattern": "^\\s*(\\d+)\\s+([0-9A-Za-z]{8,16})\\s+\\w+",
+      "row_pattern": "^[\\d/]+\\s+(\\d+)\\s+([A-Z0-9]+)\\s+(\\w+)",
       "row_fields": {
         "onu_id": {
           "group": 1,
@@ -34,11 +36,15 @@
         "serial": {
           "group": 2,
           "tipo": "STRING"
+        },
+        "oper_state": {
+          "group": 3,
+          "tipo": "STRING"
         }
       },
       "location_template": "gpon-1/1/{pon}-onu-{onu_id}",
       "read_timeout": 25,
-      "nota": "row_pattern PROVISORIO assumindo formato 'onu_id  SERIAL  Status'. Ajustar com a saida real de 'show interface gpon 1/1/1 onu' (o NocFlex faz dump do raw_tail no log ao clicar Coletar Seriais). A coluna serial pode vir como Serial Number/SN/Onu SN."
+      "nota": "row_pattern CONFIRMADO com saida real DmOS. Formato: 'Itf  ONU_ID  Serial  Oper_State'. Ex: '1/1/4  0  TK016A036523  Up'. O cabecalho (Itf ONU ID...) e ignorado pois nao comeca com digito/barra. location montado como gpon-1/1/{pon}-onu-{onu_id}."
     },
     "onu_detail": {
       "descricao": "Detalhes completos de uma ONU especifica (serial, firmware, modelo, potencia, distancia).",
@@ -73,7 +79,23 @@
         "port_count": 4,
         "pon_start": 1
       },
-      "read_timeout": 25
+      "read_timeout": 25,
+      "row_pattern": "^[\\d/]+\\s+(\\d+)\\s+([A-Z0-9]+)\\s+(\\w+)",
+      "row_fields": {
+        "onu_id": {
+          "group": 1,
+          "tipo": "INT"
+        },
+        "serial": {
+          "group": 2,
+          "tipo": "STRING"
+        },
+        "oper_state": {
+          "group": 3,
+          "tipo": "STRING"
+        }
+      },
+      "location_template": "gpon-1/1/{pon}-onu-{onu_id}"
     },
     "scan_unprovisioned": {
       "descricao": "Lista ONUs detectadas mas nao provisionadas (autofind) em cada PON.",
