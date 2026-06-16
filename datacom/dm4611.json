@@ -7,7 +7,6 @@
   "sysObjectID": "1.3.6.1.4.1.3709",
   "snmp_options": "",
   "nota_geral": "OIDs baseadas na MIB Reference oficial DmOS 9.4.0 (204.4381.02). As tabelas DmOS são indexadas — os sufixos de índice (.X no final) precisam ser confirmados com walk real, pois variam conforme o firmware enumera chassis/slot. Use os comandos de validação no fim do arquivo.",
-
   "capabilities": [
     {
       "id": "ping",
@@ -15,9 +14,24 @@
       "categoria": "Básico",
       "requer_discovery": false,
       "itens": [
-        {"id": "ping_status", "nome": "Status Ping", "tipo": "ICMP_PING", "unidade": ""},
-        {"id": "ping_loss", "nome": "Perda de Pacotes", "tipo": "ICMP_LOSS", "unidade": "%"},
-        {"id": "ping_response", "nome": "Tempo de Resposta", "tipo": "ICMP_RESPONSE", "unidade": "ms"}
+        {
+          "id": "ping_status",
+          "nome": "Status Ping",
+          "tipo": "ICMP_PING",
+          "unidade": ""
+        },
+        {
+          "id": "ping_loss",
+          "nome": "Perda de Pacotes",
+          "tipo": "ICMP_LOSS",
+          "unidade": "%"
+        },
+        {
+          "id": "ping_response",
+          "nome": "Tempo de Resposta",
+          "tipo": "ICMP_RESPONSE",
+          "unidade": "ms"
+        }
       ]
     },
     {
@@ -25,66 +39,76 @@
       "label": "Informações do Sistema",
       "categoria": "Sistema",
       "requer_discovery": false,
-      "nota": "Uptime/Nome/Descrição via MIB-II (confirmados funcionando). Serial/Modelo/MAC/Firmware via DMOS-INVENTORY-MIB chassisTable — SUBSTITUEM as OIDs Entity MIB que falharam.",
+      "nota": "Serial/Modelo/Firmware via Entity MIB (1.3.6.1.2.1.47) — CONFIRMADOS por walk real. O índice do chassis/placa é .3 (não .1). Não usar DMOS-INVENTORY-MIB enterprise (não responde nesta firmware 8.2.4).",
       "itens": [
-        {"id": "sys_uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": ""},
-        {"id": "sys_name", "nome": "Nome do Equipamento", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0", "unidade": ""},
-        {"id": "sys_descr", "nome": "Descrição", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0", "unidade": ""},
+        {
+          "id": "sys_uptime",
+          "nome": "Uptime",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": ""
+        },
+        {
+          "id": "sys_name",
+          "nome": "Nome do Equipamento",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.5.0",
+          "unidade": ""
+        },
+        {
+          "id": "sys_descr",
+          "nome": "Descrição",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.1.0",
+          "unidade": ""
+        },
         {
           "id": "product_model",
           "nome": "Modelo",
           "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.6.1",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.2.1",
           "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisProductModel. Índice final .1 = primeiro chassis. Confirmar com walk."
+          "nota": "Entity MIB entPhysicalDescr índice .1 = 'DM4611'. CONFIRMADO pelo walk."
+        },
+        {
+          "id": "part_number",
+          "nome": "Part Number",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.13.3",
+          "unidade": "",
+          "nota": "Entity MIB entPhysicalModelName índice .3 (placa) = '800.5283.51'. CONFIRMADO."
         },
         {
           "id": "serial_number",
           "nome": "Número de Série",
           "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.4.1",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.11.3",
           "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisSerialNumber. RESOLVE serial que vinha como valor de porta."
+          "nota": "Entity MIB entPhysicalSerialNum índice .3 (placa) = '5963471'. CONFIRMADO pelo walk. O índice é .3 (a placa), não .1."
         },
         {
           "id": "firmware_revision",
           "nome": "Versão Firmware",
           "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.17.1",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.9.3",
           "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisFirmwareRevision. RESOLVE firmware que vinha como timeticks."
+          "nota": "Entity MIB entPhysicalSoftwareRev índice .3 = '8.2.4-003-2-ge1a0e29dad'. CONFIRMADO."
         },
         {
           "id": "vendor",
           "nome": "Fabricante",
           "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.5.1",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.12.1",
           "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisVendor. Deve retornar 'DATACOM'."
+          "nota": "Entity MIB entPhysicalMfgName = 'DATACOM'. CONFIRMADO."
         },
         {
-          "id": "mac_address",
-          "nome": "MAC Address",
+          "id": "hardware_desc",
+          "nome": "Descrição Hardware",
           "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.11.1",
+          "oid": "1.3.6.1.2.1.47.1.1.1.1.2.3",
           "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisSystemMacAddress. RESOLVE No Such Object."
-        },
-        {
-          "id": "hardware_version",
-          "nome": "Versão Hardware",
-          "tipo": "SNMP_STRING",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.9.1",
-          "unidade": "",
-          "nota": "DMOS-INVENTORY-MIB chassisHardwareVersion."
-        },
-        {
-          "id": "operation_temp",
-          "nome": "Temperatura de Operação",
-          "tipo": "SNMP_INT",
-          "oid": "1.3.6.1.4.1.3709.3.7.1.1.1.10.1",
-          "unidade": "°C",
-          "nota": "DMOS-INVENTORY-MIB chassisOperationTemperature."
+          "nota": "Entity MIB índice .3 = '4GPON+2GT+2XS'. CONFIRMADO."
         }
       ]
     },
@@ -98,27 +122,73 @@
       "usar_nome_discovery": true,
       "nota": "Interfaces uplink GE/10GE via MIB-II padrão (confirmado funcionando).",
       "itens": [
-        {"id": "if_oper_status", "nome": "{name} — Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}", "unidade": "", "value_map": {"1": "up", "2": "down", "3": "testing"}},
-        {"id": "if_admin_status", "nome": "{name} — Status Administrativo", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}", "unidade": "", "value_map": {"1": "up", "2": "down"}},
-        {"id": "if_in_octets", "nome": "{name} — Download", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bytes"},
-        {"id": "if_out_octets", "nome": "{name} — Upload", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bytes"},
-        {"id": "if_in_errors", "nome": "{name} — Erros Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}", "unidade": "erros"},
-        {"id": "if_out_errors", "nome": "{name} — Erros Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}", "unidade": "erros"},
-        {"id": "if_in_discards", "nome": "{name} — Descartes Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}", "unidade": "pacotes"},
-        {"id": "if_out_discards", "nome": "{name} — Descartes Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}", "unidade": "pacotes"}
-      ]
-    },
-    {
-      "id": "onu_counters",
-      "label": "Contadores de ONU por PON",
-      "categoria": "GPON",
-      "requer_discovery": false,
-      "nota": "DMOS-ONU-COUNTING-MIB — contadores online/offline POR PON, prontos! Resolve a limitação de saber online/offline. Globais + por porta.",
-      "itens": [
-        {"id": "onu_global_total", "nome": "Total de ONUs (OLT)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.5.1.0", "unidade": "ONUs", "nota": "ponIfGlobalTotalOnus. Sufixo .1.0 a confirmar."},
-        {"id": "onu_global_up", "nome": "ONUs Online (OLT)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.5.3.0", "unidade": "ONUs", "nota": "ponIfGlobalUpOnus."},
-        {"id": "onu_global_down", "nome": "ONUs Offline (OLT)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.5.4.0", "unidade": "ONUs", "nota": "ponIfGlobalDownOnus."},
-        {"id": "onu_global_nonprov", "nome": "ONUs Não Provisionadas (OLT)", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.5.2.0", "unidade": "ONUs", "nota": "ponIfGlobalNonProvisionedOnus."}
+        {
+          "id": "if_oper_status",
+          "nome": "{name} — Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down",
+            "3": "testing"
+          }
+        },
+        {
+          "id": "if_admin_status",
+          "nome": "{name} — Status Administrativo",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}",
+          "unidade": "",
+          "value_map": {
+            "1": "up",
+            "2": "down"
+          }
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "{name} — Download",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bytes"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "{name} — Upload",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bytes"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "{name} — Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "{name} — Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros"
+        },
+        {
+          "id": "if_in_discards",
+          "nome": "{name} — Descartes Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
+          "unidade": "pacotes"
+        },
+        {
+          "id": "if_out_discards",
+          "nome": "{name} — Descartes Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
+          "unidade": "pacotes"
+        }
       ]
     },
     {
@@ -126,129 +196,283 @@
       "label": "Hardware (Temp / Fan / PSU)",
       "categoria": "Sistema",
       "requer_discovery": false,
-      "nota": "DMOS-HW-MONITOR-MIB. Tabelas indexadas — sufixos a confirmar com walk.",
+      "nota": "Temperatura CPU via 3709.3.6.6.1.3.1. CONFIRMADO. Fan/PSU presentes mas índices complexos (string-encoded).",
       "itens": [
-        {"id": "temp_current", "nome": "Temperatura Sensor", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.6.1.3.1.6.1", "unidade": "°C", "nota": "temperatureSensorCurrentTemperature (sub .6 da temperatureSensorTable)."},
-        {"id": "temp_status", "nome": "Status Temperatura", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.6.1.3.1.8.1", "unidade": "", "value_map": {"1": "ok", "2": "high", "3": "low", "4": "critical"}, "nota": "temperatureSensorTemperatureStatus."},
-        {"id": "fan_speed", "nome": "Velocidade FAN", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.6.1.4.1.3.1", "unidade": "RPM", "nota": "fanSpeed (sub .3 da fanTable)."},
-        {"id": "fan_status", "nome": "Status FAN", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.6.1.4.1.5.1", "unidade": "", "value_map": {"1": "ok", "2": "fail"}, "nota": "fanSpeedStatus."},
-        {"id": "psu_status", "nome": "Status PSU", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.6.1.5.1.2.1", "unidade": "", "value_map": {"1": "ok", "2": "powerInputFailure", "3": "fuseFailure", "4": "error"}, "nota": "psuStatus (sub .2 da psuTable)."}
+        {
+          "id": "cpu_temp",
+          "nome": "Temperatura CPU",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.6.1.3.1.6.1.1.49.7.83.69.78.83.79.82",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "nota": "510→51.0°C. Index string-encoded (SENSOR). CONFIRMADO."
+        }
       ]
     },
     {
-      "id": "uplink_optical",
-      "label": "Óptica dos Uplinks (SFP+)",
+      "id": "optica_pon",
+      "label": "Óptica das Portas PON",
       "categoria": "Rede",
       "requer_discovery": false,
-      "nota": "DMOS-TRANSCEIVER-MIB — diagnóstico óptico dos transceivers de uplink (10GE).",
+      "nota": "Diagnóstico óptico das 4 portas GPON via 3709.3.6.8.2.1.1. Index = ifIndex da gpon + .1. CONFIRMADO por walk.",
       "itens": [
-        {"id": "transceiver_temp", "nome": "Transceiver — Temperatura", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.7.1.1.1.1.1", "unidade": "°C", "nota": "transceiverTable.temperature (sub .1)."},
-        {"id": "transceiver_voltage", "nome": "Transceiver — Voltage", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.7.1.1.1.2.1", "unidade": "V", "nota": "transceiverTable.voltage (sub .2)."},
-        {"id": "lane_rx", "nome": "Transceiver — RX Power", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.7.1.2.1.2.1", "unidade": "dBm", "nota": "transceiverLaneTable.laneRxPower (sub .2)."},
-        {"id": "lane_tx", "nome": "Transceiver — TX Power", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.3709.3.6.7.1.2.1.3.1", "unidade": "dBm", "nota": "transceiverLaneTable.laneTxPower (sub .3)."}
+        {
+          "id": "pon1_rx",
+          "nome": "gpon-1/1/1 — RX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.2.101744641.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100,
+          "nota": "RX óptico PON1. -2075→-20.75dBm. CONFIRMADO."
+        },
+        {
+          "id": "pon1_temp",
+          "nome": "gpon-1/1/1 — Temp",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.3.101744641.1",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10,
+          "nota": "521→52.1°C"
+        },
+        {
+          "id": "pon1_tx",
+          "nome": "gpon-1/1/1 — TX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.4.101744641.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100,
+          "nota": "2508→25.08dBm"
+        },
+        {
+          "id": "pon2_rx",
+          "nome": "gpon-1/1/2 — RX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.2.101744642.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon2_temp",
+          "nome": "gpon-1/1/2 — Temp",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.3.101744642.1",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10
+        },
+        {
+          "id": "pon2_tx",
+          "nome": "gpon-1/1/2 — TX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.4.101744642.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon3_rx",
+          "nome": "gpon-1/1/3 — RX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.2.101744643.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon3_temp",
+          "nome": "gpon-1/1/3 — Temp",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.3.101744643.1",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10
+        },
+        {
+          "id": "pon3_tx",
+          "nome": "gpon-1/1/3 — TX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.4.101744643.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon4_rx",
+          "nome": "gpon-1/1/4 — RX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.2.101744644.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        },
+        {
+          "id": "pon4_temp",
+          "nome": "gpon-1/1/4 — Temp",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.3.101744644.1",
+          "unidade": "°C",
+          "conversao": "dividir",
+          "divisor": 10
+        },
+        {
+          "id": "pon4_tx",
+          "nome": "gpon-1/1/4 — TX",
+          "tipo": "SNMP_INT",
+          "oid": "1.3.6.1.4.1.3709.3.6.8.2.1.1.4.101744644.1",
+          "unidade": "dBm",
+          "conversao": "dividir",
+          "divisor": 100
+        }
       ]
     }
   ],
-
   "onu_table": {
-    "descricao": "Tabela de ONUs — GPON-ONU-IF-MIB (onuIfTable). Base enterprise 3709. Caminho melhor que o template Zabbix antigo.",
+    "descricao": "Tabela de ONUs — enterprise 3709.3.6.2.1.1. TODOS os sub-OIDs CONFIRMADOS por walk real (674 ONUs).",
     "base_oid": "1.3.6.1.4.1.3709.3.6.2.1.1",
     "snmp_options": "",
-    "nota": "GPON-ONU-IF-MIB onuIfTable. Sub-OIDs confirmados pela MIB Reference: .2=descr, .4=name, .6=operStatus, .20=TX, .21=RX, .22=alias, .25=uptime. O index de cada ONU segue o ifIndex do DmOS. Para serial/firmware da ONU, pode ser necessário cruzar com outra tabela GPON (a onuIfTable não tem serial diretamente — confirmar se .2/descr ou .4/name trazem o SN).",
+    "nota": "OIDs confirmados no walk de 16/06. RX/TX são STRING já em dBm (ex '-22.84'). Status real é .7 (1=online, 2=offline). Location no .3 formato gpon-1/1/X-onu-N. Nome do cliente no .5.",
     "fields": {
-      "descr": {
-        "sub_oid": ".2",
+      "location": {
+        "sub_oid": ".3",
         "tipo": "STRING",
-        "label": "Descrição",
-        "nota": "onuifDescr — geralmente formato gpon-1/1/X-onu-N"
+        "label": "Localização",
+        "nota": "Formato gpon-1/1/X-onu-N. Presente em todas as 674 ONUs. CONFIRMADO."
       },
       "name": {
-        "sub_oid": ".4",
+        "sub_oid": ".5",
         "tipo": "STRING",
-        "label": "Nome/Serial",
-        "nota": "onuifName — pode conter o serial ou nome configurado"
+        "label": "Nome/Descrição",
+        "nota": "Nome configurado da ONU (ex 'ES_Mario_Cesar_Martins_Ferreira', 'BL07ao202'). É o nome do cliente/descrição. CONFIRMADO."
       },
-      "oper_status": {
-        "sub_oid": ".6",
+      "status": {
+        "sub_oid": ".7",
         "tipo": "INT",
         "label": "Status",
-        "nota": "onuifOperStatus — 1=up/online, 2=down/offline (confirmar)"
-      },
-      "rx_power": {
-        "sub_oid": ".21",
-        "tipo": "FLOAT",
-        "label": "RX",
-        "unidade": "dBm",
-        "nota": "onuIfOnuPowerRx. CONFIRMADO pelo template oficial Datacom: FLOAT em dBm direto, SEM divisor. Triggers oficiais usam RX<-27 e RX>-8."
+        "nota": "1=online, 2=offline. Presente em todas as 674 ONUs (465 online, 209 offline no walk). CONFIRMADO. NÃO usar .6 (parcial)."
       },
       "tx_power": {
-        "sub_oid": ".20",
+        "sub_oid": ".21",
         "tipo": "FLOAT",
         "label": "TX",
         "unidade": "dBm",
-        "nota": "onuIfOnuPowerTx. CONFIRMADO: FLOAT em dBm direto, SEM divisor. Triggers oficiais usam TX>5 e TX<-0.5."
+        "nota": "TX power já em dBm como STRING (ex '2.43'). Sem divisor. CONFIRMADO. Presente só em ONUs online (222)."
       },
-      "alias": {
+      "rx_power": {
         "sub_oid": ".22",
-        "tipo": "STRING",
-        "label": "Alias",
-        "nota": "onuIfAlias — nome amigável configurado"
+        "tipo": "FLOAT",
+        "label": "RX",
+        "unidade": "dBm",
+        "nota": "RX power já em dBm como STRING (ex '-22.84'). Sem divisor. CONFIRMADO."
       },
       "uptime": {
-        "sub_oid": ".25",
+        "sub_oid": ".26",
         "tipo": "TIMETICKS",
         "label": "Uptime ONU",
-        "conversao": "multiplicar",
-        "multiplicador": 0.01,
-        "nota": "onuSysUpTime. CONFIRMADO pelo template oficial: multiplicar por 0.01 (÷100) pra converter em segundos. Resolve os valores estranhos (242187, 1022000) do print."
+        "conversao": "dividir",
+        "divisor": 100,
+        "nota": "onuSysUpTime em timeticks. Dividir por 100 = segundos. CONFIRMADO."
       }
     },
-    "status_field": "oper_status",
+    "status_field": "status",
     "status_values": {
-      "online": [1],
-      "offline": [2]
+      "online": [
+        1
+      ],
+      "offline": [
+        2
+      ]
     },
+    "location_field": "location",
+    "location_parser": "datacom_gpon_path",
+    "nota_location": "Location vem como gpon-1/1/X-onu-N. Parser extrai PON=X e ONU=N. Ex: gpon-1/1/2-onu-1 → PON 1/1/2, ONU 1.",
     "rx_thresholds": {
       "bom": "entre -8 e -25 dBm",
       "atencao": "entre -25 e -27 dBm",
-      "critico": "abaixo de -27 dBm",
-      "nota": "Baseado nos triggers oficiais da Datacom: alarme quando RX < -27 ou RX > -8"
-    },
-    "location_field": "descr",
-    "location_parser": "datacom_gpon_path",
-    "nota_location": "A localização vem do onuifDescr no formato gpon-1/1/X-onu-N. Parser deve extrair PON (X) e ONU (N)."
+      "critico": "abaixo de -27 dBm"
+    }
   },
-
   "onu_optical_power_snmp": {
-    "descricao": "Potência óptica das ONUs — GPON-ONU-IF-MIB. RX confirmado no print.",
+    "descricao": "Potência óptica das ONUs — CONFIRMADO por walk. RX/TX são STRING em dBm.",
     "base_oid": "1.3.6.1.4.1.3709.3.6.2.1.1",
     "snmp_options": "",
     "fields": {
-      "rx_power": {"sub_oid": ".21", "tipo": "FLOAT", "label": "RX", "unidade": "dBm", "nota": "onuIfOnuPowerRx — FLOAT dBm direto, sem divisor (confirmado template oficial)"},
-      "tx_power": {"sub_oid": ".20", "tipo": "FLOAT", "label": "TX", "unidade": "dBm", "nota": "onuIfOnuPowerTx — FLOAT dBm direto"}
+      "tx_power": {
+        "sub_oid": ".21",
+        "tipo": "FLOAT",
+        "label": "TX",
+        "unidade": "dBm",
+        "nota": "STRING dBm direto, ex '2.43'"
+      },
+      "rx_power": {
+        "sub_oid": ".22",
+        "tipo": "FLOAT",
+        "label": "RX",
+        "unidade": "dBm",
+        "nota": "STRING dBm direto, ex '-22.84'"
+      }
     },
-    "nota": "Confirmado pelo template oficial Datacom: RX/TX são FLOAT em dBm direto, SEM conversão. Thresholds de referência: RX bom entre -8 e -27 dBm, TX entre -0.5 e 5 dBm."
+    "nota": "RX=.22, TX=.21. Ambos STRING já em dBm, sem conversão. Só presentes em ONUs online."
   },
-
   "traps": {
     "descricao": "DATACOM-GPON-TRAPS-MIB + DATACOM-GENERIC-DEVICE-TRAPS-MIB — para classificação de quedas (Dying Gasp, LOS, etc). Base 1.3.6.1.4.1.3709.",
     "nota": "Configurar a OLT pra enviar traps pro NOC Flex. Estes OIDs identificam o tipo de evento recebido.",
     "gpon_alarms": {
-      "gPonLOSiAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.4)", "classificacao": "FALHA_OPTICA", "nota": "Loss of Signal — perda óptica/rompimento"},
-      "gPonLOFiAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.5)", "classificacao": "FALHA_OPTICA", "nota": "Loss of Frame"},
-      "gPonDFiAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.13)", "classificacao": "FALHA_OPTICA", "nota": "Dying gasp Failure indication"},
-      "gPonDGiAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.15)", "classificacao": "FALTA_ENERGIA_CLIENTE", "nota": "DYING GASP — falta de energia no cliente"},
-      "gPonOnuPowerFailureAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.20)", "classificacao": "FALTA_ENERGIA_CLIENTE", "nota": "ONU power failure"},
-      "gPonOnuBatteryLowAlarm": {"oid": "1.3.6.1.4.1.3709.2.4 (.23)", "classificacao": "FALTA_ENERGIA_CLIENTE", "nota": "Bateria da ONU baixa"},
-      "gPonOnuDiscoveredEvent": {"oid": "1.3.6.1.4.1.3709.2.4 (.27)", "classificacao": "ONU_DESCOBERTA", "nota": "ONU voltou/descoberta — útil pra marcar retorno"}
+      "gPonLOSiAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.4)",
+        "classificacao": "FALHA_OPTICA",
+        "nota": "Loss of Signal — perda óptica/rompimento"
+      },
+      "gPonLOFiAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.5)",
+        "classificacao": "FALHA_OPTICA",
+        "nota": "Loss of Frame"
+      },
+      "gPonDFiAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.13)",
+        "classificacao": "FALHA_OPTICA",
+        "nota": "Dying gasp Failure indication"
+      },
+      "gPonDGiAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.15)",
+        "classificacao": "FALTA_ENERGIA_CLIENTE",
+        "nota": "DYING GASP — falta de energia no cliente"
+      },
+      "gPonOnuPowerFailureAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.20)",
+        "classificacao": "FALTA_ENERGIA_CLIENTE",
+        "nota": "ONU power failure"
+      },
+      "gPonOnuBatteryLowAlarm": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.23)",
+        "classificacao": "FALTA_ENERGIA_CLIENTE",
+        "nota": "Bateria da ONU baixa"
+      },
+      "gPonOnuDiscoveredEvent": {
+        "oid": "1.3.6.1.4.1.3709.2.4 (.27)",
+        "classificacao": "ONU_DESCOBERTA",
+        "nota": "ONU voltou/descoberta — útil pra marcar retorno"
+      }
     },
     "device_alarms": {
-      "mtGenDvInfFanFailTrap": {"oid": "1.3.6.1.4.1.3709.2.40.611", "nota": "Fan falhou"},
-      "mtGenDvInfPowerStatusTrap": {"oid": "1.3.6.1.4.1.3709.2.40.901", "nota": "Mudança status de energia da OLT"},
-      "mtGenDvInfTempRangeTrap": {"oid": "1.3.6.1.4.1.3709.2.40.601", "nota": "Temperatura fora de faixa"}
+      "mtGenDvInfFanFailTrap": {
+        "oid": "1.3.6.1.4.1.3709.2.40.611",
+        "nota": "Fan falhou"
+      },
+      "mtGenDvInfPowerStatusTrap": {
+        "oid": "1.3.6.1.4.1.3709.2.40.901",
+        "nota": "Mudança status de energia da OLT"
+      },
+      "mtGenDvInfTempRangeTrap": {
+        "oid": "1.3.6.1.4.1.3709.2.40.601",
+        "nota": "Temperatura fora de faixa"
+      }
     }
   },
-
   "comandos_validacao": {
     "nota": "Rodar quando tiver acesso pra confirmar os índices das tabelas e ajustar os sufixos .X.",
     "inventory": "snmpwalk -v2c -c COMMUNITY IP 1.3.6.1.4.1.3709.3.7.1.1.1",
