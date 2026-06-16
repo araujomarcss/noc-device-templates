@@ -4,21 +4,20 @@
   "modelo": "DM4611",
   "descricao": "Script CLI (Telnet/SSH) para OLT Datacom DM4611 (DmOS). 4 PONs. Coleta serial das ONUs e demais dados que o SNMP não expõe. Mesmo motor CLI usado nas OLTs 2Flex.",
   "protocol": "telnet",
-
   "nota": "DmOS é CLI estilo Juniper: login direto, SEM enable/configure terminal. Notacao de interface gpon-1/1/X (shelf/slot/port). PON vai de 1 a 4. O comando recebe a PON como argumento, NAO precisa entrar no contexto da interface (por isso context_command e exit_command vazios). O serial da ONU so existe via CLI (nao ha OID SNMP). A correlacao com a tabela SNMP e feita pelo location no formato gpon-1/1/X-onu-N.",
-
   "auth": {
     "login_prompt": "[Ll]ogin:",
     "password_prompt": "[Pp]assword:",
-    "ready_prompt": "[#>]\\s*$",
-    "init_commands": []
+    "ready_prompt": "[\\w\\-]+#\\s*$",
+    "init_commands": [],
+    "nota_prompt": "DmOS usa prompt Hostname# (ex Costa_Verde#). Se o login cair em modo operacional com >, ajustar para [\\w\\-]+[#>]\\s*$."
   },
-
   "actions": {
-
     "list_onus_serial": {
       "descricao": "Lista as ONUs de cada PON com serial (GPON SN). Usado para preencher a coluna serial que o SNMP nao expoe. Cruza com a tabela SNMP via location gpon-1/1/{pon}-onu-{onu_id}.",
-      "commands": ["show interface gpon 1/1/{pon} onu"],
+      "commands": [
+        "show interface gpon 1/1/{pon} onu"
+      ],
       "loop": {
         "type": "per_pon",
         "context_command": "",
@@ -26,29 +25,47 @@
         "port_count": 4,
         "pon_start": 1
       },
-      "row_pattern": "AJUSTAR_COM_SAIDA_REAL",
+      "row_pattern": "^\\s*(\\d+)\\s+([0-9A-Za-z]{8,16})\\s+\\w+",
       "row_fields": {
-        "onu_id": {"group": 1, "tipo": "INT"},
-        "serial": {"group": 2, "tipo": "STRING"}
+        "onu_id": {
+          "group": 1,
+          "tipo": "INT"
+        },
+        "serial": {
+          "group": 2,
+          "tipo": "STRING"
+        }
       },
       "location_template": "gpon-1/1/{pon}-onu-{onu_id}",
       "read_timeout": 25,
-      "nota": "ATENCAO: row_pattern e provisorio. O formato exato da saida do DmOS varia por versao. Rodar o comando uma vez, capturar a saida bruta e ajustar o regex. A coluna de serial pode aparecer como 'Serial Number', 'SN' ou 'Onu SN'. O location_template monta a chave de cruzamento com o SNMP."
+      "nota": "row_pattern PROVISORIO assumindo formato 'onu_id  SERIAL  Status'. Ajustar com a saida real de 'show interface gpon 1/1/1 onu' (o NocFlex faz dump do raw_tail no log ao clicar Coletar Seriais). A coluna serial pode vir como Serial Number/SN/Onu SN."
     },
-
     "onu_detail": {
       "descricao": "Detalhes completos de uma ONU especifica (serial, firmware, modelo, potencia, distancia).",
       "inputs": [
-        {"key": "pon", "label": "Porta PON (1-4)", "type": "number", "required": true},
-        {"key": "onu_id", "label": "ONU ID", "type": "number", "required": true}
+        {
+          "key": "pon",
+          "label": "Porta PON (1-4)",
+          "type": "number",
+          "required": true
+        },
+        {
+          "key": "onu_id",
+          "label": "ONU ID",
+          "type": "number",
+          "required": true
+        }
       ],
-      "commands": ["show interface gpon 1/1/{pon} onu {onu_id}"],
+      "commands": [
+        "show interface gpon 1/1/{pon} onu {onu_id}"
+      ],
       "read_timeout": 15
     },
-
     "list_onus": {
       "descricao": "Lista resumida das ONUs de cada PON (serial + status + nome).",
-      "commands": ["show interface gpon 1/1/{pon} onu"],
+      "commands": [
+        "show interface gpon 1/1/{pon} onu"
+      ],
       "loop": {
         "type": "per_pon",
         "context_command": "",
@@ -58,10 +75,11 @@
       },
       "read_timeout": 25
     },
-
     "scan_unprovisioned": {
       "descricao": "Lista ONUs detectadas mas nao provisionadas (autofind) em cada PON.",
-      "commands": ["show interface gpon 1/1/{pon} onu unconfigured"],
+      "commands": [
+        "show interface gpon 1/1/{pon} onu unconfigured"
+      ],
       "loop": {
         "type": "per_pon",
         "context_command": "",
@@ -71,19 +89,26 @@
       },
       "read_timeout": 20
     },
-
     "search_onu_by_serial": {
       "descricao": "Busca uma ONU pelo serial em todas as PONs.",
       "inputs": [
-        {"key": "serial", "label": "Serial da ONU", "type": "string", "required": true}
+        {
+          "key": "serial",
+          "label": "Serial da ONU",
+          "type": "string",
+          "required": true
+        }
       ],
-      "commands": ["show interface gpon onu | include {serial}"],
+      "commands": [
+        "show interface gpon onu | include {serial}"
+      ],
       "read_timeout": 20
     },
-
     "running_config": {
       "descricao": "Exibe a config de provisionamento das ONUs de cada PON (serial + profiles).",
-      "commands": ["show running-config interface gpon 1/1/{pon}"],
+      "commands": [
+        "show running-config interface gpon 1/1/{pon}"
+      ],
       "loop": {
         "type": "per_pon",
         "context_command": "",
