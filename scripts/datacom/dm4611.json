@@ -2,147 +2,94 @@
   "tipo": "OLT",
   "fabricante": "Datacom",
   "modelo": "DM4611",
-  "descricao": "Script de gerenciamento de ONUs via CLI — Datacom DM4611 (DmOS). 4 PONs, notação 1/1/X.",
-  "protocol": "ssh",
+  "descricao": "Script CLI (Telnet/SSH) para OLT Datacom DM4611 (DmOS). 4 PONs. Coleta serial das ONUs e demais dados que o SNMP não expõe. Mesmo motor CLI usado nas OLTs 2Flex.",
+  "protocol": "telnet",
 
-  "nota": "DmOS usa CLI estilo Juniper (não Cisco). Não tem enable/configure terminal. Prompt: DM4611#. Interface GPON: 1/1/1 a 1/1/4 (shelf/slot/port).",
+  "nota": "DmOS é CLI estilo Juniper: login direto, SEM enable/configure terminal. Notacao de interface gpon-1/1/X (shelf/slot/port). PON vai de 1 a 4. O comando recebe a PON como argumento, NAO precisa entrar no contexto da interface (por isso context_command e exit_command vazios). O serial da ONU so existe via CLI (nao ha OID SNMP). A correlacao com a tabela SNMP e feita pelo location no formato gpon-1/1/X-onu-N.",
 
   "auth": {
-    "login_prompt": "login:",
-    "password_prompt": "password:",
+    "login_prompt": "[Ll]ogin:",
+    "password_prompt": "[Pp]assword:",
     "ready_prompt": "[#>]\\s*$",
     "init_commands": []
   },
 
   "actions": {
 
-    "list_onus": {
-      "descricao": "Lista todas as ONUs de cada PON com serial, status, nome e potência.",
-      "commands": ["show interface gpon 1/1/{pon} onu nomore"],
+    "list_onus_serial": {
+      "descricao": "Lista as ONUs de cada PON com serial (GPON SN). Usado para preencher a coluna serial que o SNMP nao expoe. Cruza com a tabela SNMP via location gpon-1/1/{pon}-onu-{onu_id}.",
+      "commands": ["show interface gpon 1/1/{pon} onu"],
       "loop": {
         "type": "per_pon",
         "context_command": "",
         "exit_command": "",
         "port_count": 4,
-        "pon_offset": 0
+        "pon_start": 1
       },
-      "nota": "DmOS não precisa entrar no contexto da interface. O comando já recebe a PON como argumento. Sem context_command/exit_command.",
-      "read_timeout": 20
-    },
-
-    "list_onus_rssi": {
-      "descricao": "Lista potência óptica (RSSI) de todas as ONUs de cada PON.",
-      "commands": ["show interface gpon 1/1/{pon} onu | display curly-braces | include \"gpon |onu |rssi-value\""],
-      "loop": {
-        "type": "per_pon",
-        "context_command": "",
-        "exit_command": "",
-        "port_count": 4
-      },
-      "nota": "Retorna linhas tipo: onu X { rssi-value -24.56 }. Parser precisa extrair ONU ID e valor RSSI.",
-      "row_pattern": "onu\\s+(\\d+)\\s*\\{[^}]*rssi-value\\s+(-?[\\d.]+)",
+      "row_pattern": "AJUSTAR_COM_SAIDA_REAL",
       "row_fields": {
-        "onu_num": {"group": 1, "tipo": "INT", "label": "ONU"},
-        "rssi": {"group": 2, "tipo": "FLOAT", "unidade": "dBm", "label": "RSSI"}
+        "onu_id": {"group": 1, "tipo": "INT"},
+        "serial": {"group": 2, "tipo": "STRING"}
       },
-      "read_timeout": 20
-    },
-
-    "scan_unprovisioned": {
-      "descricao": "Lista ONUs detectadas mas não provisionadas (autofind).",
-      "commands": ["show interface gpon 1/1/{pon} onu unconfigured nomore"],
-      "loop": {
-        "type": "per_pon",
-        "context_command": "",
-        "exit_command": "",
-        "port_count": 4
-      },
-      "nota": "Alternativa: show interface gpon onu include unconfigured",
-      "read_timeout": 15
+      "location_template": "gpon-1/1/{pon}-onu-{onu_id}",
+      "read_timeout": 25,
+      "nota": "ATENCAO: row_pattern e provisorio. O formato exato da saida do DmOS varia por versao. Rodar o comando uma vez, capturar a saida bruta e ajustar o regex. A coluna de serial pode aparecer como 'Serial Number', 'SN' ou 'Onu SN'. O location_template monta a chave de cruzamento com o SNMP."
     },
 
     "onu_detail": {
-      "descricao": "Detalhes de uma ONU específica (serial, firmware, ethernet, potência).",
+      "descricao": "Detalhes completos de uma ONU especifica (serial, firmware, modelo, potencia, distancia).",
       "inputs": [
         {"key": "pon", "label": "Porta PON (1-4)", "type": "number", "required": true},
         {"key": "onu_id", "label": "ONU ID", "type": "number", "required": true}
       ],
       "commands": ["show interface gpon 1/1/{pon} onu {onu_id}"],
-      "read_timeout": 10
+      "read_timeout": 15
     },
 
-    "onu_rssi": {
-      "descricao": "Potência óptica de uma ONU específica.",
-      "inputs": [
-        {"key": "pon", "label": "Porta PON (1-4)", "type": "number", "required": true},
-        {"key": "onu_id", "label": "ONU ID", "type": "number", "required": true}
-      ],
-      "commands": ["show interface gpon 1/1/{pon} onu {onu_id} rssi"],
-      "read_timeout": 10
-    },
-
-    "onu_ethernet": {
-      "descricao": "Status da porta ethernet da ONU (link speed, up/down).",
-      "inputs": [
-        {"key": "pon", "label": "Porta PON (1-4)", "type": "number", "required": true},
-        {"key": "onu_id", "label": "ONU ID", "type": "number", "required": true}
-      ],
-      "commands": ["show interface gpon 1/1/{pon} onu {onu_id} ethernet"],
-      "read_timeout": 10
-    },
-
-    "pppoe_sessions": {
-      "descricao": "Lista sessões PPPoE ativas em uma PON (mostra MAC + login do cliente).",
-      "commands": ["show pppoe intermediate-agent sessions interface gpon 1/1/{pon}"],
+    "list_onus": {
+      "descricao": "Lista resumida das ONUs de cada PON (serial + status + nome).",
+      "commands": ["show interface gpon 1/1/{pon} onu"],
       "loop": {
         "type": "per_pon",
         "context_command": "",
         "exit_command": "",
-        "port_count": 4
+        "port_count": 4,
+        "pon_start": 1
       },
-      "nota": "Retorna MAC + login PPPoE. Útil pra correlação ONU ↔ cliente.",
-      "read_timeout": 15
+      "read_timeout": 25
     },
 
-    "mac_table": {
-      "descricao": "Lista MACs aprendidos na tabela de endereços (MAC ↔ ONU).",
-      "commands": ["show mac-address-table interface gpon 1/1/{pon}"],
+    "scan_unprovisioned": {
+      "descricao": "Lista ONUs detectadas mas nao provisionadas (autofind) em cada PON.",
+      "commands": ["show interface gpon 1/1/{pon} onu unconfigured"],
       "loop": {
         "type": "per_pon",
         "context_command": "",
         "exit_command": "",
-        "port_count": 4
+        "port_count": 4,
+        "pon_start": 1
       },
-      "nota": "Alternativa mais genérica: show mac-address-table. Mas por PON é mais rápido.",
-      "read_timeout": 15
+      "read_timeout": 20
     },
 
     "search_onu_by_serial": {
-      "descricao": "Busca ONU pelo serial em todas as PONs.",
+      "descricao": "Busca uma ONU pelo serial em todas as PONs.",
       "inputs": [
         {"key": "serial", "label": "Serial da ONU", "type": "string", "required": true}
       ],
-      "commands": ["show interface gpon onu include {serial}"],
-      "read_timeout": 15
-    },
-
-    "search_onu_by_name": {
-      "descricao": "Busca ONU pelo nome/descrição do cliente.",
-      "inputs": [
-        {"key": "name", "label": "Nome do cliente", "type": "string", "required": true}
-      ],
-      "commands": ["show interface gpon onu include {name}"],
-      "read_timeout": 15
+      "commands": ["show interface gpon onu | include {serial}"],
+      "read_timeout": 20
     },
 
     "running_config": {
-      "descricao": "Exibe configuração ativa pra descobrir profiles de linha/serviço.",
-      "commands": ["show running-config interface gpon 1/1/{pon} | include \"gpon|onu|serial-number\""],
+      "descricao": "Exibe a config de provisionamento das ONUs de cada PON (serial + profiles).",
+      "commands": ["show running-config interface gpon 1/1/{pon}"],
       "loop": {
         "type": "per_pon",
         "context_command": "",
         "exit_command": "",
-        "port_count": 4
+        "port_count": 4,
+        "pon_start": 1
       },
       "read_timeout": 30
     }
