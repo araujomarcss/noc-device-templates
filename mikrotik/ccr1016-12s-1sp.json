@@ -3,7 +3,7 @@
   "fabricante": "Mikrotik",
   "modelo": "CCR1016-12S-1S+",
   "snmp_version": "2c",
-  "descricao": "Cloud Core Router CCR1016-12S-1S+ — 1U rackmount, 12x SFP (1G) + 1x SFP+ (10G), 16 cores x 1.2GHz (Tilera), 2GB RAM, fonte dupla hot-swap",
+  "descricao": "Cloud Core Router CCR1016-12S-1S+ — 1U rackmount, 12x SFP (1G) + 1x SFP+ (10G), 16 cores x 1.2GHz (Tilera), 2GB RAM, fonte dupla hot-swap. Óptica DDM por porta via mtxrOpticalTable (indexada por ifIndex, integrada à capability Interfaces).",
   "capabilities": [
     {
       "id": "ping",
@@ -80,11 +80,10 @@
     {
       "id": "cpu",
       "label": "CPU",
-      "descricao": "Utilização por core — 16 cores (index 1-16)",
+      "descricao": "Utilização média da CPU (16 cores)",
       "categoria": "Recursos",
-      "requer_discovery": true,
-      "discovery_oid": "1.3.6.1.2.1.25.3.3.1.1",
-      "nota": "CCR1016 possui 16 cores (confirmado em equipamento real). OID hrProcessorLoad: 1.3.6.1.2.1.25.3.3.1.2.{index}",
+      "requer_discovery": false,
+      "nota": "CCR1016 possui 16 cores. cpu_avg tira a média do walk em 1.3.6.1.2.1.25.3.3.1.2 (não depende de discovery). O item por-core foi removido porque o discovery por-índice hoje só é expandido pela capability 'interfaces' — se generalizar o discovery no poller, dá pra reintroduzir.",
       "itens": [
         {
           "id": "cpu_avg",
@@ -113,14 +112,6 @@
               "mensagem": "Host {host}: CPU CRÍTICA em {valor}% — roteador sobrecarregado"
             }
           ]
-        },
-        {
-          "id": "cpu_util_per_core",
-          "nome": "CPU Core #{index} — Utilização",
-          "tipo": "SNMP_FLOAT",
-          "oid_template": "1.3.6.1.2.1.25.3.3.1.2.{index}",
-          "unidade": "%",
-          "descricao": "Utilização média do core nos últimos 60s. Índices 1-16 confirmados no CCR1016."
         }
       ]
     },
@@ -130,7 +121,7 @@
       "descricao": "Uso de memória RAM (total, usado)",
       "categoria": "Recursos",
       "requer_discovery": false,
-      "nota": "Índice de RAM (65536) é o padrão MikroTik. Se não retornar valor neste CCR1016, fazer walk em 1.3.6.1.2.1.25.2.3.1.3 para descobrir o índice de 'main memory'.",
+      "nota": "Índice de RAM (65536) confirmado funcionando neste CCR1016 (Total 1.97 GB).",
       "itens": [
         {
           "id": "memory_total",
@@ -174,11 +165,12 @@
     },
     {
       "id": "interfaces",
-      "label": "Interfaces de Rede",
-      "descricao": "Tráfego, status, erros e velocidade por interface (12x SFP + 1x SFP+)",
+      "label": "Interfaces de Rede + Óptica SFP (DDM)",
+      "descricao": "Tráfego, status, erros, velocidade e diagnóstico óptico DDM por interface. A óptica (RX/TX power, temp, etc.) só retorna valor em portas com SFP/SFP+ — nas demais fica vazia.",
       "categoria": "Rede",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "A mtxrOpticalTable (1.3.6.1.4.1.14988.1.1.19.1.1.X) é indexada pelo mesmo ifIndex da ifTable, então os itens ópticos usam o {index} descoberto aqui. Escalas confirmadas no CCR1016-12S-1S+ real: RX/TX power valor bruto / 1000 = dBm (SFP+ 10G: -5134 → -5,13 dBm).",
       "itens": [
         {
           "id": "if_status",
@@ -188,9 +180,10 @@
           "unidade": "",
           "value_map": {
             "1": "Up",
-            "2": "Down"
+            "2": "Down",
+            "6": "Sem módulo"
           },
-          "descricao": "Status da interface (Up/Down)",
+          "descricao": "Status da interface (Up/Down). 6 = porta sem SFP inserido.",
           "triggers": [
             {
               "id": "interface_down",
@@ -321,26 +314,15 @@
               "mensagem": "Interface {interface} em {host}: {valor} erros/s de saída — verificar cabo/SFP"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "optica_sfp",
-      "label": "Óptica SFP (DDM)",
-      "descricao": "Diagnóstico óptico por porta SFP/SFP+ — RX/TX power, temperatura, tensão, bias e alarmes de LOS/TX-fault. Lido da mtxrOpticalTable (RouterOS 6.39+).",
-      "categoria": "Óptica",
-      "requer_discovery": true,
-      "discovery_oid": "1.3.6.1.4.1.14988.1.1.19.1.1.2",
-      "nota": "OIDs e escalas confirmadas em CCR1016-12S-1S+ real. RX/TX power: valor bruto ÷1000 = dBm (validado no SFP+ 10G: -5134 → -5,13 dBm). Índice da tabela = ifIndex da interface SFP. Módulos sem DDM (ex: RJ45/cobre) retornam 0 e não disparam alarmes ópticos.",
-      "itens": [
+        },
         {
           "id": "sfp_rx_power",
           "nome": "RX Power Óptico",
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.10.{index}",
-          "multiplicador": 0.001,
+          "divisor": 1000,
           "unidade": "dBm",
-          "descricao": "Potência óptica recebida. Principal métrica para diagnóstico de fibra/uplink.",
+          "descricao": "Potência óptica recebida. Só retorna em portas com SFP. Principal métrica de diagnóstico de fibra/uplink.",
           "triggers": [
             {
               "id": "rx_baixo",
@@ -359,15 +341,6 @@
               "severidade": "critical",
               "auto_create": true,
               "mensagem": "Interface {interface} em {host}: RX óptico em {valor} (≈ -30 dBm ou menos) — sinal muito fraco, link óptico em risco"
-            },
-            {
-              "id": "rx_overload",
-              "nome": "RX óptico alto (saturação)",
-              "condicao": ">=",
-              "threshold": 2000,
-              "severidade": "warning",
-              "auto_create": true,
-              "mensagem": "Interface {interface} em {host}: RX óptico em {valor} (≈ +2 dBm ou mais) — risco de saturar o receptor, verificar atenuador"
             }
           ]
         },
@@ -376,9 +349,9 @@
           "nome": "TX Power Óptico",
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.9.{index}",
-          "multiplicador": 0.001,
+          "divisor": 1000,
           "unidade": "dBm",
-          "descricao": "Potência óptica transmitida. Valor confirmado: SFP+ 10G = -2011 → -2,01 dBm.",
+          "descricao": "Potência óptica transmitida. Só retorna em portas com SFP. SFP+ 10G = -2011 → -2,01 dBm.",
           "triggers": [
             {
               "id": "tx_baixo",
@@ -397,7 +370,7 @@
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.6.{index}",
           "unidade": "°C",
-          "descricao": "Temperatura do transceiver, em °C direto (sem divisor). SFP+ 10G operava a 64°C.",
+          "descricao": "Temperatura do transceiver, em °C direto. Só retorna em portas com SFP.",
           "triggers": [
             {
               "id": "sfp_temp_alta",
@@ -424,9 +397,9 @@
           "nome": "Tensão SFP",
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.7.{index}",
-          "multiplicador": 0.001,
+          "divisor": 1000,
           "unidade": "V",
-          "descricao": "Tensão de alimentação do transceiver. 3372 → 3,372 V (padrão SFP 3,3V)."
+          "descricao": "Tensão de alimentação do transceiver. 3372 → 3,372 V. Só retorna em portas com SFP."
         },
         {
           "id": "sfp_tx_bias",
@@ -434,7 +407,7 @@
           "tipo": "SNMP_INT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.8.{index}",
           "unidade": "mA",
-          "descricao": "Corrente de bias do laser TX, em mA."
+          "descricao": "Corrente de bias do laser TX, em mA. Só retorna em portas com SFP."
         },
         {
           "id": "sfp_rx_loss",
@@ -487,7 +460,7 @@
           "nome": "Comprimento de Onda",
           "tipo": "SNMP_FLOAT",
           "oid_template": "1.3.6.1.4.1.14988.1.1.19.1.1.5.{index}",
-          "multiplicador": 0.01,
+          "divisor": 100,
           "unidade": "nm",
           "descricao": "Comprimento de onda do transceiver. 155000 → 1550 nm. Módulos genéricos podem retornar 0."
         },
@@ -532,7 +505,7 @@
               "threshold": 2000,
               "severidade": "warning",
               "auto_create": true,
-              "mensagem": "Host {host}: {valor} clientes PPPoE/L2TP conectados — verificar capacidade (CCR1016 tem mais folga que o CCR1009, ajuste o limite conforme o cenário)"
+              "mensagem": "Host {host}: {valor} clientes PPPoE/L2TP conectados — verificar capacidade (ajuste o limite conforme o cenário)"
             }
           ]
         }
@@ -621,7 +594,7 @@
       "descricao": "Temperatura, velocidade do fan, tensão e estado das fontes (Dual PSU)",
       "categoria": "Ambiente",
       "requer_discovery": false,
-      "nota": "OIDs via mtxrHlSensorTable (1.3.6.1.4.1.14988.1.1.3.100.1.3.X), confirmadas em CCR1016 real. ATENÇÃO À ESCALA: nesta tabela a temperatura vem em °C INTEIRO (33 = 33°C, multiplicador 1), mas a tensão vem em DECIVOLT (243 = 24,3V, multiplicador 0.1). Não aplicar ÷10 na temperatura — isso zera o alarme.",
+      "nota": "OIDs via mtxrHlSensorTable (1.3.6.1.4.1.14988.1.1.3.100.1.3.X). ESCALA confirmada no CCR1016 real: temperatura em °C INTEIRO (34 = 34°C, multiplicador 1), tensão em DECIVOLT (243 = 24,3V, divisor 10). NÃO aplicar ÷10 na temperatura.",
       "itens": [
         {
           "id": "temp_device",
@@ -630,7 +603,7 @@
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.14",
           "multiplicador": 1,
           "unidade": "°C",
-          "descricao": "Temperatura geral em °C direto. Valor confirmado: 33 = 33°C.",
+          "descricao": "Temperatura geral em °C direto. Valor confirmado: 34 = 34°C.",
           "triggers": [
             {
               "id": "temp_alta",
@@ -687,7 +660,7 @@
           "tipo": "SNMP_INT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.7001",
           "unidade": "RPM",
-          "descricao": "Velocidade do ventilador. Valor confirmado: ~6350 RPM.",
+          "descricao": "Velocidade do ventilador. Valor confirmado: ~6788 RPM.",
           "triggers": [
             {
               "id": "fan_lento",
@@ -714,9 +687,9 @@
           "nome": "Tensão",
           "tipo": "SNMP_FLOAT",
           "oid": "1.3.6.1.4.1.14988.1.1.3.100.1.3.13",
-          "multiplicador": 0.1,
+          "divisor": 10,
           "unidade": "V",
-          "descricao": "Tensão de alimentação em decivolt (valor * 0.1 = Volts). Valor confirmado: 243 = 24,3V.",
+          "descricao": "Tensão de alimentação em decivolt (valor / 10 = Volts). Valor confirmado: 243 = 24,3V.",
           "triggers": [
             {
               "id": "tensao_baixa",
