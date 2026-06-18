@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-06-10",
+  "updated_at": "2026-06-18",
   "templates": [
     {
       "tipo": "OLT",
@@ -29,6 +29,13 @@
       "modelo": "CCR1016-12G",
       "file": "mikrotik/ccr1016-12g.json",
       "descricao": "1U rackmount, 12x Gigabit Ethernet, 16 cores x 1.2GHz, 2GB RAM"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Mikrotik",
+      "modelo": "CCR1016-12S-1S+",
+      "file": "mikrotik/ccr1016-12s-1sp.json",
+      "descricao": "1U rackmount, 12x SFP (1G) + 1x SFP+ (10G), 16 cores x 1.2GHz, 2GB RAM, fonte dupla — com diagnóstico óptico DDM por porta"
     },
     {
       "tipo": "Router",
