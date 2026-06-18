@@ -1,0 +1,273 @@
+{
+  "tipo": "OLT",
+  "fabricante": "Huawei",
+  "modelo": "SmartAX MA5800",
+  "snmp_version": "2c",
+  "descricao": "OLT GPON Huawei SmartAX (família MA5600/MA5800) — sistema, CPU, temperatura por slot, interfaces/uplinks, status de porta PON e diagnóstico por ONT (RX óptico, status, MACs). OIDs capturados em equipamento real.",
+  "nota_geral": "AJUSTE o campo 'modelo' para o equipamento exato (ex: MA5608T, MA5683T, MA5800-X7). As capabilities por-ONT, por-porta-PON, CPU e temperatura dependem do discovery genérico no poller (Option B) — hoje só 'interfaces' expande por índice; antes do Option B essas capabilities aparecem vazias. Índice das tabelas de ONT é COMPOSTO: oid.{porta_pon}.{ont_id} (ex: 51.1.4.4194312192.0 = RX da ONT id 0 na porta 4194312192). O discovery deve capturar o sufixo composto inteiro como {index}.",
+  "capabilities": [
+    {
+      "id": "system",
+      "label": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "sys_name",
+          "nome": "Nome do Sistema",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.5.0"
+        },
+        {
+          "id": "sys_location",
+          "nome": "Localização",
+          "tipo": "SNMP_STRING",
+          "oid": "1.3.6.1.2.1.1.6.0"
+        },
+        {
+          "id": "uptime",
+          "nome": "Uptime",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s",
+          "triggers": [
+            {
+              "id": "reboot_detectado",
+              "nome": "Reboot detectado",
+              "condicao": "drop",
+              "threshold": 0,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "OLT {host} reiniciou — uptime caiu de {anterior}s para {valor}s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU por placa",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.2.6.7.1.1.2.1.5",
+      "nota": "hwCpuDevTable — CPU por placa/board. Confirme o índice com: snmpwalk ... 1.3.6.1.4.1.2011.2.6.7.1.1.2.1.5. Selecione a placa de controle (SCU/MPU).",
+      "itens": [
+        {
+          "id": "cpu_usage",
+          "nome": "CPU",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.2.6.7.1.1.2.1.5.{index}",
+          "unidade": "%",
+          "triggers": [
+            {
+              "id": "cpu_alta",
+              "nome": "CPU alta",
+              "condicao": ">=",
+              "threshold": 80,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Placa {interface} na OLT {host}: CPU em {valor}%"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura por slot",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.6.3.3.2.1.13",
+      "nota": "Temperatura por slot. Confirme o índice com: snmpwalk ... 1.3.6.1.4.1.2011.6.3.3.2.1.13. Verifique a escala (°C direto ou em décimos) no equipamento.",
+      "itens": [
+        {
+          "id": "slot_temperature",
+          "nome": "Temperatura",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.6.3.3.2.1.13.{index}",
+          "unidade": "°C",
+          "triggers": [
+            {
+              "id": "temperatura_alta",
+              "nome": "Temperatura alta",
+              "condicao": ">=",
+              "threshold": 65,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Slot {interface} na OLT {host} com temperatura alta: {valor}°C"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Uplinks",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "Tráfego usa contador 64-bit (ifHCInOctets/OutOctets) com fallback 32-bit (ifInOctets/OutOctets, que foi o capturado). if_last_change = momento da última mudança de estado (queda/subida) da interface.",
+      "itens": [
+        {
+          "id": "if_oper_status",
+          "nome": "Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": {
+            "1": "Up",
+            "2": "Down",
+            "3": "Testing",
+            "4": "Unknown",
+            "5": "Dormant",
+            "6": "Not Present",
+            "7": "Lower Layer Down"
+          },
+          "triggers": [
+            {
+              "id": "interface_down",
+              "nome": "Interface caiu",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} na OLT {host} está DOWN"
+            }
+          ]
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_last_change",
+          "nome": "Última mudança de estado",
+          "tipo": "SNMP_TIMETICKS",
+          "oid_template": "1.3.6.1.2.1.2.2.1.9.{index}",
+          "unidade": "s",
+          "descricao": "ifLastChange — uptime do equipamento no momento da última queda/subida da interface."
+        }
+      ]
+    },
+    {
+      "id": "gpon_ports",
+      "label": "Portas PON",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.6.128.1.1.2.21.1.10",
+      "nota": "Estado da porta GPON (1=online, 2=offline). Índice = porta PON.",
+      "itens": [
+        {
+          "id": "pon_port_status",
+          "nome": "Status da Porta PON",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.21.1.10.{index}",
+          "value_map": {
+            "1": "Online",
+            "2": "Offline"
+          },
+          "triggers": [
+            {
+              "id": "pon_offline",
+              "nome": "Porta PON offline",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "high",
+              "auto_create": true,
+              "mensagem": "Porta PON {interface} na OLT {host} está OFFLINE — verificar placa/uplink óptico"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "onts",
+      "label": "ONTs (clientes GPON)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.3",
+      "nota": "Discovery pelo serial da ONT (hwGponDeviceOntInfoSn). Índice COMPOSTO porta.ont_id (ex: 4194312192.0). RX óptico em dBm com divisor 100 (confirmado: -1311 = -13,11 dBm).",
+      "itens": [
+        {
+          "id": "ont_serial",
+          "nome": "Serial / MAC da ONT",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.3.{index}"
+        },
+        {
+          "id": "ont_rx_power",
+          "nome": "RX Óptico da ONT",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.51.1.4.{index}",
+          "divisor": 100,
+          "unidade": "dBm",
+          "descricao": "Potência óptica recebida pela ONT (downstream). Principal métrica de saúde do cliente.",
+          "triggers": [
+            {
+              "id": "ont_rx_baixo",
+              "nome": "RX da ONT baixo",
+              "condicao": "<=",
+              "threshold": -2500,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "ONT {interface} na OLT {host}: RX em {valor} (≈ -25 dBm) — sinal fraco no cliente"
+            },
+            {
+              "id": "ont_rx_critico",
+              "nome": "RX da ONT crítico",
+              "condicao": "<=",
+              "threshold": -2800,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "ONT {interface} na OLT {host}: RX em {valor} (≈ -28 dBm) — perto/abaixo da sensibilidade GPON, cliente em risco"
+            }
+          ]
+        },
+        {
+          "id": "olt_rx_power",
+          "nome": "RX Óptico no OLT (upstream)",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.51.1.6.{index}",
+          "divisor": 100,
+          "unidade": "dBm",
+          "descricao": "Potência óptica que a OLT recebe desta ONT (upstream)."
+        },
+        {
+          "id": "ont_run_status",
+          "nome": "Status da ONT",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.46.1.15.{index}",
+          "value_map": {
+            "1": "Online",
+            "2": "Offline"
+          },
+          "descricao": "Estado operacional da ONT (1=online, 2=offline). Atenção: ONTs caindo/subindo é comum; o trigger pode gerar muito ruído — avalie ativar só em clientes críticos.",
+          "triggers": [
+            {
+              "id": "ont_offline",
+              "nome": "ONT offline",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "warning",
+              "auto_create": false,
+              "mensagem": "ONT {interface} na OLT {host} está OFFLINE"
+            }
+          ]
+        },
+        {
+          "id": "ont_mac_count",
+          "nome": "MACs conectados na ONT",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.46.1.21.{index}",
+          "unidade": "MACs",
+          "descricao": "Número de endereços MAC aprendidos atrás da ONT."
+        }
+      ]
+    }
+  ]
+}
