@@ -127,6 +127,13 @@
       "modelo": "NE40",
       "file": "huawei/ne40.json",
       "descricao": "OIDs IF-MIB testadas no NE40 — compatível com Datacom, Furukawa, Gigatelco e VSOL"
+    },
+    {
+      "tipo": "Switch",
+      "fabricante": "Huawei",
+      "modelo": "S6730",
+      "file": "huawei/s6730.json",
+      "descricao": "Switch Huawei S6730 — interfaces, CPU, memória, temperatura e óptica SFP/DDM (HUAWEI-ENTITY-EXTENT-MIB)"
     }
   ]
 }
