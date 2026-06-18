@@ -4,7 +4,7 @@
   "modelo": "S6730",
   "snmp_version": "2c",
   "descricao": "Huawei VRP (S6730 e família NE/CE) — interfaces, CPU/memória/temperatura por placa, uptime e óptica SFP/DDM. OIDs e escalas validadas em equipamento real (HUAWEI-ENTITY-EXTENT-MIB).",
-  "nota_geral": "As tabelas de óptica (hwOpticalModuleInfoTable) e de recursos por placa (hwEntityStateTable) são indexadas por entPhysicalIndex, NÃO por ifIndex. Por isso o discovery_oid dessas capabilities é o entPhysicalName (1.3.6.1.2.1.47.1.1.1.1.7). Requer o discovery genérico no poller (não só 'interfaces'). Validado num NE40E-M2K-B; mesma MIB vale para S6730/CE.",
+  "nota_geral": "As tabelas de óptica (hwOpticalModuleInfoTable) e de recursos por placa (hwEntityStateTable) são indexadas por entPhysicalIndex, NÃO por ifIndex. Por isso o discovery_oid dessas capabilities é o entPhysicalName (1.3.6.1.2.1.47.1.1.1.1.7). Requer o discovery genérico no poller (não só 'interfaces'). Validado num NE40E-M2K-B; mesma MIB vale para S6730/CE. TODOS os triggers estão com auto_create:false para não gerar alarme em massa ao linkar (portas sem SFP retornam -5000 = -50 dBm e disparariam crítico). Ative os alarmes manualmente onde fizer sentido.",
   "capabilities": [
     {
       "id": "interfaces",
@@ -44,7 +44,7 @@
               "condicao": "=",
               "threshold": 2,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Interface {interface} em {host} está DOWN"
             }
           ]
@@ -113,7 +113,7 @@
               "condicao": ">=",
               "threshold": 80,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Placa {interface} em {host}: CPU em {valor}%"
             }
           ]
@@ -131,7 +131,7 @@
               "condicao": ">=",
               "threshold": 85,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Placa {interface} em {host}: memória em {valor}%"
             }
           ]
@@ -149,7 +149,7 @@
               "condicao": ">=",
               "threshold": 65,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Placa {interface} em {host} com temperatura alta: {valor}°C"
             }
           ]
@@ -176,7 +176,7 @@
       "label": "Óptica SFP / DDM",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
-      "nota": "hwOpticalModuleInfoTable, indexada por entPhysicalIndex (= índice do entPhysicalName, NÃO ifIndex). Potências em dBm com valor x100 (divisor 100 — confirmado: -4000 = -40,00 dBm). Portas sem SFP retornam 0 e devem ser ignoradas pelo poller (skip quando rx/serial vazio). Voltagem, bias e temperatura do SFP não foram cobertos no walk de validação — confira a escala no equipamento.",
+      "nota": "hwOpticalModuleInfoTable, indexada por entPhysicalIndex (= índice do entPhysicalName, NÃO ifIndex). Potências em dBm com valor x100 (divisor 100 — confirmado: -5000 = -50,00 dBm em porta sem luz, +182 = +1,82 dBm em porta ativa). Portas sem SFP retornam -5000 ou 0 e devem ser ignoradas pelo poller. Voltagem, bias e temperatura do SFP não foram cobertos no walk de validação — confira a escala no equipamento.",
       "itens": [
         {
           "id": "sfp_serial",
@@ -198,7 +198,7 @@
               "condicao": "<=",
               "threshold": -2500,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Interface {interface} em {host}: RX óptico baixo ({valor}, ≈ -25 dBm) — verificar fibra/atenuação"
             },
             {
@@ -207,7 +207,7 @@
               "condicao": "<=",
               "threshold": -3000,
               "severidade": "critical",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Interface {interface} em {host}: RX óptico crítico ({valor}, ≈ -30 dBm ou sem luz) — link óptico caído/cortado"
             }
           ]
@@ -226,7 +226,7 @@
               "condicao": "<=",
               "threshold": -1000,
               "severidade": "warning",
-              "auto_create": true,
+              "auto_create": false,
               "mensagem": "Interface {interface} em {host}: TX óptico baixo ({valor}, ≈ -10 dBm) — possível degradação do laser"
             }
           ]
