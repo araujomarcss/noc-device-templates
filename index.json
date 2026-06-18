@@ -24,6 +24,13 @@
       "descricao": "GPON OLT — 4x GPON, 2x GE, 2x 10GE. DmOS."
     },
     {
+      "tipo": "OLT",
+      "fabricante": "Huawei",
+      "modelo": "SmartAX MA5800",
+      "file": "huawei/ma5800.json",
+      "descricao": "OLT GPON Huawei SmartAX (MA5600/MA5800) — sistema, CPU, temperatura por slot, interfaces, portas PON e diagnóstico por ONT (RX óptico, status, MACs)"
+    },
+    {
       "tipo": "Router",
       "fabricante": "Mikrotik",
       "modelo": "CCR1016-12G",
