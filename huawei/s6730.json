@@ -1,0 +1,319 @@
+{
+  "tipo": "Switch",
+  "fabricante": "Huawei",
+  "modelo": "S6730",
+  "snmp_version": "2c",
+  "descricao": "Huawei VRP (S6730 e família NE/CE) — interfaces, CPU/memória/temperatura por placa, uptime e óptica SFP/DDM. OIDs e escalas validadas em equipamento real (HUAWEI-ENTITY-EXTENT-MIB).",
+  "nota_geral": "As tabelas de óptica (hwOpticalModuleInfoTable) e de recursos por placa (hwEntityStateTable) são indexadas por entPhysicalIndex, NÃO por ifIndex. Por isso o discovery_oid dessas capabilities é o entPhysicalName (1.3.6.1.2.1.47.1.1.1.1.7). Requer o discovery genérico no poller (não só 'interfaces'). Validado num NE40E-M2K-B; mesma MIB vale para S6730/CE.",
+  "capabilities": [
+    {
+      "id": "interfaces",
+      "label": "Interfaces de Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.31.1.1.1.1",
+      "itens": [
+        {
+          "id": "if_admin_status",
+          "nome": "Status Administrativo",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}",
+          "value_map": {
+            "1": "Up",
+            "2": "Down",
+            "3": "Testing"
+          }
+        },
+        {
+          "id": "if_oper_status",
+          "nome": "Status Operacional",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": {
+            "1": "Up",
+            "2": "Down",
+            "3": "Testing",
+            "4": "Unknown",
+            "5": "Dormant",
+            "6": "Not Present",
+            "7": "Lower Layer Down"
+          },
+          "triggers": [
+            {
+              "id": "interface_down",
+              "nome": "Interface caiu",
+              "condicao": "=",
+              "threshold": 2,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host} está DOWN"
+            }
+          ]
+        },
+        {
+          "id": "if_in_octets",
+          "nome": "Tráfego Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_out_octets",
+          "nome": "Tráfego Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
+          "unidade": "bps"
+        },
+        {
+          "id": "if_in_errors",
+          "nome": "Erros Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
+          "unidade": "erros/s"
+        },
+        {
+          "id": "if_out_errors",
+          "nome": "Erros Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
+          "unidade": "erros/s"
+        },
+        {
+          "id": "if_in_discards",
+          "nome": "Descartes Entrada",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
+          "unidade": "descartes/s"
+        },
+        {
+          "id": "if_out_discards",
+          "nome": "Descartes Saída",
+          "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
+          "unidade": "descartes/s"
+        }
+      ]
+    },
+    {
+      "id": "board_resources",
+      "label": "CPU, Memória e Temperatura por placa",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
+      "nota": "hwEntityStateTable, indexada por entPhysicalIndex. CPU/mem/temp aparecem por entidade física; selecione a placa de controle/encaminhamento (ex: a IPU/MPU). No NE40 testado, o board principal era 'IPU 3' (entPhysicalIndex 16973825): CPU 16%, Mem 38%, Temp 28°C. Entidades sem CPU/sensor retornam 0. Memória total (coluna .9) foi removida: retorna -1 (inválido) neste equipamento.",
+      "itens": [
+        {
+          "id": "cpu_usage",
+          "nome": "CPU",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5.{index}",
+          "unidade": "%",
+          "triggers": [
+            {
+              "id": "cpu_alta",
+              "nome": "CPU alta",
+              "condicao": ">=",
+              "threshold": 80,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Placa {interface} em {host}: CPU em {valor}%"
+            }
+          ]
+        },
+        {
+          "id": "memory_percent",
+          "nome": "Memória Usada",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.{index}",
+          "unidade": "%",
+          "triggers": [
+            {
+              "id": "memoria_alta",
+              "nome": "Memória alta",
+              "condicao": ">=",
+              "threshold": 85,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Placa {interface} em {host}: memória em {valor}%"
+            }
+          ]
+        },
+        {
+          "id": "temperature",
+          "nome": "Temperatura",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11.{index}",
+          "unidade": "°C",
+          "triggers": [
+            {
+              "id": "temperatura_alta",
+              "nome": "Temperatura alta",
+              "condicao": ">=",
+              "threshold": 65,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Placa {interface} em {host} com temperatura alta: {valor}°C"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "label": "Uptime",
+      "requer_discovery": false,
+      "nota": "Uptime via sysUpTime padrão (RFC 1213). Substitui a coluna .10 da hwEntityStateTable, que retornava valor uniforme e não confiável por placa.",
+      "itens": [
+        {
+          "id": "uptime",
+          "nome": "Uptime",
+          "tipo": "SNMP_TIMETICKS",
+          "oid": "1.3.6.1.2.1.1.3.0",
+          "unidade": "s"
+        }
+      ]
+    },
+    {
+      "id": "sfp_ddm",
+      "label": "Óptica SFP / DDM",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
+      "nota": "hwOpticalModuleInfoTable, indexada por entPhysicalIndex (= índice do entPhysicalName, NÃO ifIndex). Potências em dBm com valor x100 (divisor 100 — confirmado: -4000 = -40,00 dBm). Portas sem SFP retornam 0 e devem ser ignoradas pelo poller (skip quando rx/serial vazio). Voltagem, bias e temperatura do SFP não foram cobertos no walk de validação — confira a escala no equipamento.",
+      "itens": [
+        {
+          "id": "sfp_serial",
+          "nome": "Serial da SFP",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.4.{index}"
+        },
+        {
+          "id": "sfp_rx_power",
+          "nome": "RX Power",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.8.{index}",
+          "divisor": 100,
+          "unidade": "dBm",
+          "triggers": [
+            {
+              "id": "rx_power_baixo",
+              "nome": "RX óptico baixo",
+              "condicao": "<=",
+              "threshold": -2500,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: RX óptico baixo ({valor}, ≈ -25 dBm) — verificar fibra/atenuação"
+            },
+            {
+              "id": "rx_power_critico",
+              "nome": "RX óptico crítico",
+              "condicao": "<=",
+              "threshold": -3000,
+              "severidade": "critical",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: RX óptico crítico ({valor}, ≈ -30 dBm ou sem luz) — link óptico caído/cortado"
+            }
+          ]
+        },
+        {
+          "id": "sfp_tx_power",
+          "nome": "TX Power",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.9.{index}",
+          "divisor": 100,
+          "unidade": "dBm",
+          "triggers": [
+            {
+              "id": "tx_power_baixo",
+              "nome": "TX óptico baixo",
+              "condicao": "<=",
+              "threshold": -1000,
+              "severidade": "warning",
+              "auto_create": true,
+              "mensagem": "Interface {interface} em {host}: TX óptico baixo ({valor}, ≈ -10 dBm) — possível degradação do laser"
+            }
+          ]
+        },
+        {
+          "id": "sfp_temperature",
+          "nome": "Temperatura SFP",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.5.{index}",
+          "unidade": "°C"
+        },
+        {
+          "id": "sfp_voltage",
+          "nome": "Tensão SFP",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.6.{index}",
+          "unidade": "V"
+        },
+        {
+          "id": "sfp_bias",
+          "nome": "Corrente Laser Bias",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.7.{index}",
+          "unidade": "mA"
+        },
+        {
+          "id": "sfp_type",
+          "nome": "Tipo da SFP",
+          "tipo": "SNMP_STRING",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.10.{index}"
+        },
+        {
+          "id": "sfp_bandwidth",
+          "nome": "Banda Máxima",
+          "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.11.{index}",
+          "unidade": "Mbps"
+        },
+        {
+          "id": "rx_low_alarm",
+          "nome": "RX Low Alarm",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.13.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        },
+        {
+          "id": "rx_high_alarm",
+          "nome": "RX High Alarm",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.14.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        },
+        {
+          "id": "tx_low_alarm",
+          "nome": "TX Low Alarm",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.15.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        },
+        {
+          "id": "tx_high_alarm",
+          "nome": "TX High Alarm",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.16.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        },
+        {
+          "id": "rx_low_warning",
+          "nome": "RX Low Warning",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.20.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        },
+        {
+          "id": "tx_low_warning",
+          "nome": "TX Low Warning",
+          "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.22.{index}",
+          "divisor": 100,
+          "unidade": "dBm"
+        }
+      ]
+    }
+  ]
+}
