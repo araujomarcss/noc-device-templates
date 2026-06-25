@@ -1,0 +1,70 @@
+{
+  "tipo": "OLT",
+  "fabricante": "ZTE",
+  "modelo": "ZXA10 C650 Titan / C610",
+  "snmp_version": "2c",
+  "descricao": "OLT GPON/XGS-PON ZTE plataforma Titan (C650 Titan e C610, base 3902.1082.500) — system, interfaces e diagnóstico por ONT (taxa RX/TX, distância, motivo da última queda). OIDs pesquisados de fontes públicas (não validados).",
+  "nota_geral": "ATENÇÃO: plataforma Titan usa base 1.3.6.1.4.1.3902.1082.500, DIFERENTE do C320 (que usa 1012). OIDs montados por pesquisa, NÃO validados. A COLUNA EXATA do RX/TX óptico por ONU no Titan não está confirmada publicamente — faça 'snmpwalk 1.3.6.1.4.1.3902.1082.500.10.2.3' e me informe pra cravar a coluna e a escala. Índice de ONT é composto; confirme o formato via walk. Capabilities de ONT dependem do discovery genérico (Option B). Triggers com auto_create:false. Serve C650 Titan e C610 (mesma plataforma).",
+  "capabilities": [
+    {
+      "id": "system",
+      "label": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "sys_name", "nome": "Nome", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0" },
+        { "id": "sys_location", "nome": "Localização", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.6.0" },
+        { "id": "uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s" }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Uplinks",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.31.1.1.1.1",
+      "itens": [
+        {
+          "id": "if_oper_status", "nome": "Status Operacional", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "Up", "2": "Down", "3": "Testing", "4": "Unknown", "5": "Dormant", "6": "Not Present", "7": "Lower Layer Down" },
+          "triggers": [ { "id": "if_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} na OLT {host} está DOWN" } ]
+        },
+        { "id": "if_in", "nome": "Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bps" },
+        { "id": "if_out", "nome": "Tráfego Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bps" }
+      ]
+    },
+    {
+      "id": "onts",
+      "label": "ONTs (clientes GPON)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.3902.1082.500.10.2.3.8.1.7",
+      "nota": "Discovery pela tabela de motivo de última queda (zxAnPonOnu...LastOfflineReason). Índice composto — confirmar formato via walk. Taxas RX/TX usam base 4.2.2.2 (xpon, índice diferente). RX/TX óptico: coluna exata a confirmar em 10.2.3.",
+      "itens": [
+        {
+          "id": "ont_last_offline_reason", "nome": "Motivo da Última Queda", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.3902.1082.500.10.2.3.8.1.7.{index}",
+          "value_map": { "1": "Unknown", "2": "LOS", "3": "LOSi", "4": "LOFi", "5": "SFi", "6": "LOAi", "7": "LOAMi", "8": "Auth Failed", "9": "Power Off", "10": "Deactivate OK", "11": "Deactivate Fail", "12": "Reboot", "13": "Shutdown" },
+          "descricao": "Motivo da última desconexão da ONT. Útil pra diferenciar queda de energia (PowerOff) de queda de fibra (LOS)."
+        },
+        { "id": "ont_distance", "nome": "Distância óptica", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.3902.1082.500.10.2.3.10.1.2.{index}", "unidade": "m", "descricao": "Confirmar unidade." },
+        {
+          "id": "ont_rx_rate", "nome": "Taxa RX da ONU", "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.4.1.3902.1082.500.4.2.2.2.1.3.{index}", "unidade": "bps",
+          "descricao": "zxAnPonOnuIfRxOctetRate. ATENÇÃO: índice xpon (diferente do índice de status) — pode não casar com o discovery desta capability; confirmar."
+        },
+        {
+          "id": "ont_tx_rate", "nome": "Taxa TX da ONU", "tipo": "DELTA_BYTES",
+          "oid_template": "1.3.6.1.4.1.3902.1082.500.4.2.2.2.1.46.{index}", "unidade": "bps",
+          "descricao": "zxAnPonOnuIfTxOctetRate. Mesmo aviso de índice."
+        },
+        {
+          "id": "ont_rx_power", "nome": "RX Óptico da ONT (CONFIRMAR)", "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.3902.1082.500.10.2.3.4.1.2.{index}", "divisor": 100, "unidade": "dBm",
+          "descricao": "COLUNA E ESCALA NÃO CONFIRMADAS. Faça snmpwalk em 1.3.6.1.4.1.3902.1082.500.10.2.3 e identifique a coluna de potência RX; ajuste o oid_template e o divisor. Trigger desativado até confirmar.",
+          "triggers": [
+            { "id": "ont_rx_baixo", "nome": "RX baixo", "condicao": "<=", "threshold": -2500, "severidade": "warning", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: RX {valor} (≈ -25 dBm)" }
+          ]
+        }
+      ]
+    }
+  ]
+}
