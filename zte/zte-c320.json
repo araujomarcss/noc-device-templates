@@ -1,0 +1,111 @@
+{
+  "tipo": "OLT",
+  "fabricante": "ZTE",
+  "modelo": "ZXA10 C320",
+  "snmp_version": "2c",
+  "descricao": "OLT GPON ZTE ZXA10 C320 (família C3xx) — system, placas (CPU/memória), temperatura, interfaces, portas PON e diagnóstico por ONT (RX/TX óptico, status, uptime, distância). OIDs pesquisados de fontes públicas (não validados em equipamento).",
+  "nota_geral": "ATENÇÃO: OIDs montados por pesquisa, NÃO validados em equipamento real. Confirme escalas e índices via snmpwalk antes de usar em produção. Bases: GPON=1.3.6.1.4.1.3902.1012, placas/ambiente=1.3.6.1.4.1.3902.1015. Índice de ONT é COMPOSTO porta.onu (ex: 268699648.58); a óptica acrescenta um nível extra (.porta.onu.1). Capabilities por-ONT/placa dependem do discovery genérico no poller (Option B). ESCALA ÓPTICA A CALIBRAR: meça uma ONU de RX conhecido e ajuste o divisor (provável 100; ex -2071 = -20,71 dBm). Todos os triggers estão com auto_create:false.",
+  "capabilities": [
+    {
+      "id": "system",
+      "label": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "sys_name", "nome": "Nome", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0" },
+        { "id": "sys_location", "nome": "Localização", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.6.0" },
+        { "id": "uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s" }
+      ]
+    },
+    {
+      "id": "cards",
+      "label": "Placas (CPU / Memória)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.3902.1015.2.1.1.3.1.4",
+      "nota": "zxAnCardTable. Discovery pelo tipo de placa (.4). CPU=.9, Mem=.11, Serial=.14. Índice = rack.shelf.slot. Confirme via walk.",
+      "itens": [
+        {
+          "id": "card_cpu", "nome": "CPU", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.3902.1015.2.1.1.3.1.9.{index}", "unidade": "%",
+          "triggers": [ { "id": "cpu_alta", "nome": "CPU alta", "condicao": ">=", "threshold": 85, "severidade": "warning", "auto_create": false, "mensagem": "Placa {interface} na OLT {host}: CPU em {valor}%" } ]
+        },
+        {
+          "id": "card_mem", "nome": "Memória", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.3902.1015.2.1.1.3.1.11.{index}", "unidade": "%",
+          "triggers": [ { "id": "mem_alta", "nome": "Memória alta", "condicao": ">=", "threshold": 85, "severidade": "warning", "auto_create": false, "mensagem": "Placa {interface} na OLT {host}: memória em {valor}%" } ]
+        },
+        { "id": "card_serial", "nome": "Serial da Placa", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.3902.1015.2.1.1.3.1.14.{index}" }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.3902.1015.2.1.3.2",
+      "nota": "Temperatura por slot/sensor. Confirme índice e escala (°C direto ou décimos) via walk.",
+      "itens": [
+        {
+          "id": "temp", "nome": "Temperatura", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.3902.1015.2.1.3.2.{index}", "unidade": "°C",
+          "triggers": [ { "id": "temp_alta", "nome": "Temperatura alta", "condicao": ">=", "threshold": 60, "severidade": "warning", "auto_create": false, "mensagem": "Slot {interface} na OLT {host}: {valor}°C" } ]
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Uplinks",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.31.1.1.1.1",
+      "itens": [
+        {
+          "id": "if_oper_status", "nome": "Status Operacional", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "Up", "2": "Down", "3": "Testing", "4": "Unknown", "5": "Dormant", "6": "Not Present", "7": "Lower Layer Down" },
+          "triggers": [ { "id": "if_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} na OLT {host} está DOWN" } ]
+        },
+        { "id": "if_in", "nome": "Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bps" },
+        { "id": "if_out", "nome": "Tráfego Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bps" }
+      ]
+    },
+    {
+      "id": "pon_ports",
+      "label": "Portas PON (OLT)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.3902.1012.3.13.1.1.2",
+      "nota": "zxGponOltPortName (.13.1.1.2) para rótulo; .13.1.1.1 = índice. Tráfego OLT-side por PON: Rx=1010.5.4.1.2, Tx=1010.5.4.1.17. Confirme índice via walk.",
+      "itens": [
+        { "id": "pon_rx_octets", "nome": "Tráfego RX (OLT)", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.4.1.3902.1015.1010.5.4.1.2.{index}", "unidade": "bps" },
+        { "id": "pon_tx_octets", "nome": "Tráfego TX (OLT)", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.4.1.3902.1015.1010.5.4.1.17.{index}", "unidade": "bps" }
+      ]
+    },
+    {
+      "id": "onts",
+      "label": "ONTs (clientes GPON)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.3902.1012.3.50.11.2.1.8",
+      "nota": "Discovery por zxGponONTOperState. Índice COMPOSTO porta.onu (ex: 268699648.58). A óptica acrescenta nível extra: oid_template termina em .{index}.1. ESCALA ÓPTICA: calibrar divisor (provável 100). Status: confirmar value_map (varia por firmware).",
+      "itens": [
+        {
+          "id": "ont_oper_state", "nome": "Status da ONT", "tipo": "SNMP_INT",
+          "oid_template": "1.3.6.1.4.1.3902.1012.3.50.11.2.1.8.{index}",
+          "value_map": { "1": "Logging", "2": "LOS", "3": "Synchronization", "4": "Online", "5": "Dying Gasp", "6": "Auth Failed", "7": "Offline" },
+          "descricao": "Confirmar mapeamento de estados no firmware da OLT.",
+          "triggers": [ { "id": "ont_offline", "nome": "ONT offline", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: estado anormal ({valor})" } ]
+        },
+        { "id": "ont_admin_state", "nome": "Status Admin", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.3902.1012.3.50.11.2.1.7.{index}" },
+        {
+          "id": "ont_rx_power", "nome": "RX Óptico da ONT", "tipo": "SNMP_FLOAT",
+          "oid_template": "1.3.6.1.4.1.3902.1012.3.50.12.1.1.10.{index}.1", "divisor": 100, "unidade": "dBm",
+          "descricao": "zxGponPonRxOpticalLevel. CALIBRAR divisor com valor conhecido.",
+          "triggers": [
+            { "id": "ont_rx_baixo", "nome": "RX baixo", "condicao": "<=", "threshold": -2500, "severidade": "warning", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: RX {valor} (≈ -25 dBm) — sinal fraco" },
+            { "id": "ont_rx_critico", "nome": "RX crítico", "condicao": "<=", "threshold": -2800, "severidade": "critical", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: RX {valor} (≈ -28 dBm) — cliente em risco" }
+          ]
+        },
+        { "id": "ont_tx_power", "nome": "TX Óptico da ONT", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.3902.1012.3.50.12.1.1.14.{index}.1", "divisor": 100, "unidade": "dBm" },
+        { "id": "ont_uptime", "nome": "Uptime da ONT", "tipo": "SNMP_TIMETICKS", "oid_template": "1.3.6.1.4.1.3902.1012.3.50.11.2.1.20.{index}", "unidade": "s" },
+        { "id": "ont_distance", "nome": "Distância (RTD)", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.3902.1012.3.11.4.1.2.{index}", "unidade": "m", "descricao": "zxGponRTDDistance — confirmar unidade (m)." },
+        { "id": "ont_last_offline", "nome": "Última queda", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.3902.1012.3.28.2.1.6.{index}", "descricao": "OctetString de data/hora." }
+      ]
+    }
+  ]
+}
