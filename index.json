@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-06-18",
+  "updated_at": "2026-06-23",
   "templates": [
     {
       "tipo": "OLT",
@@ -141,6 +141,41 @@
       "modelo": "S6730",
       "file": "huawei/s6730.json",
       "descricao": "Switch Huawei S6730 — interfaces, CPU, memória, temperatura e óptica SFP/DDM (HUAWEI-ENTITY-EXTENT-MIB)"
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "ZTE",
+      "modelo": "ZXA10 C320",
+      "file": "zte/zte-c320.json",
+      "descricao": "OLT GPON ZTE C320 (C3xx, base 1012) — placas, temperatura, interfaces, portas PON e ONTs (RX/TX óptico, status, distância)"
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "ZTE",
+      "modelo": "C650 Titan",
+      "file": "zte/zte-titan.json",
+      "descricao": "OLT GPON ZTE C650 Titan (plataforma Titan, base 1082.500) — interfaces e ONTs (taxa RX/TX, distância, motivo de queda)"
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "ZTE",
+      "modelo": "C610",
+      "file": "zte/zte-titan.json",
+      "descricao": "OLT GPON ZTE C610 (plataforma Titan, base 1082.500) — interfaces e ONTs (taxa RX/TX, distância, motivo de queda)"
+    },
+    {
+      "tipo": "Router",
+      "fabricante": "Huawei",
+      "modelo": "NE8000 M4",
+      "file": "huawei/huawei-ne8000-m4.json",
+      "descricao": "Roteador Huawei NE8000 M4 (VRP) — interfaces, CPU/mem/temp por placa, uptime e óptica SFP/DDM (HUAWEI-ENTITY-EXTENT-MIB)"
+    },
+    {
+      "tipo": "Switch",
+      "fabricante": "Datacom",
+      "modelo": "DM4270",
+      "file": "datacom/datacom-dm4270.json",
+      "descricao": "Switch L2/L3/MPLS Datacom DM4270 (DmOS) — interfaces, temperatura, ventiladores, óptica DDM e CPU"
     }
   ]
 }
