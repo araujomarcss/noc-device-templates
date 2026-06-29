@@ -1,17 +1,18 @@
 {
   "tipo": "OLT",
   "fabricante": "Huawei",
-  "modelo": "SmartAX MA5800",
+  "modelo": "MA5600T",
   "snmp_version": "2c",
-  "descricao": "OLT GPON Huawei SmartAX (família MA5600/MA5800) — sistema, CPU, temperatura por slot, interfaces/uplinks, status de porta PON e diagnóstico por ONT (RX óptico, status, MACs). OIDs capturados em equipamento real.",
-  "nota_geral": "AJUSTE o campo 'modelo' para o equipamento exato (ex: MA5608T, MA5683T, MA5800-X7). As capabilities por-ONT, por-porta-PON, CPU e temperatura dependem do discovery genérico no poller (Option B) — hoje só 'interfaces' expande por índice; antes do Option B essas capabilities aparecem vazias. Índice das tabelas de ONT é COMPOSTO: oid.{porta_pon}.{ont_id} (ex: 51.1.4.4194312192.0 = RX da ONT id 0 na porta 4194312192). O discovery deve capturar o sufixo composto inteiro como {index}.",
+  "descricao": "OLT GPON Huawei SmartAX MA5600T (compatível com a família MA5600/MA5800) — sistema, CPU, temperatura por slot, interfaces/uplinks, status de porta PON e diagnóstico por ONT (descrição/cliente, serial, RX óptico, RX no OLT, status, MACs). OIDs e índices da árvore de ONT confirmados em equipamento real (1471 ONTs).",
+  "nota_geral": "Modelo detectado via sysName = 'MA5600T'. Os OIDs Huawei (2011.6.128.*) são compartilhados entre MA5600T e MA5800, então este template serve para ambas as famílias (ajuste o campo 'modelo' se o chassi exato for outro, ex: MA5608T/MA5683T/MA5800-X7). Índice das tabelas de ONT é COMPOSTO: oid.{porta_pon}.{ont_id} (ex: 4194312192.0 = ONT id 0 na porta PON encodada 4194312192). O discovery deve capturar o sufixo composto inteiro como {index}. CPU/temperatura/portas-PON dependem do discovery genérico do poller; a capability 'onts' foi calibrada com walk real. discovery_name_oid em onts = 43.1.9 (descrição/cliente) → alertas e itens mostram o cliente em vez do índice. onu_table inclui coluna Cliente.",
   "onu_table": {
     "base_oid": "1.3.6.1.4.1.2011.6.128.1.1.2",
     "snmp_options": "-Cc",
     "fields": {
-      "serial": { "sub_oid": ".43.1.3",  "tipo": "STRING", "label": "Serial" },
-      "status": { "sub_oid": ".46.1.15", "tipo": "INT",    "label": "Status" },
-      "rx":     { "sub_oid": ".51.1.4",  "tipo": "INT",    "label": "RX (x100 dBm)" }
+      "cliente": { "sub_oid": ".43.1.9",  "tipo": "STRING", "label": "Cliente" },
+      "serial":  { "sub_oid": ".43.1.3",  "tipo": "STRING", "label": "Serial" },
+      "status":  { "sub_oid": ".46.1.15", "tipo": "INT",    "label": "Status" },
+      "rx":      { "sub_oid": ".51.1.4",  "tipo": "INT",    "label": "RX (x100 dBm)" }
     },
     "status_field": "status",
     "status_values": { "online": [1], "offline": [2] },
@@ -103,22 +104,35 @@
       "label": "ONTs (clientes GPON)",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.3",
-      "nota": "Discovery pelo serial da ONT (hwGponDeviceOntInfoSn). Índice COMPOSTO porta.ont_id (ex: 4194312192.0). RX óptico em dBm com divisor 100 (confirmado: -1311 = -13,11 dBm).",
+      "discovery_name_oid": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.9",
+      "nota": "Discovery pelo serial (43.1.3) p/ achar todas as ONTs; rótulo pela descrição/cliente (43.1.9) via discovery_name_oid. Índice COMPOSTO porta.ont_id (ex: 4194312192.0). RX (51.1.4 e 51.1.6) em dBm com divisor 100 (-1492 = -14,92 dBm). 2147483647 = leitura inválida (o poller já descarta).",
       "itens": [
-        { "id": "ont_serial", "nome": "Serial / MAC da ONT", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.3.{index}" },
+        {
+          "id": "ont_serial", "nome": "Serial / MAC da ONT", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.3.{index}",
+          "descricao": "Serial GPON. Hex-STRING: 4 primeiros bytes = vendor ID em ASCII (ex: 49 54 42 53 = 'ITBS'), 4 últimos em hex. Formatar como ASCII+HEX."
+        },
+        {
+          "id": "ont_description", "nome": "Descrição / Cliente", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.43.1.9.{index}", "rotulo_principal": true,
+          "descricao": "Descrição cadastrada na OLT — geralmente código/login do cliente (ex: '41995 - jorleys10433@powerfibra') ou endereço. Usada como rótulo (via discovery_name_oid). Pode vir vazia se não cadastrada."
+        },
         {
           "id": "ont_rx_power", "nome": "RX Óptico da ONT", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.51.1.4.{index}", "divisor": 100, "unidade": "dBm",
           "descricao": "Potência óptica recebida pela ONT (downstream). Principal métrica de saúde do cliente.",
           "triggers": [
             { "id": "ont_rx_baixo", "nome": "RX da ONT baixo", "condicao": "<=", "threshold": -2500, "severidade": "warning", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: RX em {valor} (≈ -25 dBm) — sinal fraco no cliente" },
             { "id": "ont_rx_critico", "nome": "RX da ONT crítico", "condicao": "<=", "threshold": -2800, "severidade": "critical", "auto_create": false, "mensagem": "ONT {interface} na OLT {host}: RX em {valor} (≈ -28 dBm) — perto/abaixo da sensibilidade GPON, cliente em risco" }
-          ]
+          ],
+          "valor_invalido": 2147483647
         },
-        { "id": "olt_rx_power", "nome": "RX Óptico no OLT (upstream)", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.51.1.6.{index}", "divisor": 100, "unidade": "dBm", "descricao": "Potência óptica que a OLT recebe desta ONT (upstream)." },
+        {
+          "id": "olt_rx_power", "nome": "RX Óptico no OLT (upstream)", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.51.1.6.{index}", "divisor": 100, "unidade": "dBm",
+          "descricao": "Potência óptica que a OLT recebe desta ONT (upstream). 2147483647 = sem leitura (ignorar).",
+          "valor_invalido": 2147483647
+        },
         {
           "id": "ont_run_status", "nome": "Status da ONT", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.6.128.1.1.2.46.1.15.{index}",
           "value_map": { "1": "Online", "2": "Offline" },
-          "descricao": "Estado operacional da ONT (1=online, 2=offline). Atenção: ONTs caindo/subindo é comum; o trigger pode gerar muito ruído — avalie ativar só em clientes críticos.",
+          "descricao": "Estado operacional da ONT (1=online, 2=offline). ONTs caindo/subindo é comum; o trigger pode gerar muito ruído — avalie ativar só em clientes críticos.",
           "triggers": [
             { "id": "ont_offline", "nome": "ONT offline", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "ONT {interface} na OLT {host} está OFFLINE" }
           ]
