@@ -1,142 +1,196 @@
 {
-  "tipo": "Router",
+  "tipo": "Roteador",
   "fabricante": "Huawei",
-  "modelo": "NE40",
+  "modelo": "NE40E",
   "snmp_version": "2c",
-  "descricao": "Huawei NE40 — OIDs IF-MIB testadas e compatíveis com Huawei, Datacom, Furukawa, Gigatelco e VSOL",
+  "descricao": "Roteador/BNG Huawei NetEngine NE40E (VRP V800R022) atuando como concentrador PPPoE — sistema, CPU/memória/temperatura por placa, interfaces/uplinks, diagnóstico óptico dos uplinks (RX/TX/temp por SFP), contagem de assinantes PPPoE online (agregado em tempo real) e varredura diária da base de sessões PPPoE por cliente (username, IP, MAC, porta/VLAN, plano, login). OIDs e índices confirmados em equipamento real (sysName 'Powernet_vPPPoE', ~2410 sessões PPPoE).",
+  "nota_geral": "Modelo detectado via sysDescr = 'HUAWEI NE40E-...' / sysObjectID 1.3.6.1.4.1.2011.2.62.30. CPU/memória/temperatura usam a hwEntityStateTable (2011.5.25.31.1.1.1.1.*) indexada por índice de placa cru (ex: 16777216, 16973825); use entPhysicalName (1.3.6.1.2.1.47.1.1.1.1.7.{index}) para traduzir o índice no nome da placa. O diagnóstico óptico (2011.5.25.31.1.1.3.1.*) é indexado por ifIndex e cobre os SFP/SFP+ de uplink. Sentinela de leitura inválida nos ópticos = 2147483647; RX = -4000 (-40 dBm) significa SEM SINAL (link/fibra down). A capability 'subscribers_pppoe' soma a coluna 2011.5.25.40.12.1.4.1.4 para obter o total de clientes online em tempo real (melhor detector de incidente em massa). A capability 'sessions_pppoe' lê a tabela de sessão hwAccessUser (2011.5.2.1.15.1.*) — é PESADA (~2410 linhas x dezenas de colunas) e contém DADO PESSOAL de assinante; por isso roda 1x/dia (intervalo 86400s) e é marcada como sensível/restrita. NÃO existe ifIndex limpo dentro da tabela de sessão; a ligação cliente->porta é feita pelo nome textual da interface (coluna 57, ex 'GigabitEthernet0/3/8.5002'). Para agrupar clientes por porta, agrupe a tabela de sessão pela coluna 57 (sufixo .VLAN é a sub-interface). A lista de assinantes PPPoE individuais via VRP CLI normalmente não vem por SNMP, mas esta caixa expõe a tabela completa.",
+  "sessions_table": {
+    "base_oid": "1.3.6.1.4.1.2011.5.2.1.15.1",
+    "snmp_options": "-Cc",
+    "intervalo": 86400,
+    "sensivel": true,
+    "acesso": "restrito",
+    "nota": "Varredura diaria (1x/24h). Dado pessoal de assinante — manter em view de suporte com permissao, fora do painel geral (LGPD). Indice = ID interno da sessao no roteador. Agrupar por 'porta' (coluna 57) gera a tabela de portas: clientes online por sub-interface.",
+    "fields": {
+      "username":    { "sub_oid": ".3",  "tipo": "STRING",      "label": "Cliente (login)" },
+      "ip":          { "sub_oid": ".15", "tipo": "IPADDRESS",    "label": "IP" },
+      "mac":         { "sub_oid": ".17", "tipo": "HEX_MAC",      "label": "MAC" },
+      "porta":       { "sub_oid": ".57", "tipo": "STRING",       "label": "Porta / Sub-interface" },
+      "vlan":        { "sub_oid": ".63", "tipo": "STRING",       "label": "VLAN" },
+      "bytes_up":    { "sub_oid": ".37", "tipo": "COUNTER64",    "label": "Bytes Upload" },
+      "bytes_down":  { "sub_oid": ".39", "tipo": "COUNTER64",    "label": "Bytes Download" },
+      "rate_up":     { "sub_oid": ".45", "tipo": "INT",          "label": "Plano Upload (bps)" },
+      "rate_down":   { "sub_oid": ".47", "tipo": "INT",          "label": "Plano Download (bps)" },
+      "login_time":  { "sub_oid": ".25", "tipo": "HEX_DATETIME", "label": "Login" }
+    },
+    "porta_field": "porta",
+    "mac_parser": "hex_mac_6b",
+    "datetime_parser": "huawei_7byte"
+  },
+  "ports_table": {
+    "fonte": "sessions_table",
+    "agrupar_por": "porta",
+    "nota": "Tabela de portas DERIVADA da tabela de sessoes: agrupar as sessoes pela coluna 57 (porta/sub-interface) e contar -> clientes online por porta. Para juntar com status/trafego/optico da porta fisica, normalizar o nome (remover sufixo '.VLAN' da sub-interface, ex 'GigabitEthernet0/3/8.5002' -> 'GigabitEthernet0/3/8') e casar com ifDescr (1.3.6.1.2.1.2.2.1.2) da capability interfaces/optical_uplinks. Nao requer OID novo.",
+    "metricas": [
+      { "id": "clientes_por_porta", "nome": "Clientes online na porta", "tipo": "GROUP_COUNT", "unidade": "clientes" }
+    ]
+  },
   "capabilities": [
     {
-      "id": "ping",
-      "label": "Ping / Disponibilidade",
-      "descricao": "Verifica se o equipamento está online via ICMP",
-      "categoria": "Básico",
+      "id": "system",
+      "label": "Sistema",
       "requer_discovery": false,
       "itens": [
+        { "id": "sys_name", "nome": "Nome do Sistema", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0" },
+        { "id": "sys_descr", "nome": "Descrição", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0" },
+        { "id": "sys_location", "nome": "Localização", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.6.0" },
         {
-          "id": "icmp_ping",
-          "nome": "ICMP Ping",
-          "tipo": "ICMP_PING",
-          "unidade": "",
-          "descricao": "Online=1 / Offline=0"
-        },
+          "id": "uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s",
+          "triggers": [
+            { "id": "reboot_detectado", "nome": "Reboot detectado", "condicao": "drop", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "Roteador {host} reiniciou — uptime caiu de {anterior}s para {valor}s" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpu",
+      "label": "CPU por placa",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5",
+      "discovery_name_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
+      "nota": "hwEntityCpuUsage (hwEntityStateTable). Indice de placa cru (ex: 16777216, 16973825 = placas de controle ativas). Placas inativas/sem CPU retornam 0 — filtre. Rotulo da placa via entPhysicalName (47.1.1.1.1.7.{index}). Fallback VRP5 antiga: 1.3.6.1.4.1.2011.6.3.4.1.2.",
+      "itens": [
         {
-          "id": "icmp_loss",
-          "nome": "Perda de Pacotes",
-          "tipo": "ICMP_LOSS",
-          "unidade": "%",
-          "descricao": "Percentual de pacotes perdidos"
-        },
+          "id": "cpu_usage", "nome": "CPU", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5.{index}", "unidade": "%",
+          "triggers": [
+            { "id": "cpu_alta", "nome": "CPU alta", "condicao": ">=", "threshold": 80, "severidade": "warning", "auto_create": false, "mensagem": "Placa {interface} no roteador {host}: CPU em {valor}%" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memória por placa",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7",
+      "discovery_name_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
+      "nota": "hwEntityMemUsage (hwEntityStateTable). Mesmos indices de placa do CPU (16777216, 16973825 ~39%). Placas sem memoria retornam 0 — filtre. Fallback VRP5 antiga: 1.3.6.1.4.1.2011.6.3.5.1.2.",
+      "itens": [
         {
-          "id": "icmp_response",
-          "nome": "Tempo de Resposta",
-          "tipo": "ICMP_RESPONSE",
-          "unidade": "ms",
-          "descricao": "Latência ICMP em milissegundos"
+          "id": "mem_usage", "nome": "Memória", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.{index}", "unidade": "%",
+          "triggers": [
+            { "id": "mem_alta", "nome": "Memória alta", "condicao": ">=", "threshold": 85, "severidade": "warning", "auto_create": false, "mensagem": "Placa {interface} no roteador {host}: memória em {valor}%" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura por placa",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11",
+      "discovery_name_oid": "1.3.6.1.2.1.47.1.1.1.1.7",
+      "nota": "hwEntityTemperature (hwEntityStateTable). Sensores nos indices de placa (ex: 16973825, 17039361, 17104897, 17170433 ~24-25°C). Indices sem sensor retornam 0/sentinela — filtre. °C direto.",
+      "itens": [
+        {
+          "id": "board_temperature", "nome": "Temperatura", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11.{index}", "unidade": "°C",
+          "triggers": [
+            { "id": "temperatura_alta", "nome": "Temperatura alta", "condicao": ">=", "threshold": 65, "severidade": "warning", "auto_create": false, "mensagem": "Placa {interface} no roteador {host} com temperatura alta: {valor}°C" }
+          ]
         }
       ]
     },
     {
       "id": "interfaces",
-      "label": "Interfaces de Rede",
-      "descricao": "Status, tráfego, erros e descartados por interface — OIDs IF-MIB confirmadas no NE40",
-      "categoria": "Rede",
+      "label": "Interfaces / Uplinks",
       "requer_discovery": true,
       "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
-      "nota": "OIDs testadas no NE40 e compatíveis com Datacom, Furukawa, Gigatelco e VSOL",
+      "nota": "Trafego usa contador 64-bit (ifHCInOctets/OutOctets) com fallback 32-bit. ifHighSpeed (31.1.1.1.15) resolve a velocidade nas 100GE (ifSpeed satura em 4294967295). if_last_change = momento da ultima mudanca de estado. ifAlias (31.1.1.1.18) traz a descricao configurada na interface.",
       "itens": [
         {
-          "id": "if_status",
-          "nome": "Status Operacional",
-          "tipo": "SNMP_INT",
-          "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
-          "unidade": "",
-          "value_map": {
-            "1": "Up",
-            "2": "Down"
-          },
-          "descricao": "Status da interface (ifOperStatus). 1=Up, 2=Down"
+          "id": "if_oper_status", "nome": "Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "Up", "2": "Down", "3": "Testing", "4": "Unknown", "5": "Dormant", "6": "Not Present", "7": "Lower Layer Down" },
+          "triggers": [
+            { "id": "interface_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} no roteador {host} está DOWN" }
+          ]
+        },
+        { "id": "if_admin_status", "nome": "Status Administrativo", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}", "value_map": { "1": "Up", "2": "Down", "3": "Testing" } },
+        { "id": "if_in_octets", "nome": "Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bps" },
+        { "id": "if_out_octets", "nome": "Tráfego Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bps" },
+        { "id": "if_high_speed", "nome": "Velocidade da Interface", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}", "unidade": "Mbps", "descricao": "ifHighSpeed — usa Mbps; resolve a saturacao do ifSpeed (32-bit) nas portas 100GE." },
+        { "id": "if_in_errors", "nome": "Erros de Entrada", "tipo": "DELTA", "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}", "unidade": "err/s" },
+        { "id": "if_last_change", "nome": "Última mudança de estado", "tipo": "SNMP_TIMETICKS", "oid_template": "1.3.6.1.2.1.2.2.1.9.{index}", "unidade": "s", "descricao": "ifLastChange — uptime do equipamento no momento da ultima queda/subida da interface." }
+      ]
+    },
+    {
+      "id": "optical_uplinks",
+      "label": "Óptico dos Uplinks (SFP)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.4",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "hwEntityOpticalInfoTable, indexada por ifIndex (casa com a capability interfaces). Discovery pela coluna .4 (serial do modulo) para achar so as portas com SFP. Rotulo via ifDescr (2.2.1.2.{index}). RX/TX em centesimos de dBm (divisor 100). Sentinela invalido = 2147483647 (slot sem leitura). RX = -4000 (-40 dBm) = SEM SINAL (fibra/link down).",
+      "itens": [
+        {
+          "id": "optical_rx", "nome": "RX Óptico do Uplink", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.8.{index}", "divisor": 100, "unidade": "dBm",
+          "descricao": "Potencia optica recebida no SFP do uplink. Principal metrica de saude do enlace de subida.",
+          "triggers": [
+            { "id": "uplink_rx_baixo", "nome": "RX do uplink fraco", "condicao": "<=", "threshold": -2200, "severidade": "warning", "auto_create": false, "mensagem": "Uplink {interface} no roteador {host}: RX em {valor} (≈ -22 dBm) — sinal optico fraco" },
+            { "id": "uplink_sem_sinal", "nome": "Uplink sem sinal óptico", "condicao": "<=", "threshold": -4000, "severidade": "high", "auto_create": false, "mensagem": "Uplink {interface} no roteador {host}: RX = -40 dBm — SEM SINAL (fibra desconectada ou link down)" }
+          ],
+          "valor_invalido": 2147483647
         },
         {
-          "id": "if_type",
-          "nome": "Tipo de Interface",
-          "tipo": "SNMP_INT",
-          "oid_template": "1.3.6.1.2.1.2.2.1.3.{index}",
-          "unidade": "",
-          "descricao": "Tipo da interface (ifType). Ex: Ethernet=6, full/half duplex"
+          "id": "optical_tx", "nome": "TX Óptico do Uplink", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.9.{index}", "divisor": 100, "unidade": "dBm",
+          "descricao": "Potencia optica transmitida pelo SFP do uplink.",
+          "valor_invalido": 2147483647
         },
         {
-          "id": "if_speed",
-          "nome": "Velocidade",
-          "tipo": "SNMP_INT",
-          "oid_template": "1.3.6.1.2.1.31.1.1.1.15.{index}",
-          "unidade": "Mbps",
-          "descricao": "Velocidade negociada da interface em Mbps (ifHighSpeed)"
-        },
-        {
-          "id": "if_in_octets",
-          "nome": "Tráfego Entrada (Bits recebidos)",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",
-          "unidade": "bps",
-          "descricao": "Bytes recebidos — contador 64-bit (ifHCInOctets)"
-        },
-        {
-          "id": "if_out_octets",
-          "nome": "Tráfego Saída (Bits enviados)",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}",
-          "unidade": "bps",
-          "descricao": "Bytes enviados — contador 64-bit (ifHCOutOctets)"
-        },
-        {
-          "id": "if_in_errors",
-          "nome": "Erros de Entrada",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.2.2.1.14.{index}",
-          "unidade": "erros/s",
-          "descricao": "Pacotes de entrada com erros (ifInErrors)"
-        },
-        {
-          "id": "if_out_errors",
-          "nome": "Erros de Saída",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.2.2.1.20.{index}",
-          "unidade": "erros/s",
-          "descricao": "Pacotes de saída com erros (ifOutErrors)"
-        },
-        {
-          "id": "if_in_discards",
-          "nome": "Descartados Entrada",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.2.2.1.13.{index}",
-          "unidade": "pkts/s",
-          "descricao": "Pacotes de entrada descartados (ifInDiscards)"
-        },
-        {
-          "id": "if_out_discards",
-          "nome": "Descartados Saída",
-          "tipo": "DELTA_BYTES",
-          "oid_template": "1.3.6.1.2.1.2.2.1.19.{index}",
-          "unidade": "pkts/s",
-          "descricao": "Pacotes de saída descartados (ifOutDiscards)"
+          "id": "optical_temp", "nome": "Temperatura do SFP", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.5.{index}", "unidade": "°C",
+          "descricao": "Temperatura do modulo optico (°C direto).",
+          "valor_invalido": 2147483647
         }
       ]
     },
     {
-      "id": "uptime",
-      "label": "Uptime",
-      "descricao": "Tempo desde o último reinício",
-      "categoria": "Básico",
+      "id": "subscribers_pppoe",
+      "label": "Clientes PPPoE (total online)",
       "requer_discovery": false,
+      "agregacao": "soma_coluna",
+      "agregacao_oid": "1.3.6.1.4.1.2011.5.25.40.12.1.4.1.4",
+      "nota": "Total de assinantes PPPoE online em tempo real = SOMA de toda a coluna 2011.5.25.40.12.1.4.1.4 (sessoes por sub-interface/VLAN). Capturado ~2410 clientes em 88 VLANs. Roda no ciclo normal de coleta — uma queda brusca aqui e o melhor detector de incidente em massa (queda de OLT, uplink, etc).",
       "itens": [
         {
-          "id": "uptime_net",
-          "nome": "Uptime SNMP",
-          "tipo": "SNMP_TIMETICKS",
-          "oid": "1.3.6.1.2.1.1.3.0",
-          "unidade": "s",
-          "descricao": "Tempo desde último reinício do SNMP"
+          "id": "pppoe_online_total", "nome": "Assinantes PPPoE Online", "tipo": "SNMP_SUM", "oid_base": "1.3.6.1.4.1.2011.5.25.40.12.1.4.1.4", "unidade": "clientes",
+          "triggers": [
+            { "id": "pppoe_queda_massa", "nome": "Queda em massa de PPPoE", "condicao": "drop_pct", "threshold": 20, "severidade": "high", "auto_create": false, "mensagem": "Roteador {host}: total de PPPoE caiu mais de 20% ({anterior} → {valor} online) — possível incidente em massa" },
+            { "id": "pppoe_zerado", "nome": "PPPoE zerado", "condicao": "<=", "threshold": 0, "severidade": "critical", "auto_create": false, "mensagem": "Roteador {host}: nenhum cliente PPPoE online — concentrador fora do ar" }
+          ]
         }
+      ]
+    },
+    {
+      "id": "sessions_pppoe",
+      "label": "Sessões PPPoE (clientes / portas)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.2011.5.2.1.15.1.3",
+      "discovery_name_oid": "1.3.6.1.4.1.2011.5.2.1.15.1.3",
+      "intervalo": 86400,
+      "sensivel": true,
+      "acesso": "restrito",
+      "snmp_options": "-Cc",
+      "nota": "VARREDURA DIARIA (1x/24h, intervalo 86400s) — NAO coletar no ciclo normal: a tabela e pesada (~2410 sessoes x dezenas de colunas) e bate na control plane do BNG. DADO PESSOAL de assinante (login/IP/MAC) — manter restrito (LGPD), fora do painel geral. Discovery pela coluna .3 (username). Indice = ID interno da sessao. Para a TABELA DE PORTAS, agrupar estas sessoes pela coluna 'porta' (.57): da clientes-online por sub-interface; para cruzar com status/trafego/optico da porta fisica, casar o nome (tirando o sufixo .VLAN) com ifDescr. Os triggers ficam desligados por padrao (esta capability e inventario, nao alarme).",
+      "itens": [
+        { "id": "sess_username", "nome": "Cliente (login)", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.3.{index}", "rotulo_principal": true, "descricao": "Login PPPoE do assinante, com realm do SGP (ex: 'severino10@powernet%sgp')." },
+        { "id": "sess_ip", "nome": "IP do Cliente", "tipo": "SNMP_IPADDRESS", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.15.{index}", "descricao": "IP atribuido (faixa CGNAT 100.64/10 = pos-NAT)." },
+        { "id": "sess_mac", "nome": "MAC do Cliente", "tipo": "SNMP_HEX_MAC", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.17.{index}", "descricao": "MAC do equipamento do cliente (Hex-STRING 6 bytes)." },
+        { "id": "sess_port", "nome": "Porta / Sub-interface", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.57.{index}", "descricao": "Interface logica de entrada (ex: 'GigabitEthernet0/3/8.5002'). Chave para a tabela de portas (agrupar por este campo)." },
+        { "id": "sess_vlan", "nome": "VLAN", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.63.{index}" },
+        { "id": "sess_bytes_up", "nome": "Bytes Upload", "tipo": "SNMP_COUNTER64", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.37.{index}", "unidade": "bytes" },
+        { "id": "sess_bytes_down", "nome": "Bytes Download", "tipo": "SNMP_COUNTER64", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.39.{index}", "unidade": "bytes" },
+        { "id": "sess_rate_up", "nome": "Plano Upload", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.45.{index}", "unidade": "bps", "descricao": "Velocidade contratada de upload (bps)." },
+        { "id": "sess_rate_down", "nome": "Plano Download", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.47.{index}", "unidade": "bps", "descricao": "Velocidade contratada de download (bps)." },
+        { "id": "sess_login_time", "nome": "Login", "tipo": "SNMP_HEX_DATETIME", "oid_template": "1.3.6.1.4.1.2011.5.2.1.15.1.25.{index}", "descricao": "Momento em que a sessao subiu. Hex-STRING 7 bytes: [ano_hi ano_lo mes dia hh mm ss]." }
       ]
     }
   ]
