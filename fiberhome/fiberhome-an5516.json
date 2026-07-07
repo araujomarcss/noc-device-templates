@@ -1,0 +1,132 @@
+{
+  "tipo": "OLT",
+  "fabricante": "FiberHome",
+  "modelo": "AN5516",
+  "snmp_version": "2c",
+  "status_validacao": "a_validar_em_campo",
+  "descricao": "OLT GPON FiberHome família AN5516/AN5116 (enterprise 5875) — sistema, temperatura do chassi, total de assinantes/ONUs online (com alerta de queda em massa), inventário de placas, capacidade e óptico por porta PON, e diagnóstico óptico por ONU (RX/TX/temperatura). Também mapeia a tabela de ONUs não autorizadas (whitelist), que alimenta o fluxo de provisionamento. Cobre a família via sysObjectID.",
+  "nota_geral": "IMPORTANTE: template montado a partir da MIB oficial FiberHome (GEPON/FIBERHOME-OLT-COMMON-MIB, enterprise 1.3.6.1.4.1.5875.800) e de dois templates Zabbix da comunidade que concordam entre si — porém NÃO foi validado em equipamento real. Marcado como 'a_validar_em_campo'. Antes de confiar 100%, rodar um snmpwalk numa OLT FiberHome e conferir: (1) formato do índice composto da ONU (slot/pon/onu_id — precisa de parse, análogo ao Huawei porta.ont_id); (2) se o RX/TX vêm mesmo em centésimos de dBm (divisor 100); (3) o valor/sentinela quando a ONU está offline. Detecção de modelo via sysObjectID (1.3.6.1.2.1.1.2.0): An5116-02=...5875.800.1001.1, An5116-06=.2, An5516-01=.11, An5516-06=.6(subrack)/tipicamente .1001.x, An5516-04=.12(subrack), GT5116-06B=.14. ATENÇÃO OPERACIONAL: o RX/TX óptico das ONUs só retorna valor se a coleta de performance óptica estiver LIGADA na OLT (CLI: 'set pon_traffic_sts switch opt enable <slot> <pon>' na seção maintenance/performance). Sem isso, .6/.7 vêm zerados. Algumas placas controladoras (HSWA/HSUA) podem ter divergência de OID — validar por placa.",
+  "capabilities": [
+    {
+      "id": "system",
+      "label": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "sys_name", "nome": "Nome do Sistema", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0" },
+        { "id": "sys_descr", "nome": "Descrição", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0" },
+        { "id": "sys_object_id", "nome": "Modelo (sysObjectID)", "tipo": "SNMP_OID", "oid": "1.3.6.1.2.1.1.2.0", "descricao": "Identifica a família FiberHome. Ex: ...5875.800.1001.11 = An5516-01." },
+        { "id": "sw_version", "nome": "Versão de Software", "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.5875.800.3.9.4.3.0" },
+        { "id": "hw_version", "nome": "Versão de Hardware", "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.5875.800.3.9.4.4.0" },
+        {
+          "id": "uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s",
+          "triggers": [
+            { "id": "reboot_detectado", "nome": "Reboot detectado", "condicao": "drop", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "OLT {host} reiniciou — uptime caiu de {anterior}s para {valor}s" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "label": "Temperatura do Chassi",
+      "requer_discovery": false,
+      "nota": "Device Temperature (sysTemperature). °C direto. Escalar (1 valor por OLT).",
+      "itens": [
+        {
+          "id": "device_temperature", "nome": "Temperatura", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.5875.800.3.9.4.5.0", "unidade": "°C",
+          "triggers": [
+            { "id": "temperatura_alta", "nome": "Temperatura alta", "condicao": ">=", "threshold": 55, "severidade": "warning", "auto_create": false, "mensagem": "OLT {host} com temperatura alta: {valor}°C" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "subscribers_total",
+      "label": "Clientes / ONUs Online (total)",
+      "requer_discovery": false,
+      "nota": "Total de ONUs autenticadas na OLT (escalar). Confirmado em template da comunidade como 'Clientes Total OLT'. É o pulso da OLT: uma queda brusca indica incidente em massa (uplink/placa/PON).",
+      "itens": [
+        {
+          "id": "onu_online_total", "nome": "ONUs Online", "tipo": "SNMP_INT", "oid": "1.3.6.1.4.1.5875.800.3.9.4.6.0", "unidade": "clientes",
+          "triggers": [
+            { "id": "onu_queda_massa", "nome": "Queda em massa de ONUs", "condicao": "drop_pct", "threshold": 15, "severidade": "high", "auto_create": false, "mensagem": "OLT {host}: total de ONUs caiu mais de 15% ({anterior} → {valor}) — possível incidente em massa" },
+            { "id": "onu_zerado", "nome": "Nenhuma ONU online", "condicao": "<=", "threshold": 0, "severidade": "critical", "auto_create": false, "mensagem": "OLT {host}: nenhuma ONU online — OLT possivelmente fora do ar" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cards",
+      "label": "Placas / Slots",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.5875.800.3.9.5.1.1.2",
+      "nota": "Inventário de placas. .2 = card present status (1=present, 0=not present); .3 = authorized card type (código do modelo da placa, ex 355=HSWA, 527=GC8B, 414=HU2A). cardMemUtil (uso de memória por placa) aparece nos templates da comunidade mas o OID numérico exato não foi confirmado — marcado a_validar.",
+      "itens": [
+        {
+          "id": "card_present", "nome": "Placa presente", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.5.1.1.2.{index}",
+          "value_map": { "1": "Presente", "0": "Ausente" },
+          "triggers": [
+            { "id": "placa_ausente", "nome": "Placa ausente/removida", "condicao": "=", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "Slot {interface} na OLT {host}: placa ausente ou removida" }
+          ]
+        },
+        { "id": "card_type", "nome": "Tipo da Placa", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.5.1.1.3.{index}", "descricao": "Código do modelo da placa (ver tabela na MIB, ex 527=GC8B)." },
+        { "id": "card_mem_util", "nome": "Memória da Placa", "tipo": "SNMP_INT", "oid_template": "MIB:cardMemUtil.{index}", "unidade": "%", "status_validacao": "a_validar", "descricao": "OID numérico não confirmado — resolver via walk antes de usar.",
+          "triggers": [
+            { "id": "card_mem_alta", "nome": "Memória da placa alta", "condicao": ">=", "threshold": 80, "severidade": "warning", "auto_create": false, "mensagem": "Slot {interface} na OLT {host}: memória em {valor}%" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pon_ports",
+      "label": "Portas PON (capacidade + óptico)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.5875.800.3.9.3.4.1.2",
+      "nota": "oltPonInfoTable (1.3.6.1.4.1.5875.800.3.9.3.4.1), indexada por ponIndex. Colunas confirmadas na MIB: .2=oltPonName, .5=oltPonOnlineStatus, .7=oltPonTxOpticalPower, .8=oltPonOpticalVoltage, .9=oltPonOpticalCurrent, .10=oltPonOpticalTemperature, .12=oltPonAuthOnuNum (nº de ONUs autorizadas na porta). GPON satura em 128 ONUs/porta — alerta em 118 (padrão da comunidade).",
+      "itens": [
+        {
+          "id": "pon_auth_onu_num", "nome": "ONUs autorizadas na PON", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.4.1.12.{index}", "unidade": "ONUs",
+          "triggers": [
+            { "id": "pon_quase_cheia", "nome": "PON quase cheia", "condicao": ">=", "threshold": 118, "severidade": "warning", "auto_create": false, "mensagem": "PON {interface} na OLT {host} quase cheia: {valor} ONUs (limite 128)" }
+          ]
+        },
+        { "id": "pon_online_status", "nome": "Status da PON", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.4.1.5.{index}", "descricao": "oltPonOnlineStatus." },
+        { "id": "pon_tx_power", "nome": "TX Óptico da PON", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.4.1.7.{index}", "divisor": 100, "unidade": "dBm", "status_validacao": "a_validar", "descricao": "oltPonTxOpticalPower. Divisor 100 assumido do padrão da família — confirmar em campo." },
+        { "id": "pon_temp", "nome": "Temperatura da PON", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.4.1.10.{index}", "unidade": "°C", "descricao": "oltPonOpticalTemperature." }
+      ]
+    },
+    {
+      "id": "onu_optical",
+      "label": "Óptico das ONUs (RX/TX)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.5875.800.3.9.3.3.1.2",
+      "nota": "onuPonInfoTable (1.3.6.1.4.1.5875.800.3.9.3.3.1), indexada por índice COMPOSTO de ONU (slot/pon/onu_id — precisa de parse, análogo ao Huawei). Colunas confirmadas na MIB: .2=onuPonName (nome/rótulo), .6=onuPonRXOpticalPower, .7=onuPonTXOpticalPower, .10=onuPonOpticalTemperature, .11=onuPonIsOpticalPowerValid (1=support/leitura válida, 2=nonsupport/inválida). RX/TX em centésimos de dBm (÷100), confirmado em 2 templates. Use a coluna .11 como 'valor válido' antes de confiar no RX/TX. Descoberta pela coluna .2.",
+      "itens": [
+        { "id": "onu_name", "nome": "Nome/Rótulo da ONU", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.3.1.2.{index}", "rotulo_principal": true },
+        {
+          "id": "onu_rx_power", "nome": "RX Óptico da ONU", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.3.1.6.{index}", "divisor": 100, "unidade": "dBm",
+          "validade_oid": "1.3.6.1.4.1.5875.800.3.9.3.3.1.11.{index}", "validade_valor_ok": 1,
+          "descricao": "Potência óptica recebida pela ONU. Principal métrica de saúde do enlace do cliente. Só confiar se .11 (isOpticalPowerValid) = 1.",
+          "triggers": [
+            { "id": "onu_rx_baixo", "nome": "RX da ONU fraco", "condicao": "<=", "threshold": -2500, "severidade": "warning", "auto_create": false, "mensagem": "ONU {interface} na OLT {host}: RX em {valor} (≈ -25 dBm) — sinal óptico baixo" },
+            { "id": "onu_rx_critico", "nome": "RX da ONU crítico", "condicao": "<=", "threshold": -2800, "severidade": "critical", "auto_create": false, "mensagem": "ONU {interface} na OLT {host}: RX em {valor} (≈ -28 dBm) — sinal crítico" }
+          ]
+        },
+        { "id": "onu_tx_power", "nome": "TX Óptico da ONU", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.3.1.7.{index}", "divisor": 100, "unidade": "dBm", "validade_oid": "1.3.6.1.4.1.5875.800.3.9.3.3.1.11.{index}", "validade_valor_ok": 1 },
+        { "id": "onu_temp", "nome": "Temperatura da ONU", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.9.3.3.1.10.{index}", "unidade": "°C" }
+      ]
+    },
+    {
+      "id": "onu_unauth",
+      "label": "ONUs não autorizadas (whitelist)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.5875.800.3.1.1.1.4",
+      "intervalo": 300,
+      "nota": "onuWhiteList / onuPhysicalwhiteListTable (1.3.6.1.4.1.5875.800.3.1.1.1). Lista ONUs detectadas aguardando autorização (equivalente FiberHome do autofind Huawei / unauth do SGP). Colunas: .2=onuSlotForPhysical, .3=onuPonForPhysical, .4=onuMacForPhysical (MAC/serial da ONU), .5=actionForPhysical. Alimenta o fluxo de provisionamento (descobrir → autorizar). LEITURA — não dispara alarme por padrão; é inventário de pendências.",
+      "itens": [
+        { "id": "unauth_mac", "nome": "MAC/Serial da ONU pendente", "tipo": "SNMP_HEX", "oid_template": "1.3.6.1.4.1.5875.800.3.1.1.1.4.{index}", "rotulo_principal": true },
+        { "id": "unauth_slot", "nome": "Slot", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.1.1.1.2.{index}" },
+        { "id": "unauth_pon", "nome": "PON", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.5875.800.3.1.1.1.3.{index}" }
+      ]
+    }
+  ]
+}
