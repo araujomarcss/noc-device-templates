@@ -8,7 +8,7 @@
   "modelo": "AN5516",
   "file": "fiberhome/fiberhome-an5516.json",
   "descricao": "OLT GPON FiberHome AN5516/AN5116 — sistema, temperatura, ONUs online, PON, óptico das ONUs e whitelist de não autorizadas"
-}
+    },
     {
       "tipo": "OLT",
       "fabricante": "2Flex",
