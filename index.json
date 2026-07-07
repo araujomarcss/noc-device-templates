@@ -179,7 +179,7 @@
     },
     {
       "tipo": "OLT",
-      "fab": "FiberHome",
+      "fabricante": "FiberHome",
       "modelo": "AN5516",
       "file": "fiberhome/fiberhome-an5516.json"
     }
