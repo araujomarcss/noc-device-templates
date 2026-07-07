@@ -1,14 +1,7 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-06-23",
+  "updated_at": "2026-07-07",
   "templates": [
-    {
-  "tipo": "OLT",
-  "fabricante": "FiberHome",
-  "modelo": "AN5516",
-  "file": "fiberhome/fiberhome-an5516.json",
-  "descricao": "OLT GPON FiberHome AN5516/AN5116 — sistema, temperatura, ONUs online, PON, óptico das ONUs e whitelist de não autorizadas"
-    },
     {
       "tipo": "OLT",
       "fabricante": "2Flex",
@@ -183,6 +176,12 @@
       "modelo": "DM4270",
       "file": "datacom/datacom-dm4270.json",
       "descricao": "Switch L2/L3/MPLS Datacom DM4270 (DmOS) — interfaces, temperatura, ventiladores, óptica DDM e CPU"
+    },
+    {
+      "tipo": "OLT",
+      "fab": "FiberHome",
+      "modelo": "AN5516",
+      "file": "fiberhome/fiberhome-an5516.json"
     }
   ]
 }
