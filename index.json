@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-07-07",
+  "updated_at": "2026-07-29",
   "templates": [
     {
       "tipo": "OLT",
@@ -182,6 +182,13 @@
       "fabricante": "FiberHome",
       "modelo": "AN5516",
       "file": "fiberhome/fiberhome-an5516.json"
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "Furukawa",
+      "modelo": "LD3032",
+      "file": "furukawa/furukawa-ld3032.json",
+      "descricao": "OLT GPON Furukawa LightDrive LD3032 (plataforma NOS, PEN 10428) — interfaces e ONUs por porta PON (cliente, serial, RX óptico, status)"
     }
   ]
 }
