@@ -12,11 +12,12 @@
       "cliente": { "sub_oid": ".18",  "tipo": "STRING", "label": "Cliente" },
       "serial":  { "sub_oid": ".4",   "tipo": "STRING", "label": "Serial/ONU" },
       "status":  { "sub_oid": ".2",   "tipo": "INT",    "label": "Status" },
-      "rx":      { "sub_oid": ".16",  "tipo": "INT",    "label": "RX (x10 dBm)" },
+      "rx":      { "sub_oid": ".16",  "tipo": "INT",    "divisor": 10, "label": "RX (dBm)" },
       "servico": { "sub_oid": ".118", "tipo": "STRING", "label": "Serviço" }
     },
     "status_field": "status",
-    "status_values": { "online": [2], "offline": [1] }
+    "status_values": { "online": [2], "offline": [1] },
+    "location_parser": "furukawa_pon"
   },
   "capabilities": [
     {
