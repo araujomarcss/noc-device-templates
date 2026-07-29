@@ -1,0 +1,96 @@
+{
+  "tipo": "OLT",
+  "fabricante": "Furukawa",
+  "modelo": "LD3032",
+  "snmp_version": "2c",
+  "descricao": "OLT GPON Furukawa LightDrive LD3032 (plataforma NOS, PEN 10428) — sistema, interfaces/uplinks e árvore de ONUs por porta PON com cliente/descrição, serial, RX óptico e status. OIDs e índices confirmados em equipamento real (sysName 'OLT_RP', firmware NOS 2.09, 404 ONUs).",
+  "nota_geral": "Modelo detectado via sysDescr = 'LD3032 NOS 2.09' e sysObjectID = 1.3.6.1.4.1.10428.9.1.1.2.4.5 (PEN do fabricante = 10428). A tabela de ONUs é 1.3.6.1.4.1.10428.9.1.101.23.3.1.1.{coluna}.{pon}.{onu} — o índice é COMPOSTO: 1º segmento = porta PON encodada (1000001, 1000002, ...; PON física = segmento − 1000000), 2º segmento = id da ONU na porta. O discovery deve capturar o sufixo composto inteiro como {index}. Colunas calibradas: 2=status(1=offline,2=online — INVERTIDO em relação à Huawei), 4=serial/nome da ONU (ex: 'GIGAbc0d8760'), 16=RX óptico (÷10 dBm; -400 = sem sinal/offline), 17=modelo da ONU, 18=descrição/cliente (login, vem entre ASPAS DUPLAS literais — o poller deve remover as aspas da borda; preenchido só em parte das ONUs), 118=rótulo de serviço/área. IMPORTANTE: o login do cliente (col 18) NÃO está cadastrado em todas as ONUs nesta OLT (apenas ~150/404, e poucas no formato login@dominio); a identidade sempre disponível é o serial (col 4). Para mapear 100% dos clientes por porta, correlacione o serial (col 4) com o ERP (SGP/IXC), igual à ponte concentrador↔ERP. O poller agrupa as ONUs por porta automaticamente pelo índice numérico; o rótulo da PON sai como o número cru (1000001) até existir um parser 'furukawa_pon' (pon = seg1 − 1000000) em parse_location — a listagem e os alertas por cliente funcionam sem isso. CPU/temperatura/portas-PON dependem de OIDs adicionais sob 10428 ainda não mapeados (podem ser adicionados depois).",
+  "onu_table": {
+    "base_oid": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1",
+    "snmp_options": "-Cc",
+    "fields": {
+      "cliente": { "sub_oid": ".18",  "tipo": "STRING", "label": "Cliente" },
+      "serial":  { "sub_oid": ".4",   "tipo": "STRING", "label": "Serial/ONU" },
+      "status":  { "sub_oid": ".2",   "tipo": "INT",    "label": "Status" },
+      "rx":      { "sub_oid": ".16",  "tipo": "INT",    "label": "RX (x10 dBm)" },
+      "servico": { "sub_oid": ".118", "tipo": "STRING", "label": "Serviço" }
+    },
+    "status_field": "status",
+    "status_values": { "online": [2], "offline": [1] }
+  },
+  "capabilities": [
+    {
+      "id": "system",
+      "label": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "sys_name", "nome": "Nome do Sistema", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0" },
+        { "id": "sys_location", "nome": "Localização", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.6.0" },
+        {
+          "id": "uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "s",
+          "triggers": [
+            { "id": "reboot_detectado", "nome": "Reboot detectado", "condicao": "drop", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "OLT {host} reiniciou — uptime caiu de {anterior}s para {valor}s" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Uplinks",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.2",
+      "nota": "IF-MIB padrão (funciona na LD3032). ~190 interfaces (bridges 'brN' + uplinks físicos). Tráfego usa contador 64-bit (ifHCInOctets/OutOctets) com fallback 32-bit. Selecione no discovery os uplinks físicos (não as bridges 'brN').",
+      "itens": [
+        {
+          "id": "if_oper_status", "nome": "Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "Up", "2": "Down", "3": "Testing", "4": "Unknown", "5": "Dormant", "6": "Not Present", "7": "Lower Layer Down" },
+          "triggers": [
+            { "id": "interface_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} na OLT {host} está DOWN" }
+          ]
+        },
+        { "id": "if_in_octets", "nome": "Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bps" },
+        { "id": "if_out_octets", "nome": "Tráfego Saída", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bps" },
+        { "id": "if_last_change", "nome": "Última mudança de estado", "tipo": "SNMP_TIMETICKS", "oid_template": "1.3.6.1.2.1.2.2.1.9.{index}", "unidade": "s", "descricao": "ifLastChange — uptime do equipamento no momento da última queda/subida da interface." }
+      ]
+    },
+    {
+      "id": "onts",
+      "label": "ONUs (clientes GPON)",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.4",
+      "discovery_name_oid": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.18",
+      "nota": "Discovery pelo serial (col 4, presente em 100% das ONUs); rótulo pela descrição/cliente (col 18) via discovery_name_oid — quando vazia, cai no serial/índice. Índice COMPOSTO {pon}.{onu} (ex: 1000002.42). RX (col 16) em dBm ÷10 (-187 = -18,7 dBm); -400 = sem sinal (offline / leitura inválida). Status (col 2): 1=offline, 2=online.",
+      "itens": [
+        {
+          "id": "ont_serial", "nome": "Serial / Nome da ONU", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.4.{index}",
+          "descricao": "Identificador da ONU (ex: 'GIGAbc0d8760' = vendor 'GIGA' + últimos bytes do MAC). Sempre preenchido — use como chave de correlação com o ERP."
+        },
+        {
+          "id": "ont_description", "nome": "Descrição / Cliente", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.18.{index}", "rotulo_principal": true,
+          "descricao": "Descrição cadastrada na OLT — quando existe, é o login do cliente (ex: 'paulo02707@powerfibra.moradas'). VEM ENTRE ASPAS DUPLAS literais (remover as aspas da borda na exibição). Preenchida só em parte das ONUs nesta OLT; onde vazia, correlacione o serial (col 4) com o ERP."
+        },
+        {
+          "id": "ont_rx_power", "nome": "RX Óptico da ONU", "tipo": "SNMP_FLOAT", "oid_template": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.16.{index}", "divisor": 10, "unidade": "dBm",
+          "descricao": "Potência óptica recebida pela ONU (downstream). Principal métrica de saúde do cliente. -400 (÷10 = -40 dBm) = sem sinal/ONU offline — ignorar.",
+          "valor_invalido": -400,
+          "triggers": [
+            { "id": "ont_rx_baixo", "nome": "RX da ONT baixo", "condicao": "<=", "threshold": -250, "severidade": "warning", "auto_create": false, "mensagem": "ONU {interface} na OLT {host}: RX em {valor} (≈ -25 dBm) — sinal fraco no cliente" },
+            { "id": "ont_rx_critico", "nome": "RX da ONT crítico", "condicao": "<=", "threshold": -280, "severidade": "critical", "auto_create": false, "mensagem": "ONU {interface} na OLT {host}: RX em {valor} (≈ -28 dBm) — perto/abaixo da sensibilidade GPON, cliente em risco" }
+          ]
+        },
+        {
+          "id": "ont_run_status", "nome": "Status da ONU", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.2.{index}",
+          "value_map": { "1": "Offline", "2": "Online" },
+          "descricao": "Estado da ONU (1=offline, 2=online — INVERTIDO em relação ao padrão Huawei). Bate 100% com o RX (col 16). ONUs caindo/subindo é comum; o trigger pode gerar ruído — avalie ativar só em clientes críticos.",
+          "triggers": [
+            { "id": "ont_offline", "nome": "ONU offline", "condicao": "=", "threshold": 1, "severidade": "warning", "auto_create": false, "mensagem": "ONU {interface} na OLT {host} está OFFLINE" }
+          ]
+        },
+        {
+          "id": "ont_service", "nome": "Serviço / VLAN", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.10428.9.1.101.23.3.1.1.118.{index}",
+          "descricao": "Rótulo de serviço/área da ONU (ex: 'MORADAS-VLAN352-ROUTER', 'VLAN100-BRIDGE'). Útil pra segmentar clientes por VLAN/área."
+        }
+      ]
+    }
+  ]
+}
