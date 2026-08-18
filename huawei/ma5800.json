@@ -10,9 +10,9 @@
     "snmp_options": "-Cc",
     "fields": {
       "cliente": { "sub_oid": ".43.1.9",  "tipo": "STRING", "label": "Cliente" },
-      "serial":  { "sub_oid": ".43.1.3",  "tipo": "STRING", "label": "Serial" },
+      "serial":  { "sub_oid": ".43.1.3",  "tipo": "HEX_SERIAL", "parser": "parse_hex_serial", "label": "Serial GPON" },
       "status":  { "sub_oid": ".46.1.15", "tipo": "INT",    "label": "Status" },
-      "rx":      { "sub_oid": ".51.1.4",  "tipo": "INT",    "label": "RX (x100 dBm)" }
+      "rx":      { "sub_oid": ".51.1.4",  "tipo": "INT", "divisor": 100, "label": "RX (dBm)" }
     },
     "status_field": "status",
     "status_values": { "online": [1], "offline": [2] },
