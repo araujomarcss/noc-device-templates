@@ -1,0 +1,86 @@
+{
+  "tipo": "OLT",
+  "fabricante": "VSOL",
+  "modelo": "V1600GS-F",
+  "snmp_version": "2c",
+  "descricao": "GPON OLT VSOL V1600GS-F — sistema, interfaces/uplinks (IF-MIB), lista de ONUs (MAC, status, tipo de porta) e RX óptico por ONU. Enterprise OID: 1.3.6.1.4.1.37950. OIDs de ONU e óptica confirmados em equipamento real (22 ONUs, RX em 6.1.1.3.1.7).",
+  "snmp_options": "-Cc -t 10 -r 2",
+  "nota_geral": "A VSOL limita taxa de SNMP: walks pesados/consecutivos podem fazer o agente parar de responder por alguns segundos. Por isso os walks usam -Cc -t 10 -r 2 e a óptica é um walk único. A tabela de ONU (5.10.3.2.1) é indexada 1..N (índice plano); a óptica (6.1.1.3.1.{metrica}.1.{onu}) tem um nível de porta PON fixo (.1) — por isso o RX é lido em 6.1.1.3.1.7 com sub_oid '.1', o que faz a chave da ONU casar direto com o onu_id da tabela. TX/temperatura/tensão existem (cols .6/.3/.4) mas hoje só o RX casa via template puro. Status da ONU em 5.10.3.2.1.4 (1=online observado; ajuste status_values se aparecer offline).",
+
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Latência",
+      "descricao": "ICMP ping, perda de pacotes e tempo de resposta",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "ping_status",   "nome": "Status Ping",       "tipo": "ICMP_PING",     "unidade": "" },
+        { "id": "ping_loss",     "nome": "Perda de Pacotes",  "tipo": "ICMP_LOSS",     "unidade": "%" },
+        { "id": "ping_response", "nome": "Tempo de Resposta", "tipo": "ICMP_RESPONSE", "unidade": "ms" }
+      ]
+    },
+    {
+      "id": "sistema",
+      "label": "Informações do Sistema",
+      "descricao": "Uptime, nome e descrição do equipamento",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "sys_uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "",
+          "triggers": [
+            { "id": "reboot_detectado", "nome": "Reboot detectado", "condicao": "drop", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "OLT {host} reiniciou — uptime caiu de {anterior} para {valor}" }
+          ]
+        },
+        { "id": "sys_name",  "nome": "Nome do Equipamento", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0", "unidade": "" },
+        { "id": "sys_descr", "nome": "Descrição",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0", "unidade": "" }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Uplinks",
+      "descricao": "Status e tráfego das portas (uplinks GE/10GE e PON) — MIBs universais IF-MIB",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "usar_nome_discovery": true,
+      "itens": [
+        {
+          "id": "if_oper_status", "nome": "{name} — Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "up", "2": "down", "3": "testing" },
+          "triggers": [
+            { "id": "interface_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} na OLT {host} está DOWN" }
+          ]
+        },
+        { "id": "if_in_octets",  "nome": "{name} — Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",  "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bytes" },
+        { "id": "if_out_octets", "nome": "{name} — Tráfego Saída",   "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bytes" }
+      ]
+    }
+  ],
+
+  "onu_table": {
+    "descricao": "Lista de ONUs — enterprise 37950.1.1.5.10.3.2.1. Índice plano 1..N. col .3 = MAC (Hex-STRING), .4 = status, .5 = tipo de porta (GPON / GE 0/1).",
+    "base_oid": "1.3.6.1.4.1.37950.1.1.5.10.3.2.1",
+    "snmp_options": "-Cc -t 10 -r 2",
+    "fields": {
+      "mac":    { "sub_oid": ".3", "tipo": "MAC",    "label": "MAC" },
+      "status": { "sub_oid": ".4", "tipo": "INT",    "label": "Status" },
+      "porta":  { "sub_oid": ".5", "tipo": "STRING", "label": "Porta" }
+    },
+    "status_field": "status",
+    "status_values": { "online": [1], "offline": [0, 2] }
+  },
+
+  "onu_optical_power_snmp": {
+    "descricao": "RX óptico por ONU — enterprise 37950.1.1.6.1.1.3.1.7 (STRING em dBm, ex: -20.61). base_oid inclui a coluna 7 (RX) e o field usa sub_oid '.1' (porta PON fixa) para que a chave da ONU seja o índice puro e case com o onu_id da onu_table. Valores já vêm em dBm — sem divisor.",
+    "base_oid": "1.3.6.1.4.1.37950.1.1.6.1.1.3.1.7",
+    "snmp_options": "-Cc -t 10 -r 2",
+    "index_suffix": "",
+    "fields": {
+      "rx_power": { "sub_oid": ".1", "tipo": "STRING", "label": "RX", "unidade": "dBm" }
+    },
+    "nota": "TX (col .6), temperatura (.3), tensão (.4) e corrente de bias (.5) existem na mesma árvore, mas hoje não casam por template puro por causa do nível de porta PON no índice — precisariam de um strip de prefixo no backend."
+  }
+}

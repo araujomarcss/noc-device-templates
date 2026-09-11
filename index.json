@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated_at": "2026-07-29",
+  "updated_at": "2026-09-11",
   "templates": [
     {
       "tipo": "OLT",
@@ -189,6 +189,20 @@
       "modelo": "LD3032",
       "file": "furukawa/furukawa-ld3032.json",
       "descricao": "OLT GPON Furukawa LightDrive LD3032 (plataforma NOS, PEN 10428) — interfaces e ONUs por porta PON (cliente, serial, RX óptico, status)"
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "VSOL",
+      "modelo": "V1600GS-F",
+      "file": "vsol/v1600gs.json",
+      "descricao": "GPON OLT VSOL V1600GS-F — sistema, interfaces (IF-MIB), lista de ONUs (MAC/status) e RX óptico por ONU. Enterprise 37950."
+    },
+    {
+      "tipo": "OLT",
+      "fabricante": "Intelbras",
+      "modelo": "G16",
+      "file": "intelbras/g16.json",
+      "descricao": "GPON OLT Intelbras G16 (16x GPON) — sistema, interfaces e alarmes de porta. Sem lista de ONU por SNMP (limitação do equipamento). Enterprise 13464."
     }
   ]
 }

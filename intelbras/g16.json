@@ -1,0 +1,67 @@
+{
+  "tipo": "OLT",
+  "fabricante": "Intelbras",
+  "modelo": "G16",
+  "snmp_version": "2c",
+  "descricao": "GPON OLT Intelbras G16 (CASSETTE OLT GPON, 16x GPON + uplinks GE/10GE) — sistema (modelo, serial, firmware), interfaces/uplinks e status por porta via IF-MIB, habilitando os alarmes de porta (up/down + banda). Enterprise OID: 1.3.6.1.4.1.13464 (plataforma OEM Broadband Network Platform).",
+  "snmp_options": "-Cc",
+  "nota_geral": "A firmware OEM (enterprise 13464) NÃO expõe árvore de ONU/PON por SNMP — só gerência do equipamento (13464.1.2.*) e as MIBs universais (IF-MIB). Por isso este template não tem onu_table/onu_optical/pon_ports: a lista de ONU por SNMP não é possível NESTE equipamento (limitação da OLT, não do NocFlex). O valor entregue é: painel de sistema, aba Interfaces (status/tráfego das 16 portas GPON g0/1..16 + uplinks e1/e2) e os ALARMES DE PORTA (up/down + banda). As 16 portas GPON aparecem como g0/1..g0/16; uplinks como e1/x, e2/x; agregações como ch-x.",
+
+  "capabilities": [
+    {
+      "id": "ping",
+      "label": "Ping / Latência",
+      "descricao": "ICMP ping, perda de pacotes e tempo de resposta",
+      "categoria": "Básico",
+      "requer_discovery": false,
+      "itens": [
+        { "id": "ping_status",   "nome": "Status Ping",       "tipo": "ICMP_PING",     "unidade": "" },
+        { "id": "ping_loss",     "nome": "Perda de Pacotes",  "tipo": "ICMP_LOSS",     "unidade": "%" },
+        { "id": "ping_response", "nome": "Tempo de Resposta", "tipo": "ICMP_RESPONSE", "unidade": "ms" }
+      ]
+    },
+    {
+      "id": "sistema",
+      "label": "Informações do Sistema",
+      "descricao": "Uptime, nome, modelo, número de série e firmware",
+      "categoria": "Sistema",
+      "requer_discovery": false,
+      "itens": [
+        {
+          "id": "sys_uptime", "nome": "Uptime", "tipo": "SNMP_TIMETICKS", "oid": "1.3.6.1.2.1.1.3.0", "unidade": "",
+          "triggers": [
+            { "id": "reboot_detectado", "nome": "Reboot detectado", "condicao": "drop", "threshold": 0, "severidade": "warning", "auto_create": false, "mensagem": "OLT {host} reiniciou — uptime caiu de {anterior} para {valor}" }
+          ]
+        },
+        { "id": "sys_name",         "nome": "Nome do Equipamento", "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.5.0",                  "unidade": "" },
+        { "id": "sys_descr",        "nome": "Descrição",           "tipo": "SNMP_STRING", "oid": "1.3.6.1.2.1.1.1.0",                  "unidade": "" },
+        { "id": "device_model",     "nome": "Modelo",              "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.13464.1.2.1.1.2.10.0",   "unidade": "" },
+        { "id": "serial_number",    "nome": "Número de Série",     "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.13464.1.2.1.1.2.19.0",   "unidade": "" },
+        { "id": "firmware_version", "nome": "Versão Firmware",     "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.13464.1.2.1.1.2.2.0",    "unidade": "" },
+        { "id": "product_desc",     "nome": "Produto",             "tipo": "SNMP_STRING", "oid": "1.3.6.1.4.1.13464.1.2.1.1.2.15.0",   "unidade": "" }
+      ]
+    },
+    {
+      "id": "interfaces",
+      "label": "Interfaces / Portas",
+      "descricao": "Status e tráfego das 16 portas GPON (g0/1..16), uplinks (e1/x, e2/x) e agregações (ch-x) — MIBs universais IF-MIB. Habilita os alarmes de porta (up/down + banda).",
+      "categoria": "Rede",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.2.2.1.1",
+      "discovery_name_oid": "1.3.6.1.2.1.2.2.1.2",
+      "usar_nome_discovery": true,
+      "itens": [
+        {
+          "id": "if_oper_status", "nome": "{name} — Status Operacional", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.8.{index}",
+          "value_map": { "1": "up", "2": "down", "3": "testing", "4": "unknown", "5": "dormant", "6": "notPresent", "7": "lowerLayerDown" },
+          "triggers": [
+            { "id": "interface_down", "nome": "Interface caiu", "condicao": "=", "threshold": 2, "severidade": "warning", "auto_create": false, "mensagem": "Interface {interface} na OLT {host} está DOWN" }
+          ]
+        },
+        { "id": "if_admin_status", "nome": "{name} — Status Administrativo", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.2.2.1.7.{index}", "value_map": { "1": "up", "2": "down", "3": "testing" } },
+        { "id": "if_in_octets",  "nome": "{name} — Tráfego Entrada", "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.6.{index}",  "oid_template_32bit": "1.3.6.1.2.1.2.2.1.10.{index}", "unidade": "bytes" },
+        { "id": "if_out_octets", "nome": "{name} — Tráfego Saída",   "tipo": "DELTA_BYTES", "oid_template": "1.3.6.1.2.1.31.1.1.1.10.{index}", "oid_template_32bit": "1.3.6.1.2.1.2.2.1.16.{index}", "unidade": "bytes" }
+      ]
+    }
+  ]
+}
