@@ -82,5 +82,15 @@
       "rx_power": { "sub_oid": ".1", "tipo": "STRING", "label": "RX", "unidade": "dBm" }
     },
     "nota": "TX (col .6), temperatura (.3), tensão (.4) e corrente de bias (.5) existem na mesma árvore, mas hoje não casam por template puro por causa do nível de porta PON no índice — precisariam de um strip de prefixo no backend."
+  },
+
+  "pon_ports": {
+    "descricao": "Status da(s) porta(s) GPON via IF-MIB (ifOperStatus). A V1600GS-F tem 1 porta GPON = GPON0/1 (ifIndex 4). As ONUs aparecem individualmente na aba Interfaces (GPON01ONUx) com up/down.",
+    "port_count": 1,
+    "port_name_prefix": "GPON0/",
+    "fields": {
+      "status": { "oid_template": "1.3.6.1.2.1.2.2.1.8.4", "tipo": "INT", "label": "Status", "value_map": { "1": "up", "2": "down", "3": "testing" } }
+    },
+    "nota": "ifIndex das portas físicas: GE0/1..3 = 1..3, GPON0/1 = 4. As ONUs (ifIndex 5+) são dinâmicas; por isso a porta GPON é fixada em .4."
   }
 }
