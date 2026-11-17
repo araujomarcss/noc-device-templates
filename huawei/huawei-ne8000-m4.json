@@ -74,6 +74,19 @@
         { "id": "sfp_temperature", "nome": "Temperatura SFP", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.5.{index}", "unidade": "°C" },
         { "id": "sfp_type", "nome": "Tipo da SFP", "tipo": "SNMP_STRING", "oid_template": "1.3.6.1.4.1.2011.5.25.31.1.1.3.1.10.{index}" }
       ]
+    },
+    {
+      "id": "bgp",
+      "label": "Sessões BGP",
+      "requer_discovery": true,
+      "discovery_oid": "1.3.6.1.2.1.15.3.1.2",
+      "discovery_endpoint": "bgp",
+      "nota": "BGP4-MIB bgpPeerState (RFC1657), IPv4 apenas. Indice = IP do peer. Estado 1=idle..6=established. Peers admin-down (bgpPeerAdminStatus 1.3.6.1.2.1.15.3.1.3 = 1) NAO devem virar item — o endpoint /discover-bgp ja os marca travados, senao alarmariam pra sempre. Alarme = estado != 6 (saiu de Established). IPv6 e dado rico por peer via MIB Huawei hwBgpPeerTable (1.3.6.1.4.1.2011.5.25.177) = fase 2.",
+      "itens": [
+        { "id": "bgp_state", "nome": "Sessão BGP", "tipo": "SNMP_INT", "oid_template": "1.3.6.1.2.1.15.3.1.2.{index}",
+          "value_map": { "1": "Idle", "2": "Connect", "3": "Active", "4": "OpenSent", "5": "OpenConfirm", "6": "Established" },
+          "triggers": [ { "id": "bgp_peer_down", "nome": "Sessão BGP caiu", "condicao": "!=", "threshold": 6, "severidade": "critical", "auto_create": true, "mensagem": "Sessão BGP com o peer {interface} em {host} saiu de Established (estado atual: {valor})" } ] }
+      ]
     }
   ]
 }
